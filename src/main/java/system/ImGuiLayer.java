@@ -175,6 +175,7 @@ public class ImGuiLayer {
             SpritesheetWindow.getInstance().imgui();
             FileDialog.getInstance().render();
             AddingSpritesheetWindow.getInstance().spritesheetPreview();
+            AddingNewPrefabWindow.getInstance().imgui();
             PrefabsWindow.getInstance().imgui();
             OpenProjectWindow.imgui();
             CreateNewProjectWindow.imgui();

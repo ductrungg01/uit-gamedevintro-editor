@@ -36,7 +36,7 @@ public class FileUtils {
             put(ICON_NAME.DISABLE_CONSTRAINED_PROPORTIONS, "system-assets/images/DisableConstrainedProportions-icon.png");
         }
     };
-    final static String defaultAssetFolder = "assets";
+    final static String defaultAssetFolder = "data/textures";
     final static String defaultSprite = "system-assets/images/Default Sprite.png";
     private static List<String> imageExtensions = List.of("jpg", "jpeg", "png");
     private static List<String> soundExtensions = List.of("ogg", "mp3", "wav", "flac", "aiff", "m4a");

@@ -27,7 +27,7 @@ public class AssetsWindow {
     private final String FOLDER_ICON = "system-assets/images/folder-icon.png";
     private final String LEFT_ARROW_ICON = "system-assets/images/left-arrow-icon.png";
     private final String RIGHT_ARROW_ICON = "system-assets/images/right-arrow-icon.png";
-    private static final String ROOT_FOLDER = "textures";
+    private static final String ROOT_FOLDER = "data/textures";
 
     private boolean rename = false;
     private String selectedItem = "";

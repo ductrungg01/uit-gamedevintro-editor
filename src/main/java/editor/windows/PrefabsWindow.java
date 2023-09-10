@@ -3,6 +3,7 @@ package editor.windows;
 import components.Sprite;
 import components.SpriteRenderer;
 import editor.Debug;
+import editor.ReferenceType;
 import imgui.ImGui;
 import imgui.ImVec2;
 import imgui.flag.ImGuiCol;
@@ -45,6 +46,7 @@ public class PrefabsWindow {
     public String prefabNeedToHighlight = "";
     private final float HIGHLIGHT_TIME = 2f;
     private float highlightTimeRemain = HIGHLIGHT_TIME;
+    private static Sprite SPRITE_WAITING = null;
 
     public void imgui() {
         ImGui.setNextWindowSizeConstraints(Settings.MIN_WIDTH_GROUP_WIDGET, Settings.MIN_HEIGHT_GROUP_WIDGET, Window.getWidth(), Window.getHeight());
@@ -54,6 +56,8 @@ public class PrefabsWindow {
         }
 
         ImGui.begin("Prefabs");
+
+        settings();
 
         ImVec2 windowPos = new ImVec2();
         ImGui.getWindowPos(windowPos);
@@ -127,6 +131,24 @@ public class PrefabsWindow {
             }
         }
 
+    }
+
+    private void settings() {
+        //region ADD NEW PREFAB
+        final String ID_WAITING_FILE_DIALOG = "Add new sprefab imgui id";
+        if (ImGui.button("Add new prefab")) {
+            FileDialog.getInstance().showSpritesheetAlso = false;
+            FileDialog.getInstance().removeSpritesheet = true;
+            FileDialog.getInstance().open(ID_WAITING_FILE_DIALOG, ReferenceType.SPRITE);
+        }
+
+        SPRITE_WAITING = (Sprite) FileDialog.getInstance().getSelectedObject(ID_WAITING_FILE_DIALOG, SPRITE_WAITING);
+
+        if (SPRITE_WAITING != null && !AddingNewPrefabWindow.getInstance().isOpen()) {
+            AddingNewPrefabWindow.getInstance().open(SPRITE_WAITING);
+            SPRITE_WAITING = null;
+        }
+        //endregion
     }
 
     private void drawPrefabButton(GameObject prefab) {

@@ -1,1 +1,0 @@
-assets/images/spritesheets/animation-block.png|16|16|9|1|1
