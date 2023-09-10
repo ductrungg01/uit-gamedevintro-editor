@@ -33,19 +33,18 @@ public class EditorCamera extends Component implements INonAddableComponent {
     //region Override methods
     @Override
     public void editorUpdate(float dt) {
-        if ((KeyListener.isKeyPressed(GLFW_KEY_LEFT_CONTROL) || KeyListener.isKeyPressed(GLFW_KEY_RIGHT_CONTROL))) {
-            if (MouseListener.mouseButtonDown(GLFW_MOUSE_BUTTON_LEFT) && dragDebounce > 0) {
+            if (MouseListener.mouseButtonDown(GLFW_MOUSE_BUTTON_RIGHT) && dragDebounce > 0) {
                 this.clickOrigin = MouseListener.getWorld();
                 dragDebounce -= dt;
                 return;
-            } else if (MouseListener.mouseButtonDown(GLFW_MOUSE_BUTTON_LEFT)) {
+            } else if (MouseListener.mouseButtonDown(GLFW_MOUSE_BUTTON_RIGHT)) {
                 Vector2f mousePos = MouseListener.getWorld();
                 Vector2f delta = new Vector2f(mousePos).sub(this.clickOrigin);
 
                 levelEditorCamera.position.sub(delta.mul(dt).mul(dragSensitivity));
                 this.clickOrigin.lerp(mousePos, dt);
             }
-            if (dragDebounce <= 0.0f && !MouseListener.mouseButtonDown(GLFW_MOUSE_BUTTON_LEFT)) {
+            if (dragDebounce <= 0.0f && !MouseListener.mouseButtonDown(GLFW_MOUSE_BUTTON_RIGHT)) {
                 dragDebounce = 0.1f;
             }
 
@@ -56,7 +55,6 @@ public class EditorCamera extends Component implements INonAddableComponent {
                 addValue *= -Math.signum(MouseListener.getScrollY());
                 levelEditorCamera.addZoom(addValue);
             }
-        }
 
         if (KeyListener.isKeyPressed(GLFW_KEY_KP_DECIMAL)) {
             reset = true;
