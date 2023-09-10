@@ -243,47 +243,25 @@ public class GameObject {
     }
 
     public void imgui() {
-        //region Prefab settings
-        ImGui.beginChild("Show prefab and button override of " + this.hashCode(), ImGui.getContentRegionMaxX(), (!this.isPrefab ? 80 : 50), true);
+        ImGui.text("Object's name: ");
+        ImGui.sameLine();
 
-        ButtonColor btnCol = new ButtonColor(new Vector4f(14 / 255f, 14 / 255f, 28 / 255f, 1), COLOR_Blue, COLOR_DarkBlue);
-        Vector2f btnSize = new Vector2f(ImGui.getContentRegionAvailX(), 30f);
-        if (this.isPrefab) {
-            if (NiceImGui.drawButton("Override all children", btnCol, btnSize)) {
-                this.overrideAllChildGameObject();
-            }
-        } else {
-            if (!this.parentId.isEmpty())
-                NiceImGui.prefabShowingInInspectorsButton(this);
-            if (NiceImGui.drawButton("Save as a new prefab", btnCol, btnSize)) {
-                this.setAsPrefab();
-            }
-        }
-        ImGui.endChild();
+        ImGui.textColored(Settings.NAME_COLOR.x, Settings.NAME_COLOR.y, Settings.NAME_COLOR.z, Settings.NAME_COLOR.w,
+                this.name);
+
+        this.tag = NiceImGui.inputText("Tag: ", this.tag, this.getUid() + "tag");
 
         ImGui.separator();
-        //endregion
-
-        this.name = NiceImGui.inputText("Name", this.name, "Name of " + this.hashCode());
-        this.tag = NiceImGui.inputText("Tag", this.tag, "Tag of " + this.hashCode());
-//        ImGui.text("isPrefab? : " + this.isPrefab);
-//        ImGui.text("prefab ID : " + this.prefabId);
-//        ImGui.text("parent ID : " + this.parentId);
-
 
         for (int i = 0; i < components.size(); i++) {
             Component c = components.get(i);
 
             if (c instanceof Transform || c instanceof SpriteRenderer) {
-                // Because Transform is cannot be removed!!!
+                // Because Transform and SpriteRenderer is cannot be removed!!!
                 if (ImGui.collapsingHeader(c.getClass().getSimpleName())) {
                     c.imgui();
                 }
-
-                if (this.isPrefab && c instanceof Transform) {
-                    ((Transform) c).position = new Vector2f();  // Prefab's position is always (0,0)
-                }
-            } else {
+            } else if (c instanceof StateMachine) {
                 ImBoolean removeComponentButton = new ImBoolean(true);
 
                 if (ImGui.collapsingHeader(c.getClass().getSimpleName(), removeComponentButton)) {
@@ -291,18 +269,13 @@ public class GameObject {
                 }
 
                 if (!removeComponentButton.get()) {
-                    if (c instanceof RigidBody2D && (this.getComponent(Box2DCollider.class) != null || this.getComponent(CircleCollider.class) != null || this.getComponent(Capsule2DCollider.class) != null)) {
-                        JOptionPane.showMessageDialog(null, "You need remove all Collider first!",
-                                "ERROR", JOptionPane.ERROR_MESSAGE);
-                    } else {
-                        int response = JOptionPane.showConfirmDialog(null,
-                                "Remove component '" + c.getClass().getSimpleName() + "' from game object '" + this.name + "'?",
-                                "REMOVE COMPONENT",
-                                JOptionPane.YES_NO_OPTION);
-                        if (response == JOptionPane.YES_OPTION) {
-                            components.remove(i);
-                            i--;
-                        }
+                    int response = JOptionPane.showConfirmDialog(null,
+                            "Remove component '" + c.getClass().getSimpleName() + "' from game object '" + this.name + "'?",
+                            "REMOVE COMPONENT",
+                            JOptionPane.YES_NO_OPTION);
+                    if (response == JOptionPane.YES_OPTION) {
+                        components.remove(i);
+                        i--;
                     }
                 }
             }

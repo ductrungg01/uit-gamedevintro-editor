@@ -168,7 +168,7 @@ public class ImGuiLayer {
 
         GameViewWindow.getInstance().imgui();
         SceneHierarchyWindow.getInstance().imgui();
-        ConsoleWindow.getInstance().imgui();
+        //ConsoleWindow.getInstance().imgui();
         inspectorWindow.imgui();
 
         if (!Window.get().runtimePlaying) {

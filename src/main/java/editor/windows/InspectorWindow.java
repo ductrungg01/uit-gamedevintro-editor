@@ -41,7 +41,7 @@ public class InspectorWindow {
     String searchText = "";
     boolean showAddComponentMenu = false;
 
-    Set<Class<? extends Component>> classes;
+    //Set<Class<? extends Component>> classes;
     //endregion
 
     //region Constructors
@@ -49,33 +49,6 @@ public class InspectorWindow {
         this.activeGameObjects = new ArrayList<>();
         this.pickingTexture = pickingTexture;
         this.activeGameObjectOriginalColor = new ArrayList<>();
-
-        Reflections reflections = new Reflections("physics2d.components");
-        classes = reflections.getSubTypesOf(Component.class);
-        reflections = new Reflections("components");
-        classes.addAll(reflections.getSubTypesOf(Component.class));
-
-        List<Class<? extends Component>> classesToRemove = new ArrayList<>();
-
-        for (Class<? extends Component> aClass : classes) {
-            try {
-                Component component = aClass.getDeclaredConstructor().newInstance();
-                if (component instanceof INonAddableComponent) {
-                    classesToRemove.add(aClass);
-                }
-            } catch (InstantiationException | IllegalAccessException e) {
-                e.printStackTrace();
-            } catch (InvocationTargetException | NoSuchMethodException e) {
-                Throwable cause = e.getCause();
-                if (cause != null) {
-                    cause.printStackTrace();
-                } else {
-                    e.printStackTrace();
-                }
-            }
-        }
-
-        classes.removeAll(classesToRemove);
     }
     //endregion
 
@@ -89,8 +62,6 @@ public class InspectorWindow {
             activeGameObject = activeGameObjects.get(0);
         }
 
-//        if (activeGameObjects.size() > 1) activeGameObject = null;
-
         if (activeGameObject == null) {
             ImGui.end();
             return;
@@ -100,55 +71,17 @@ public class InspectorWindow {
 
         ImGui.separator();
 
-        if (NiceImGui.drawButton("Add component",
-                new ButtonColor(COLOR_DarkBlue, COLOR_Blue, COLOR_Blue),
-                new Vector2f(ImGui.getContentRegionAvailX(), 50f))) {
-            showAddComponentMenu = true;
-            searchText = "";
-            ImGui.openPopup("AddComponentMenu");
-        }
+        if (this.activeGameObject.getComponent(StateMachine.class) == null) {
+            if (NiceImGui.drawButton("Add StateMachine",
+                    new ButtonColor(COLOR_DarkBlue, COLOR_Blue, COLOR_Blue),
+                    new Vector2f(ImGui.getContentRegionAvailX(), 50f))) {
+                showAddComponentMenu = true;
+                searchText = "";
+                ImGui.openPopup("AddComponentMenu");
+            }
 
-        if (showAddComponentMenu) {
-            if (ImGui.beginPopup("AddComponentMenu")) {
-                searchText = NiceImGui.inputText("", searchText, "AddingComponent" + activeGameObject.hashCode());
-
-                ImGui.beginChild("ComponentList", 500, 350, true, ImGuiWindowFlags.HorizontalScrollbar);
-                for (Class<? extends Component> aClass : classes) {
-                    String className = aClass.getSimpleName();
-                    if (searchText.isEmpty() || className.toLowerCase().contains(searchText.toLowerCase())) {
-                        if (ImGui.menuItem(className)) {
-                            Component component = null;
-                            try {
-                                component = aClass.getDeclaredConstructor().newInstance();
-                                if (activeGameObject.getComponent(aClass) != null) {
-                                    JOptionPane.showMessageDialog(null, "Component '" + className + "' is existed!",
-                                            "ERROR", JOptionPane.ERROR_MESSAGE);
-                                    continue;
-                                }
-                                if ((component instanceof Box2DCollider) || (component instanceof CircleCollider) || (component instanceof Capsule2DCollider)) {
-                                    if (activeGameObject.getComponent(RigidBody2D.class) == null) {
-                                        JOptionPane.showMessageDialog(null, "You need add RigidBody2D before add any Collider!",
-                                                "ERROR", JOptionPane.ERROR_MESSAGE);
-                                        continue;
-                                    }
-                                }
-                            } catch (InstantiationException | IllegalAccessException e) {
-                                e.printStackTrace();
-                            } catch (InvocationTargetException | NoSuchMethodException e) {
-                                throw new RuntimeException(e);
-                            }
-
-                            showAddComponentMenu = false;
-                            if (activeGameObject.getComponent(aClass) == null) {
-                                activeGameObject.addComponent(component);
-                                component.start();
-                            }
-                            ImGui.closeCurrentPopup();
-                        }
-                    }
-                }
-                ImGui.endChild();
-                ImGui.endPopup();
+            if (showAddComponentMenu) {
+                this.activeGameObject.addComponent(new StateMachine());
             }
         }
 

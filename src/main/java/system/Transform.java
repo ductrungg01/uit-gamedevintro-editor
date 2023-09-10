@@ -49,9 +49,9 @@ public class Transform extends Component implements INonAddableComponent {
     @Override
     public void imgui() {
         NiceImGui.drawVec2Control("Position", this.position, "Position of transform " + this.gameObject.hashCode());
-        constrainedProportions = NiceImGui.drawVec2ControlWithConstrainedProportions("Scale", this.scale, "Scale of transform " + this.gameObject.hashCode(), constrainedProportions);
-        this.rotation = NiceImGui.dragFloat("Rotation", this.rotation);
-        this.zIndex = NiceImGui.dragInt("Z-Index", this.zIndex);
+        //constrainedProportions = NiceImGui.drawVec2ControlWithConstrainedProportions("Scale", this.scale, "Scale of transform " + this.gameObject.hashCode(), constrainedProportions);
+        //this.rotation = NiceImGui.dragFloat("Rotation", this.rotation);
+        //this.zIndex = NiceImGui.dragInt("Z-Index", this.zIndex);
     }
 
     @Override

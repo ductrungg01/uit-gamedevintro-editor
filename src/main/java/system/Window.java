@@ -77,7 +77,7 @@ public class Window implements Observer {
         this.height = 2160;
 //        this.width = 700;
 //        this.height = 500;
-        this.title = "9 Engine";
+        this.title = "9 Engine - UIT - GameDevIntroEditorExtension";
         EventSystem.addObserver(this);
     }
 
@@ -227,7 +227,7 @@ public class Window implements Observer {
     }
 
     public void run() throws IOException {
-        System.out.println("Hello LWJGL " + Version.getVersion() + "!");
+        //System.out.println("Hello LWJGL " + Version.getVersion() + "!");
 
         init();
         loop();
