@@ -188,7 +188,7 @@ public class MouseListener {
             PointerBuffer paths = MemoryUtil.memPointerBuffer(names, count);
             for (int i = 0; i < count; i++) {
                 String filePath = MemoryUtil.memUTF8(paths.get(i));
-
+                if (!filePath.endsWith(".png")) continue;
                 //copy file
                 File srcFile = new File(filePath);
                 File desFile = new File(AssetsWindow.getCurrentOpenFolder() + "/" + srcFile.getName());

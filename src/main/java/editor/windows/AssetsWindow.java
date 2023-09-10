@@ -27,7 +27,7 @@ public class AssetsWindow {
     private final String FOLDER_ICON = "system-assets/images/folder-icon.png";
     private final String LEFT_ARROW_ICON = "system-assets/images/left-arrow-icon.png";
     private final String RIGHT_ARROW_ICON = "system-assets/images/right-arrow-icon.png";
-    private static final String ROOT_FOLDER = "assets";
+    private static final String ROOT_FOLDER = "textures";
 
     private boolean rename = false;
     private String selectedItem = "";
@@ -164,7 +164,7 @@ public class AssetsWindow {
     public void imgui() {
         ImGui.setNextWindowSizeConstraints(Settings.MIN_WIDTH_GROUP_WIDGET, Settings.MIN_HEIGHT_GROUP_WIDGET, Window.getWidth(), Window.getHeight());
 
-        ImGui.begin("Assets");
+        ImGui.begin("Textures");
 
         ImGui.getWindowPos(widgetPos);
         ImGui.getWindowSize(widgetSize);
@@ -236,34 +236,18 @@ public class AssetsWindow {
 
         for (int i = 0; i < listOfFiles.length; i++) {
             if (listOfFiles[i].isFile()) {
-                ImGui.pushID(i);
                 if (FileUtils.isImageFile(listOfFiles[i])) {
+                    ImGui.pushID(i);
                     spr.setTexture(AssetPool.getTexture(listOfFiles[i].getPath()));
                     spr.calcWidthAndHeight();
                     float oldCursorScreenPosY = ImGui.getCursorScreenPosY();
                     NiceImGui.showImage(spr, new Vector2f(28, 28), true, "Click the file name and move to GameView to create a game object!", true, new Vector2f(300, 300), false);
                     ImGui.sameLine();
                     ImGui.setCursorScreenPos(ImGui.getCursorScreenPosX(), oldCursorScreenPosY);
-                } else if (FileUtils.checkFileExtension("java", listOfFiles[i])) {
-                    spr.setTexture(AssetPool.getTexture(FileUtils.icons.get(FileUtils.ICON_NAME.JAVA)));
-                    spr.calcWidthAndHeight();
-                    ImGui.image(spr.getTexId(), 28, 28);
-                    ImGui.sameLine();
-                } else if (FileUtils.isSoundFile(listOfFiles[i])) {
-                    spr.setTexture(AssetPool.getTexture(FileUtils.icons.get(FileUtils.ICON_NAME.SOUND)));
-                    spr.calcWidthAndHeight();
-                    ImGui.image(spr.getTexId(), 28, 28);
-                    ImGui.sameLine();
-                } else {
-                    spr.setTexture(AssetPool.getTexture(FileUtils.icons.get(FileUtils.ICON_NAME.FILE)));
-                    spr.calcWidthAndHeight();
-                    ImGui.image(spr.getTexId(), 28, 28);
-                    ImGui.sameLine();
+                    handleItemSelect(listOfFiles[i], false);
+                    ImGui.popID();
+                    ImGui.dummy(0, 4);
                 }
-                handleItemSelect(listOfFiles[i], false);
-                ImGui.popID();
-                ImGui.dummy(0, 4);
-
             } else if (listOfFiles[i].isDirectory()) {
                 ImGui.pushID(i);
                 spr.setTexture(AssetPool.getTexture(FOLDER_ICON));
@@ -298,10 +282,6 @@ public class AssetsWindow {
                 ImGui.endChild();
                 rename = true;
                 selectedItem = theDir.getName();
-            }
-
-            if (ImGui.menuItem("Create file")) {
-                MessageBox.setContext(true, MessageBox.TypeOfMsb.CREATE_FILE, "[Create file] Enter file name");
             }
 
             if (ImGui.menuItem("Open folder in Explorer")) {

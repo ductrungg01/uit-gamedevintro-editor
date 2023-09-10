@@ -71,12 +71,7 @@ public class GameObject {
             spr.setTexture(AssetPool.getTexture(texturePath));
         }
 
-        float MIN_SCALE_X = Settings.GRID_WIDTH;
-        float MIN_SCALE_Y = Settings.GRID_HEIGHT;
-
-        float offset = Math.max(MIN_SCALE_X / spr.getWidth(), MIN_SCALE_Y / spr.getHeight());
-
-        Vector2f size = new Vector2f(spr.getWidth() * offset, spr.getHeight() * offset);
+        Vector2f size = new Vector2f(spr.getWidth(), spr.getHeight());
 
         this.name = name;
 

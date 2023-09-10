@@ -7,6 +7,7 @@ import editor.uihelper.ButtonColor;
 import imgui.ImGui;
 import imgui.flag.ImGuiTreeNodeFlags;
 import org.joml.Vector2f;
+import system.Camera;
 import system.GameObject;
 import system.Transform;
 import system.Window;
@@ -62,6 +63,8 @@ public class SceneHierarchyWindow {
         if (ImGui.beginTabBar("HierarchyTabBar")) {
             if (ImGui.beginTabItem("System")) {
                 NiceImGui.colorPicker4("Camera's clear color", Window.getScene().camera().clearColor);
+                NiceImGui.drawVec2Control("ScreenSize", Camera.screenSize, "Screensize");
+
                 ImGui.endTabItem();
             }
 
@@ -95,16 +98,6 @@ public class SceneHierarchyWindow {
                         index++;
                     }
 
-                    if (ImGui.beginPopupContextWindow("Hierarchy")) {
-                        if (ImGui.menuItem("New GameObject")) {
-                            GameObject go = new GameObject("New GameObject", FileUtils.getDefaultSprite());
-                            go.setSerialize();
-
-                            Window.getScene().addGameObjectToScene(go);
-                        }
-
-                        ImGui.endPopup();
-                    }
                     ImGui.endTabItem();
                 }
             }

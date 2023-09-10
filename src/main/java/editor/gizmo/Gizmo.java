@@ -26,8 +26,8 @@ public class Gizmo extends Component implements INonAddableComponent {
     private static Vector2f xAxisOffset = new Vector2f(0.2f, -0f);
     private static Vector2f yAxisOffset = new Vector2f(-0f, 0.1f);
 
-    private static float gizmoWidth = 0.35f;
-    private static float gizmoHeight = 0.45f;
+    private static float gizmoWidth = 0.25f * Window.getScene().camera().getZoom();
+    private static float gizmoHeight = 0.35f * Window.getScene().camera().getZoom();
 
     protected boolean xAxisActive = false;
     protected boolean yAxisActive = false;

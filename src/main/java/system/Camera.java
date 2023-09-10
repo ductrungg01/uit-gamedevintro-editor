@@ -9,12 +9,12 @@ public class Camera {
     //region Fields
     private Matrix4f projectionMatrix, viewMatrix, inverseProjection, inverseView;
     public Vector2f position;
-
-    private float projectionWidth = 6;
+    public static Vector2f screenSize = new Vector2f(320, 240);
+    private float projectionWidth = 4;
     private float projectionHeight = 3;
     public Vector4f clearColor = new Vector4f(1, 1, 1, 1);
     private Vector2f projectionSize = new Vector2f(projectionWidth, projectionHeight);
-    private float zoom = 1.0f;
+    private float zoom = 1f;
     //endregion
 
     //region Constructors
@@ -77,6 +77,13 @@ public class Camera {
 
     public void addZoom(float value) {
         this.zoom += value;
+    }
+
+    public void setDefaultZoom(){
+        float offsetW = screenSize.x / projectionWidth;
+        float offsetH = screenSize.y / projectionHeight;
+        float needToMul = Math.max(offsetH, offsetW) + 20;
+        setZoom(needToMul);
     }
     //endregion
 }

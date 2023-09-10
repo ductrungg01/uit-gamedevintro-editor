@@ -84,7 +84,8 @@ public class Scene {
 
     //region Methods
     public void init() {
-        this.camera = new Camera(new Vector2f(0, 0));
+        this.camera = new Camera(new Vector2f(-40, -Camera.screenSize.y - 30));
+        this.camera.setDefaultZoom();
         this.sceneInitializer.loadResources(this);
         this.sceneInitializer.init(this);
     }

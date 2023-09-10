@@ -47,8 +47,8 @@ public class MouseControls {
             holdingObject.setNoSerialize();
             float x = MouseListener.getWorldX();
             float y = MouseListener.getWorldY();
-            holdingObject.transform.position.x = ((int) Math.floor(x / Settings.GRID_WIDTH) * Settings.GRID_WIDTH) + Settings.GRID_WIDTH / 2.0f;
-            holdingObject.transform.position.y = ((int) Math.floor(y / Settings.GRID_HEIGHT) * Settings.GRID_HEIGHT) + Settings.GRID_HEIGHT / 2.0f;
+            holdingObject.transform.position.x = x;
+            holdingObject.transform.position.y = y;
 
             if (MouseListener.mouseButtonDown(GLFW_MOUSE_BUTTON_LEFT)) {
                 float halfWidth = Settings.GRID_WIDTH / 2.0f;
