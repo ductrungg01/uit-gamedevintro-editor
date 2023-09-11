@@ -50,10 +50,6 @@ public class SpriteRenderer extends Component implements INonAddableComponent {
 
     @Override
     public void imgui() {
-        if (NiceImGui.colorPicker4("Color picker: ", this.color)) {
-            this.isDirty = true;
-        }
-
         Sprite tmp = (Sprite) NiceImGui.ReferenceButton("Sprite",
                 ReferenceType.SPRITE,
                 sprite,
