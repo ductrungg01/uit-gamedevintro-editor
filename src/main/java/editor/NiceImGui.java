@@ -497,6 +497,8 @@ public class NiceImGui {
         ImGui.popID();
         //endregion
 
+
+
         ImGui.sameLine();
 
         //region Remove Button
@@ -519,6 +521,26 @@ public class NiceImGui {
         ImGui.columns(1);
 
         ImGui.popID();
+
+        //region coord
+        Sprite sprite = (Sprite) oldValue;
+        if (sprite != null){
+            Vector2f[] texCoords = sprite.getTexCoords();
+            float img_size_width = sprite.getTexture().getWidth();
+            float img_size_height = sprite.getTexture().getHeight();
+
+            Vector2f topLeftCoord = new Vector2f(
+                    (float) Math.floor(texCoords[3].x * img_size_width),
+                    (float) Math.floor( texCoords[3].y * img_size_height)
+            );
+            Vector2f bottomRightCoord = new Vector2f(
+                    (float) Math.floor(texCoords[1].x * img_size_width),
+                    (float) Math.floor(texCoords[1].y * img_size_height)
+            );
+            ImGui.text("Top-Left coord: (" + topLeftCoord.x + " : " + topLeftCoord.y + ")");
+            ImGui.text("Bottom-Right coord: (" + bottomRightCoord.x + " : " + bottomRightCoord.y + ")");
+        }
+        //endregion
 
         return oldValue;
     }
