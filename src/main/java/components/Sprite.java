@@ -48,6 +48,14 @@ public class Sprite implements INonAddableComponent {
 
     public void setTexCoords(Vector2f[] texCoords) {
         this.texCoords = texCoords;
+        float dx = texCoords[0].x - texCoords[3].x;
+        float dy = texCoords[1].y - texCoords[0].y;
+
+        float width = this.texture.getWidth() * dx;
+        float height = this.texture.getHeight() * dy;
+
+        setWidth(width);
+        setHeight(height);
     }
 
     public float getWidth() {
