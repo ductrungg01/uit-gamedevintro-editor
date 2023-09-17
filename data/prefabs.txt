@@ -15,7 +15,7 @@
             "y": 0.0
           },
           "scale": {
-            "x": 152.0,
+            "x": 16.0,
             "y": 16.0
           },
           "rotation": 0.0,
@@ -33,7 +33,7 @@
             "w": 1.0
           },
           "sprite": {
-            "width": 152.0,
+            "width": 16.0,
             "height": 16.0,
             "texture": {
               "filePath": "textures/animation-block.png",
@@ -42,11 +42,11 @@
             },
             "texCoords": [
               {
-                "x": 1.0,
+                "x": 0.10526316,
                 "y": 0.0
               },
               {
-                "x": 1.0,
+                "x": 0.10526316,
                 "y": 1.0
               },
               {

@@ -10,8 +10,11 @@ import observers.events.EventType;
 import org.joml.Vector2f;
 import system.MouseListener;
 import system.Window;
+import util.SceneUtils;
 import util.Settings;
 import util.Time;
+
+import static editor.uihelper.NiceShortCall.COLOR_Yellow;
 
 public class GameViewWindow {
     public static boolean isPlaying = false;
@@ -48,12 +51,15 @@ public class GameViewWindow {
                 ImGuiWindowFlags.MenuBar);
 
         ImGui.beginMenuBar();
-        if (ImGui.menuItem("Play", "", isPlaying, !isPlaying)) {
-            EventSystem.notify(null, new Event(EventType.GameEngineStartPlay));
-        }
-        if (ImGui.menuItem("Stop", "", !isPlaying, isPlaying)) {
-            EventSystem.notify(null, new Event(EventType.GameEngineStopPlay));
-        }
+//        if (ImGui.menuItem("Play", "", isPlaying, !isPlaying)) {
+//            EventSystem.notify(null, new Event(EventType.GameEngineStartPlay));
+//        }
+//        if (ImGui.menuItem("Stop", "", !isPlaying, isPlaying)) {
+//            EventSystem.notify(null, new Event(EventType.GameEngineStopPlay));
+//        }
+
+        ImGui.textColored(COLOR_Yellow.x, COLOR_Yellow.y, COLOR_Yellow.z, COLOR_Yellow.w,
+                "Current scene: '" + SceneUtils.CURRENT_SCENE + "'");
         ImGui.endMenuBar();
 
         ImVec2 windowSize = getLargestSizeForViewport();
