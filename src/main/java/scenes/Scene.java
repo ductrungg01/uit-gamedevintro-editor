@@ -6,9 +6,7 @@ import components.Component;
 import deserializers.ComponentDeserializer;
 import deserializers.GameObjectDeserializer;
 import deserializers.PrefabDeserializer;
-import editor.KeyControls;
-import editor.MessageBox;
-import editor.MouseControls;
+import editor.*;
 import editor.windows.OpenSceneWindow;
 import editor.windows.SceneHierarchyWindow;
 import org.joml.Vector2f;
@@ -259,12 +257,16 @@ public class Scene {
 
             writer.write(gson.toJson(objsToSerialize));
             writer.close();
-            if (isShowMessage)
-                MessageBox.setContext(true, MessageBox.TypeOfMsb.NORMAL_MESSAGE, "Save scene '" + SceneUtils.CURRENT_SCENE + "' successfully");
+            if (isShowMessage) {
+                //MessageBox.setContext(true, MessageBox.TypeOfMsb.NORMAL_MESSAGE, "Save scene '" + SceneUtils.CURRENT_SCENE + "' successfully");
+                Debug.Log("Save scene '" + SceneUtils.CURRENT_SCENE + "' successfully", LogType.Success);
+            }
         } catch (IOException e) {
             e.printStackTrace();
-            if (isShowMessage)
-                MessageBox.setContext(true, MessageBox.TypeOfMsb.NORMAL_MESSAGE, "Save failed");
+            if (isShowMessage) {
+                //MessageBox.setContext(true, MessageBox.TypeOfMsb.NORMAL_MESSAGE, "Save failed");
+                Debug.Log("Save scene '" + SceneUtils.CURRENT_SCENE + "' FAIL", LogType.Error);
+            }
         }
         //endregion
 
@@ -283,12 +285,16 @@ public class Scene {
 
             writer.write(gson.toJson(objsToSerialize));
             writer.close();
-            if (isShowMessage)
-                MessageBox.setContext(true, MessageBox.TypeOfMsb.NORMAL_MESSAGE, "Save scene '" + SceneUtils.CURRENT_SCENE + "' successfully");
+            if (isShowMessage) {
+                //MessageBox.setContext(true, MessageBox.TypeOfMsb.NORMAL_MESSAGE, "Save scene '" + SceneUtils.CURRENT_SCENE + "' successfully");
+                Debug.Log("Save prefab successfully", LogType.Success);
+            }
         } catch (IOException e) {
             e.printStackTrace();
-            if (isShowMessage)
-                MessageBox.setContext(true, MessageBox.TypeOfMsb.NORMAL_MESSAGE, "Save failed");
+            if (isShowMessage) {
+                Debug.Log("Save prefab FAIL", LogType.Error);
+                //MessageBox.setContext(true, MessageBox.TypeOfMsb.NORMAL_MESSAGE, "Save failed");
+            }
         }
         //endregion
 

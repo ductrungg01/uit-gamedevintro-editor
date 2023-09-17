@@ -21,12 +21,17 @@ import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_RIGHT;
 public class SceneList {
     private static List<String> scenes = new ArrayList<>();
     private static final String ROOT_FOLDER = "data";
+
+    public static boolean isAutoSave = true;
+
     public static void update(){
         getAllScene();
 
         ImGui.setNextWindowSizeConstraints(Settings.MIN_WIDTH_GROUP_WIDGET, Settings.MIN_HEIGHT_GROUP_WIDGET, Window.getWidth(), Window.getHeight());
 
         ImGui.begin("Scene list");
+
+        isAutoSave = NiceImGui.checkbox("Auto save when change scene or close?", isAutoSave);
 
         if (ImGui.button("New Scene")){
             CreateNewSceneWindow.open(false);

@@ -179,6 +179,7 @@ public class ImGuiLayer {
             PrefabsWindow.getInstance().imgui();
             OpenSceneWindow.imgui();
             CreateNewSceneWindow.imgui();
+            ConsoleWindow.getInstance().imgui();
 
             assetsWindow.imgui();
             messageBox.imgui();

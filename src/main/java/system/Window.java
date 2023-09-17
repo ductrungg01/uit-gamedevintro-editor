@@ -9,6 +9,7 @@ import deserializers.PrefabDeserializer;
 import editor.windows.GameViewWindow;
 import editor.windows.OpenSceneWindow;
 import editor.windows.SceneHierarchyWindow;
+import editor.windows.SceneList;
 import observers.EventSystem;
 import observers.Observer;
 import observers.events.Event;
@@ -352,17 +353,21 @@ public class Window implements Observer {
     }
 
     public void askToSave(boolean askFromCloseWindow) {
-        String message = (askFromCloseWindow ? "Save the scene data before close?"
-                : "Save the data of current scene (" + SceneUtils.CURRENT_SCENE + ") before open/create other scene?");
-        int jOptionPane = (askFromCloseWindow ? JOptionPane.YES_NO_CANCEL_OPTION : JOptionPane.YES_OPTION);
+        if (SceneList.isAutoSave) {
+            EventSystem.notify(null, new Event(EventType.SaveLevel));
+        } else {
+            String message = (askFromCloseWindow ? "Save the scene data before close?"
+                    : "Save the data of current scene (" + SceneUtils.CURRENT_SCENE + ") before open/create other scene?");
+            int jOptionPane = (askFromCloseWindow ? JOptionPane.YES_NO_CANCEL_OPTION : JOptionPane.YES_OPTION);
 
-        if (!SceneUtils.CURRENT_SCENE.isEmpty() && checkHaveAnyChance()) {
-            int response = JOptionPane.showConfirmDialog(null, message, "SAVE", jOptionPane);
-            if (response == JOptionPane.YES_OPTION) {
-                EventSystem.notify(null, new Event(EventType.SaveLevel));
-            }
-            if (response == JOptionPane.CANCEL_OPTION) {
-                glfwSetWindowShouldClose(glfwWindow, false);
+            if (!SceneUtils.CURRENT_SCENE.isEmpty() && checkHaveAnyChance()) {
+                int response = JOptionPane.showConfirmDialog(null, message, "SAVE", jOptionPane);
+                if (response == JOptionPane.YES_OPTION) {
+                    EventSystem.notify(null, new Event(EventType.SaveLevel));
+                }
+                if (response == JOptionPane.CANCEL_OPTION) {
+                    glfwSetWindowShouldClose(glfwWindow, false);
+                }
             }
         }
     }
