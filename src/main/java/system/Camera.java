@@ -6,13 +6,13 @@ import org.joml.Vector3f;
 import org.joml.Vector4f;
 
 public class Camera {
+    public static Vector2f screenSize = new Vector2f(320, 240);
+    public Vector2f position;
+    public Vector4f clearColor = new Vector4f(1, 1, 1, 1);
     //region Fields
     private Matrix4f projectionMatrix, viewMatrix, inverseProjection, inverseView;
-    public Vector2f position;
-    public static Vector2f screenSize = new Vector2f(320, 240);
-    private float projectionWidth = 4;
+    private float projectionWidth = 5.33333333f;
     private float projectionHeight = 3;
-    public Vector4f clearColor = new Vector4f(1, 1, 1, 1);
     private Vector2f projectionSize = new Vector2f(projectionWidth, projectionHeight);
     private float zoom = 1f;
     //endregion
@@ -79,7 +79,7 @@ public class Camera {
         this.zoom += value;
     }
 
-    public void setDefaultZoom(){
+    public void setDefaultZoom() {
         float offsetW = screenSize.x / projectionWidth;
         float offsetH = screenSize.y / projectionHeight;
         float needToMul = Math.max(offsetH, offsetW) + 20;

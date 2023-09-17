@@ -1,0 +1,454 @@
+[
+  {
+    "name": "misc.png",
+    "tag": "",
+    "isPrefab": false,
+    "prefabId": "",
+    "parentId": "DK5ZuDck8x",
+    "uid": 4114,
+    "components": [
+      {
+        "type": "system.Transform",
+        "properties": {
+          "position": {
+            "x": 305.41388,
+            "y": -54.377335
+          },
+          "scale": {
+            "x": 17.0,
+            "y": 17.0
+          },
+          "rotation": 0.0,
+          "zIndex": 0,
+          "uid": 18
+        }
+      },
+      {
+        "type": "components.SpriteRenderer",
+        "properties": {
+          "color": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0,
+            "w": 1.0
+          },
+          "sprite": {
+            "width": 17.00003,
+            "height": 17.000002,
+            "texture": {
+              "filePath": "textures/misc.png",
+              "width": 639,
+              "height": 360
+            },
+            "texCoords": [
+              {
+                "x": 0.6071988,
+                "y": 0.42222223
+              },
+              {
+                "x": 0.6071988,
+                "y": 0.46944445
+              },
+              {
+                "x": 0.58059466,
+                "y": 0.46944445
+              },
+              {
+                "x": 0.58059466,
+                "y": 0.42222223
+              }
+            ]
+          },
+          "uid": 19
+        }
+      },
+      {
+        "type": "components.StateMachine",
+        "properties": {
+          "stateTransfers": {},
+          "states": [
+            {
+              "title": "New state (0)",
+              "animationFrames": [
+                {
+                  "sprite": {
+                    "width": 40.0,
+                    "height": 40.0,
+                    "texture": {
+                      "filePath": "system-assets/images/Default Sprite.png",
+                      "width": 40,
+                      "height": 40
+                    },
+                    "texCoords": [
+                      {
+                        "x": 1.0,
+                        "y": 0.0
+                      },
+                      {
+                        "x": 1.0,
+                        "y": 1.0
+                      },
+                      {
+                        "x": 0.0,
+                        "y": 1.0
+                      },
+                      {
+                        "x": 0.0,
+                        "y": 0.0
+                      }
+                    ]
+                  },
+                  "frameTime": 0.0
+                }
+              ],
+              "doesLoop": false
+            }
+          ],
+          "defaultStateTitle": "New state (0)",
+          "uid": 39
+        }
+      }
+    ],
+    "doSerialization": true,
+    "isDead": true
+  },
+  {
+    "name": "misc.png",
+    "tag": "",
+    "isPrefab": false,
+    "prefabId": "",
+    "parentId": "DK5ZuDck8x",
+    "uid": 4116,
+    "components": [
+      {
+        "type": "system.Transform",
+        "properties": {
+          "position": {
+            "x": 7.5,
+            "y": -7.5
+          },
+          "scale": {
+            "x": 17.0,
+            "y": 17.0
+          },
+          "rotation": 0.0,
+          "zIndex": 0,
+          "uid": 18
+        }
+      },
+      {
+        "type": "components.SpriteRenderer",
+        "properties": {
+          "color": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0,
+            "w": 1.0
+          },
+          "sprite": {
+            "width": 17.00003,
+            "height": 17.000002,
+            "texture": {
+              "filePath": "textures/misc.png",
+              "width": 639,
+              "height": 360
+            },
+            "texCoords": [
+              {
+                "x": 0.6071988,
+                "y": 0.42222223
+              },
+              {
+                "x": 0.6071988,
+                "y": 0.46944445
+              },
+              {
+                "x": 0.58059466,
+                "y": 0.46944445
+              },
+              {
+                "x": 0.58059466,
+                "y": 0.42222223
+              }
+            ]
+          },
+          "uid": 19
+        }
+      },
+      {
+        "type": "components.StateMachine",
+        "properties": {
+          "stateTransfers": {},
+          "states": [
+            {
+              "title": "New state (0)",
+              "animationFrames": [
+                {
+                  "sprite": {
+                    "width": 40.0,
+                    "height": 40.0,
+                    "texture": {
+                      "filePath": "system-assets/images/Default Sprite.png",
+                      "width": 40,
+                      "height": 40
+                    },
+                    "texCoords": [
+                      {
+                        "x": 1.0,
+                        "y": 0.0
+                      },
+                      {
+                        "x": 1.0,
+                        "y": 1.0
+                      },
+                      {
+                        "x": 0.0,
+                        "y": 1.0
+                      },
+                      {
+                        "x": 0.0,
+                        "y": 0.0
+                      }
+                    ]
+                  },
+                  "frameTime": 0.0
+                }
+              ],
+              "doesLoop": false
+            }
+          ],
+          "defaultStateTitle": "New state (0)",
+          "uid": 39
+        }
+      }
+    ],
+    "doSerialization": true,
+    "isDead": true
+  },
+  {
+    "name": "misc.png",
+    "tag": "",
+    "isPrefab": false,
+    "prefabId": "",
+    "parentId": "DK5ZuDck8x",
+    "uid": 4118,
+    "components": [
+      {
+        "type": "system.Transform",
+        "properties": {
+          "position": {
+            "x": 162.23712,
+            "y": -121.19314
+          },
+          "scale": {
+            "x": 17.0,
+            "y": 17.0
+          },
+          "rotation": 0.0,
+          "zIndex": 0,
+          "uid": 18
+        }
+      },
+      {
+        "type": "components.SpriteRenderer",
+        "properties": {
+          "color": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0,
+            "w": 1.0
+          },
+          "sprite": {
+            "width": 17.00003,
+            "height": 17.000002,
+            "texture": {
+              "filePath": "textures/misc.png",
+              "width": 639,
+              "height": 360
+            },
+            "texCoords": [
+              {
+                "x": 0.6071988,
+                "y": 0.42222223
+              },
+              {
+                "x": 0.6071988,
+                "y": 0.46944445
+              },
+              {
+                "x": 0.58059466,
+                "y": 0.46944445
+              },
+              {
+                "x": 0.58059466,
+                "y": 0.42222223
+              }
+            ]
+          },
+          "uid": 19
+        }
+      },
+      {
+        "type": "components.StateMachine",
+        "properties": {
+          "stateTransfers": {},
+          "states": [
+            {
+              "title": "New state (0)",
+              "animationFrames": [
+                {
+                  "sprite": {
+                    "width": 40.0,
+                    "height": 40.0,
+                    "texture": {
+                      "filePath": "system-assets/images/Default Sprite.png",
+                      "width": 40,
+                      "height": 40
+                    },
+                    "texCoords": [
+                      {
+                        "x": 1.0,
+                        "y": 0.0
+                      },
+                      {
+                        "x": 1.0,
+                        "y": 1.0
+                      },
+                      {
+                        "x": 0.0,
+                        "y": 1.0
+                      },
+                      {
+                        "x": 0.0,
+                        "y": 0.0
+                      }
+                    ]
+                  },
+                  "frameTime": 0.0
+                }
+              ],
+              "doesLoop": false
+            }
+          ],
+          "defaultStateTitle": "New state (0)",
+          "uid": 39
+        }
+      }
+    ],
+    "doSerialization": true,
+    "isDead": true
+  },
+  {
+    "name": "misc.png",
+    "tag": "",
+    "isPrefab": false,
+    "prefabId": "",
+    "parentId": "DK5ZuDck8x",
+    "uid": 4120,
+    "components": [
+      {
+        "type": "system.Transform",
+        "properties": {
+          "position": {
+            "x": 209.21701,
+            "y": -88.381805
+          },
+          "scale": {
+            "x": 17.0,
+            "y": 17.0
+          },
+          "rotation": 0.0,
+          "zIndex": 0,
+          "uid": 18
+        }
+      },
+      {
+        "type": "components.SpriteRenderer",
+        "properties": {
+          "color": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0,
+            "w": 1.0
+          },
+          "sprite": {
+            "width": 17.00003,
+            "height": 17.000002,
+            "texture": {
+              "filePath": "textures/misc.png",
+              "width": 639,
+              "height": 360
+            },
+            "texCoords": [
+              {
+                "x": 0.6071988,
+                "y": 0.42222223
+              },
+              {
+                "x": 0.6071988,
+                "y": 0.46944445
+              },
+              {
+                "x": 0.58059466,
+                "y": 0.46944445
+              },
+              {
+                "x": 0.58059466,
+                "y": 0.42222223
+              }
+            ]
+          },
+          "uid": 19
+        }
+      },
+      {
+        "type": "components.StateMachine",
+        "properties": {
+          "stateTransfers": {},
+          "states": [
+            {
+              "title": "New state (0)",
+              "animationFrames": [
+                {
+                  "sprite": {
+                    "width": 40.0,
+                    "height": 40.0,
+                    "texture": {
+                      "filePath": "system-assets/images/Default Sprite.png",
+                      "width": 40,
+                      "height": 40
+                    },
+                    "texCoords": [
+                      {
+                        "x": 1.0,
+                        "y": 0.0
+                      },
+                      {
+                        "x": 1.0,
+                        "y": 1.0
+                      },
+                      {
+                        "x": 0.0,
+                        "y": 1.0
+                      },
+                      {
+                        "x": 0.0,
+                        "y": 0.0
+                      }
+                    ]
+                  },
+                  "frameTime": 0.0
+                }
+              ],
+              "doesLoop": false
+            }
+          ],
+          "defaultStateTitle": "New state (0)",
+          "uid": 39
+        }
+      }
+    ],
+    "doSerialization": true,
+    "isDead": true
+  }
+]

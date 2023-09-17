@@ -11,15 +11,14 @@ import static org.lwjgl.glfw.GLFW.*;
 
 public class EditorCamera extends Component implements INonAddableComponent {
 
+    private static Camera levelEditorCamera;
     //region Fields
     private float dragDebounce = 0.032f;
-
-    private static Camera levelEditorCamera;
     private Vector2f clickOrigin;
     private boolean reset = false;
     private float lerpTime = 0.0f;
     private float dragSensitivity = 30.0f;
-    private float scrollSensivity = 0.1f;
+    private float scrollSensivity = 100f;
     //endregion
 
     //region Constructors
@@ -32,11 +31,23 @@ public class EditorCamera extends Component implements INonAddableComponent {
     }
 //endregion
 
+    public static void setEditorCamera(Vector2f position) {
+        levelEditorCamera.position = position;
+    }
+
+    public static Vector2f getEditorCameraSize() {
+        return levelEditorCamera.getProjectionSize();
+    }
+
+    public static float getEditorCameraZoom() {
+        return levelEditorCamera.getZoom();
+    }
+
     //region Override methods
     @Override
     public void editorUpdate(float dt) {
-        if (MouseListener.mouseButtonDown(GLFW_MOUSE_BUTTON_RIGHT)){
-            if (ImGui.getMouseCursor() != ImGuiMouseCursor.Hand){
+        if (MouseListener.mouseButtonDown(GLFW_MOUSE_BUTTON_RIGHT)) {
+            if (ImGui.getMouseCursor() != ImGuiMouseCursor.Hand) {
                 ImGui.setMouseCursor(ImGuiMouseCursor.Hand);
             }
         }
@@ -60,21 +71,9 @@ public class EditorCamera extends Component implements INonAddableComponent {
             float addValue = (float) Math.pow(Math.abs(MouseListener.getScrollY() * scrollSensivity),
                     1 / levelEditorCamera.getZoom());
 
-            addValue *= -Math.signum(MouseListener.getScrollY());
+            addValue *= -Math.signum(MouseListener.getScrollY()) * 5;
             levelEditorCamera.addZoom(addValue);
         }
-    }
-
-    public static void setEditorCamera(Vector2f position) {
-        levelEditorCamera.position = position;
-    }
-
-    public static Vector2f getEditorCameraSize() {
-        return levelEditorCamera.getProjectionSize();
-    }
-
-    public static float getEditorCameraZoom() {
-        return levelEditorCamera.getZoom();
     }
     //endregion
 }

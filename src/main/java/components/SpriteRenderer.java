@@ -71,7 +71,7 @@ public class SpriteRenderer extends Component implements INonAddableComponent {
             ImGui.textColored(COLOR_Green.x, COLOR_Green.y, COLOR_Green.z, COLOR_Green.w,
                     FileUtils.getShorterName(sprite.getTexture().getFilePath()));
             //region coord
-            if (sprite != null){
+            if (sprite != null) {
                 Vector2f[] texCoords = sprite.getTexCoords();
                 float img_size_width = sprite.getTexture().getWidth();
                 float img_size_height = sprite.getTexture().getHeight();
@@ -86,13 +86,34 @@ public class SpriteRenderer extends Component implements INonAddableComponent {
                         texCoords[1].x * img_size_width,
                         texCoords[1].y * img_size_height
                 );
-                ImGui.text("Top-Left coord: (" + df.format(topLeftCoord.x) + " : " +  df.format(topLeftCoord.y) + ")");
-                ImGui.text("Bottom-Right coord: (" +  df.format(bottomRightCoord.x) + " : " +  df.format(bottomRightCoord.y) + ")");
+                ImGui.text("Top-Left coord: (" + df.format(topLeftCoord.x) + " : " + df.format(topLeftCoord.y) + ")");
+                ImGui.text("Bottom-Right coord: (" + df.format(bottomRightCoord.x) + " : " + df.format(bottomRightCoord.y) + ")");
             }
         }
 
         NiceImGui.showImage(this.sprite, new Vector2f(100, 100));
     }
+
+    public void convertToScale() {
+        Vector2f[] texCoords = sprite.getTexCoords();
+        float img_size_width = sprite.getTexture().getWidth();
+        float img_size_height = sprite.getTexture().getHeight();
+
+        DecimalFormat df = new DecimalFormat("#.##");
+
+        Vector2f topLeftCoord = new Vector2f(
+                texCoords[3].x * img_size_width,
+                texCoords[3].y * img_size_height
+        );
+        Vector2f bottomRightCoord = new Vector2f(
+                texCoords[1].x * img_size_width,
+                texCoords[1].y * img_size_height
+        );
+
+        this.gameObject.transform.scale.x = Float.parseFloat(df.format(bottomRightCoord.x - topLeftCoord.x));
+        this.gameObject.transform.scale.y = Float.parseFloat(df.format(bottomRightCoord.y - topLeftCoord.y));
+    }
+
     //endregion
 
     //region Properties
@@ -104,12 +125,27 @@ public class SpriteRenderer extends Component implements INonAddableComponent {
         return new Vector4f(this.color);
     }
 
+    public void setColor(Vector4f color) {
+        if (!this.color.equals(color)) {
+            this.isDirty = true;
+            this.color.set(color);
+        }
+    }
+
     public Texture getTexture() {
         return sprite.getTexture();
     }
 
+    public void setTexture(Texture texture) {
+        this.sprite.setTexture(texture);
+    }
+
     public Vector2f[] getTexCoords() {
         return sprite.getTexCoords();
+    }
+
+    public Sprite getSprite() {
+        return this.sprite;
     }
 
     public void setSprite(Sprite sprite) {
@@ -119,17 +155,7 @@ public class SpriteRenderer extends Component implements INonAddableComponent {
 
         this.sprite = sprite;
         this.isDirty = true;
-    }
-
-    public Sprite getSprite() {
-        return this.sprite;
-    }
-
-    public void setColor(Vector4f color) {
-        if (!this.color.equals(color)) {
-            this.isDirty = true;
-            this.color.set(color);
-        }
+        convertToScale();
     }
 
     public boolean isDirty() {
@@ -138,10 +164,6 @@ public class SpriteRenderer extends Component implements INonAddableComponent {
 
     public void setClean() {
         this.isDirty = false;
-    }
-
-    public void setTexture(Texture texture) {
-        this.sprite.setTexture(texture);
     }
     //endregion
 }

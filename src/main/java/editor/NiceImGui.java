@@ -33,6 +33,8 @@ public class NiceImGui {
     final static float DEFAULT_REFERENCE_BUTTON_WIDTH = 250f;
     static final float DEFAULT_FLOAT_DRAG_SPEED = 0.1f;
     private static final float defaultLabelColumnWidth = 150.0f;
+    public static Sprite SPRITE_WAITING = null;
+    public static boolean SELECT_SPR_WINDOW_ISOPEN = false;
 
     //region Calc / Settings / Configurations
     private static float calcMinLabelColWith(String label) {
@@ -40,19 +42,19 @@ public class NiceImGui {
 
         return Float.max(minLength, defaultLabelColumnWidth);
     }
+    //endregion
 
-    public static Vector4f getPopupBgColor(){
+    public static Vector4f getPopupBgColor() {
         ImVec4 vec4 = new ImVec4();
         ImGui.getStyle().getColor(ImGuiCol.PopupBg, vec4);
         return new Vector4f(vec4.x, vec4.y, vec4.z, vec4.w);
     }
 
-    public static Vector4f getWindowBgColor(){
+    public static Vector4f getWindowBgColor() {
         ImVec4 vec4 = new ImVec4();
         ImGui.getStyle().getColor(ImGuiCol.WindowBg, vec4);
         return new Vector4f(vec4.x, vec4.y, vec4.z, vec4.w);
     }
-    //endregion
 
     //region Draw dot
     public static Vector2f getSizeOfButton(String label) {
@@ -112,7 +114,7 @@ public class NiceImGui {
     public static void createDot(float x, float y, float size) {
         createDot(x, y, size, DEFAULT_DOT_COLOR);
     }
-
+    //endregion
 
     public static void createDot(float x, float y, float size, Vector3f color) {
         createDot(x, y, size, new Vector4f(color, 1f));
@@ -122,7 +124,6 @@ public class NiceImGui {
         ImDrawList drawList = ImGui.getWindowDrawList();
         drawList.addCircleFilled(x, y, size, ImColor.floatToColor(color.x, color.y, color.z, color.w));
     }
-    //endregion
 
     //region Vec2
     public static void drawVec2Control(String label, Vector2f values, String imguiId) {
@@ -290,6 +291,7 @@ public class NiceImGui {
         ImGui.columns(1);
         ImGui.popID();
     }
+    //endregion
 
     public static void drawVec2ForCollider(String label, Vector2f values, float resetValue, String imguiId) {
         ImGui.pushID(imguiId);
@@ -403,15 +405,11 @@ public class NiceImGui {
         ImGui.columns(1);
         ImGui.popID();
     }
-    //endregion
 
     //region Reference
     public static Object ReferenceButton(String label, ReferenceType referenceType, Object oldValue, String idPush) {
         return ReferenceButton(label, referenceType, oldValue, new float[2], idPush);
     }
-
-    public static Sprite SPRITE_WAITING = null;
-    public static boolean SELECT_SPR_WINDOW_ISOPEN = false;
 
     public static Object ReferenceButton(String label, ReferenceType referenceType, Object oldValue, float[] columnWidths, String idPush) {
         ImGui.pushID(idPush);
@@ -499,7 +497,7 @@ public class NiceImGui {
         }
 
         if (SPRITE_WAITING == null) {
-            Sprite spr = (Sprite)oldValue;
+            Sprite spr = (Sprite) oldValue;
             Sprite newSpr = spr.copy();
             newSpr = FileDialog.getInstance().getSelectedSprite(idPush, newSpr);
             if (!spr.equal(newSpr)) {
@@ -507,7 +505,7 @@ public class NiceImGui {
             }
         }
 
-        if (SPRITE_WAITING != null){
+        if (SPRITE_WAITING != null) {
             if (!SELECT_SPR_WINDOW_ISOPEN) {
                 SelectSpriteWindow.getInstance().open(SPRITE_WAITING);
                 SELECT_SPR_WINDOW_ISOPEN = true;
@@ -515,7 +513,7 @@ public class NiceImGui {
 
             Sprite result = SelectSpriteWindow.getInstance().getResult();
 
-            if (result != null){
+            if (result != null) {
                 oldValue = result;
                 SPRITE_WAITING = null;
                 SELECT_SPR_WINDOW_ISOPEN = false;
@@ -524,7 +522,6 @@ public class NiceImGui {
 
         ImGui.popID();
         //endregion
-
 
 
         ImGui.sameLine();
@@ -552,7 +549,7 @@ public class NiceImGui {
 
         //region coord
         Sprite sprite = (Sprite) oldValue;
-        if (sprite != null){
+        if (sprite != null) {
             Vector2f[] texCoords = sprite.getTexCoords();
             float img_size_width = sprite.getTexture().getWidth();
             float img_size_height = sprite.getTexture().getHeight();
@@ -567,13 +564,14 @@ public class NiceImGui {
                     texCoords[1].x * img_size_width,
                     texCoords[1].y * img_size_height
             );
-            ImGui.text("Top-Left coord: (" + df.format(topLeftCoord.x) + " : " +  df.format(topLeftCoord.y) + ")");
-            ImGui.text("Bottom-Right coord: (" +  df.format(bottomRightCoord.x) + " : " +  df.format(bottomRightCoord.y) + ")");
+            ImGui.text("Top-Left coord: (" + df.format(topLeftCoord.x) + " : " + df.format(topLeftCoord.y) + ")");
+            ImGui.text("Bottom-Right coord: (" + df.format(bottomRightCoord.x) + " : " + df.format(bottomRightCoord.y) + ")");
         }
         //endregion
 
         return oldValue;
     }
+
     public static Object ReferenceButtonGO(GameObject go_request, String label, ReferenceType referenceType, Object oldValue, float[] columnWidths, String idPush) {
         ImGui.pushID(idPush);
 
@@ -660,7 +658,7 @@ public class NiceImGui {
         }
 
         if (SPRITE_WAITING == null) {
-            Sprite spr = (Sprite)oldValue;
+            Sprite spr = (Sprite) oldValue;
             Sprite newSpr = spr.copy();
             newSpr = FileDialog.getInstance().getSelectedSprite(idPush, newSpr);
             if (!spr.equal(newSpr)) {
@@ -668,7 +666,7 @@ public class NiceImGui {
             }
         }
 
-        if (SPRITE_WAITING != null){
+        if (SPRITE_WAITING != null) {
             if (!SELECT_SPR_WINDOW_ISOPEN) {
                 SelectSpriteWindow.getInstance().open(SPRITE_WAITING, go_request);
                 SELECT_SPR_WINDOW_ISOPEN = true;
@@ -676,7 +674,7 @@ public class NiceImGui {
 
             Sprite result = SelectSpriteWindow.getInstance().getResult();
 
-            if (result != null){
+            if (result != null) {
                 oldValue = result;
                 SPRITE_WAITING = null;
                 SELECT_SPR_WINDOW_ISOPEN = false;
@@ -685,7 +683,6 @@ public class NiceImGui {
 
         ImGui.popID();
         //endregion
-
 
 
         ImGui.sameLine();
@@ -713,7 +710,7 @@ public class NiceImGui {
 
         //region coord
         Sprite sprite = (Sprite) oldValue;
-        if (sprite != null){
+        if (sprite != null) {
             Vector2f[] texCoords = sprite.getTexCoords();
             float img_size_width = sprite.getTexture().getWidth();
             float img_size_height = sprite.getTexture().getHeight();
@@ -728,8 +725,8 @@ public class NiceImGui {
                     texCoords[1].x * img_size_width,
                     texCoords[1].y * img_size_height
             );
-            ImGui.text("Top-Left coord: (" + df.format(topLeftCoord.x) + " : " +  df.format(topLeftCoord.y) + ")");
-            ImGui.text("Bottom-Right coord: (" +  df.format(bottomRightCoord.x) + " : " +  df.format(bottomRightCoord.y) + ")");
+            ImGui.text("Top-Left coord: (" + df.format(topLeftCoord.x) + " : " + df.format(topLeftCoord.y) + ")");
+            ImGui.text("Bottom-Right coord: (" + df.format(bottomRightCoord.x) + " : " + df.format(bottomRightCoord.y) + ")");
         }
         //endregion
 
@@ -770,7 +767,7 @@ public class NiceImGui {
     //endregion
 
     //region Button
-    public static void drawFakeButton(Vector4f btnColor, Vector2f btnSize){
+    public static void drawFakeButton(Vector4f btnColor, Vector2f btnSize) {
         ImGui.pushStyleColor(ImGuiCol.Button, btnColor.x, btnColor.y, btnColor.z, btnColor.w);
         ImGui.pushStyleColor(ImGuiCol.ButtonHovered, btnColor.x, btnColor.y, btnColor.z, btnColor.w);
         ImGui.pushStyleColor(ImGuiCol.ButtonActive, btnColor.x, btnColor.y, btnColor.z, btnColor.w);
@@ -801,7 +798,7 @@ public class NiceImGui {
         return ans;
     }
 
-    public static boolean buttonFullWidthLeftTextAndHaveIcon(String imguiId, String title, Sprite icon, ButtonColor btnColor, Vector4f fakeButtonCol){
+    public static boolean buttonFullWidthLeftTextAndHaveIcon(String imguiId, String title, Sprite icon, ButtonColor btnColor, Vector4f fakeButtonCol) {
         boolean isClick = false;
 
         ImGui.pushID(imguiId);
@@ -839,7 +836,6 @@ public class NiceImGui {
 
         return isClick;
     }
-
 
 
     public static boolean drawButton(String label, ButtonColor btnColor, Vector2f btnSize) {

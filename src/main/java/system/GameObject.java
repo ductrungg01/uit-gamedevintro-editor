@@ -35,17 +35,17 @@ import java.util.Vector;
 import static editor.uihelper.NiceShortCall.*;
 
 public class GameObject {
+    public static List<GameObject> PrefabLists = new ArrayList<>();
     //region Fields
     private static int ID_COUNTER = 0;
-    private int uid = -1;
     public String name = "";
     public String tag = "";
     public boolean isPrefab = false;
     public String prefabId = "";
     public String parentId = "";
-    public static List<GameObject> PrefabLists = new ArrayList<>();
-    private List<Component> components = new ArrayList<>();
     public transient Transform transform;
+    private int uid = -1;
+    private List<Component> components = new ArrayList<>();
     private boolean doSerialization = false;
     private boolean isDead = false;
     //endregion
@@ -79,13 +79,13 @@ public class GameObject {
         this.transform.scale.x = size.x;
         this.transform.scale.y = size.y;
         SpriteRenderer renderer = new SpriteRenderer();
-        renderer.setSprite(spr);
         this.addComponent(renderer);
+        renderer.setSprite(spr);
 
         this.uid = ID_COUNTER++;
     }
 
-    public GameObject(String name, Sprite spr, Vector2f size){
+    public GameObject(String name, Sprite spr, Vector2f size) {
         if (spr.getTexId() == -1) {
             String texturePath = spr.getTexture().getFilePath();
             spr.setTexture(AssetPool.getTexture(texturePath));
@@ -98,12 +98,34 @@ public class GameObject {
         this.transform.scale.x = size.x;
         this.transform.scale.y = size.y;
         SpriteRenderer renderer = new SpriteRenderer();
-        renderer.setSprite(spr);
         this.addComponent(renderer);
+        renderer.setSprite(spr);
 
         this.uid = ID_COUNTER++;
     }
     //endregion
+
+    public static void init(int maxId) {
+        ID_COUNTER = maxId;
+    }
+
+    public static GameObject getPrefabById(String prefabId) {
+        for (GameObject prefab : GameObject.PrefabLists) {
+            if (prefab.prefabId.equals(prefabId)) {
+                return prefab;
+            }
+        }
+
+        return null;
+    }
+
+    public static int getCurrentMaxUid() {
+        return ID_COUNTER;
+    }
+
+    public static void setCurrentMaxUid(int idMax) {
+        ID_COUNTER = idMax;
+    }
 
     //region Methods
     public GameObject copy() {
@@ -175,7 +197,6 @@ public class GameObject {
         }
 
 
-
         Debug.Log("Cannot find the prefab!");
     }
 
@@ -212,10 +233,6 @@ public class GameObject {
         }
     }
 
-    public static void init(int maxId) {
-        ID_COUNTER = maxId;
-    }
-
     /**
      * Update is called once per frame
      *
@@ -226,6 +243,7 @@ public class GameObject {
             components.get(i).update(dt);
         }
     }
+    //endregion
 
     /**
      * Start is called before the first frame update
@@ -311,7 +329,7 @@ public class GameObject {
             }
         }
 
-        if (this.isPrefab()){
+        if (this.isPrefab()) {
             this.overrideAllChildGameObject();
         }
     }
@@ -321,7 +339,6 @@ public class GameObject {
             components.get(i).editorUpdate(dt);
         }
     }
-    //endregion
 
     //region Properties
     public <T extends Component> T getComponent(Class<T> componentClass) {
@@ -333,16 +350,6 @@ public class GameObject {
                     e.printStackTrace();
                     assert false : "Error: Casting component";
                 }
-            }
-        }
-
-        return null;
-    }
-
-    public static GameObject getPrefabById(String prefabId) {
-        for (GameObject prefab : GameObject.PrefabLists) {
-            if (prefab.prefabId.equals(prefabId)) {
-                return prefab;
             }
         }
 
@@ -380,6 +387,7 @@ public class GameObject {
     public void setNoSerialize() {
         this.doSerialization = false;
     }
+
     public void setSerialize() {
         this.doSerialization = true;
     }
@@ -483,14 +491,6 @@ public class GameObject {
         }
 
         return sb.toString();
-    }
-
-    public static int getCurrentMaxUid(){
-        return ID_COUNTER;
-    }
-
-    public static void setCurrentMaxUid(int idMax){
-        ID_COUNTER = idMax;
     }
     //endregion
 }

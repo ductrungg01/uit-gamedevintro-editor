@@ -37,7 +37,7 @@ public class MouseControls {
 
     public void editorUpdate(float dt) {
         if (FileDialog.getInstance().isOpen() || !GameViewWindow.getInstance().getWantCaptureMouse()) return;
-        if (KeyListener.isKeyPressed(GLFW_KEY_LEFT_CONTROL) || KeyListener.isKeyPressed(GLFW_KEY_RIGHT_CONTROL)) return;
+//        if (KeyListener.isKeyPressed(GLFW_KEY_LEFT_CONTROL) || KeyListener.isKeyPressed(GLFW_KEY_RIGHT_CONTROL)) return;
 
         debounce -= dt;
         PickingTexture pickingTexture = Window.getImguiLayer().getInspectorWindow().getPickingTexture();

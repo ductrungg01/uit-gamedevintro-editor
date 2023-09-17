@@ -1,6 +1,7 @@
 package editor.windows;
 
 import components.Sprite;
+import components.SpriteRenderer;
 import editor.NiceImGui;
 import editor.uihelper.ButtonColor;
 import imgui.ImColor;
@@ -24,11 +25,15 @@ import static editor.uihelper.NiceShortCall.COLOR_Red;
 import static org.joml.Math.clamp;
 
 public class AddingNewPrefabWindow {
+    private static AddingNewPrefabWindow instance = null;
+    private boolean isOpen = false;
+    private Vector2f topLeftCoord = new Vector2f();
+    //endregion
+    private Vector2f bottomRightCoord = new Vector2f();
+    private Sprite sprite;
     //region Singleton
     private AddingNewPrefabWindow() {
     }
-
-    private static AddingNewPrefabWindow instance = null;
 
     public static AddingNewPrefabWindow getInstance() {
         if (instance == null) {
@@ -37,23 +42,15 @@ public class AddingNewPrefabWindow {
 
         return instance;
     }
-    //endregion
 
-    private boolean isOpen = false;
-
-    private Vector2f topLeftCoord = new Vector2f();
-    private Vector2f bottomRightCoord = new Vector2f();
-    private Sprite sprite;
-
-
-    public void open(Sprite sprite){
+    public void open(Sprite sprite) {
         this.isOpen = true;
         this.sprite = sprite;
         this.topLeftCoord = new Vector2f(0, 0);
         this.bottomRightCoord = new Vector2f(sprite.getWidth(), sprite.getHeight());
     }
 
-    public void imgui(){
+    public void imgui() {
         if (!this.isOpen) return;
 
         String popupId = "Adding new Prefab";
@@ -68,7 +65,7 @@ public class AddingNewPrefabWindow {
         float popupPosY = (float) Window.getHeight() / 2 - popupHeight / 2;
         ImGui.setNextWindowPos(popupPosX, popupPosY, ImGuiCond.Always);
 
-        if (ImGui.beginPopupModal(popupId,new ImBoolean(this.isOpen), ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize )) {
+        if (ImGui.beginPopupModal(popupId, new ImBoolean(this.isOpen), ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize)) {
             ImGui.columns(3);
             final float SETTING_COLUMN_WIDTH = 450f;
             ImGui.setColumnWidth(0, SETTING_COLUMN_WIDTH);
@@ -82,8 +79,8 @@ public class AddingNewPrefabWindow {
             String goName = FileUtils.getFileName(sprite.getTexture().getFilePath());
             ImGui.sameLine();
             ImGui.text(goName);
-            NiceImGui.drawVec2Control("Top-Left coord:", this.topLeftCoord, 0, 180,"TopleftCoord");
-            NiceImGui.drawVec2Control("Bottom-Right coord:", this.bottomRightCoord, 0, 180,"BottomrightCoord");
+            NiceImGui.drawVec2Control("Top-Left coord:", this.topLeftCoord, 0, 180, "TopleftCoord");
+            NiceImGui.drawVec2Control("Bottom-Right coord:", this.bottomRightCoord, 0, 180, "BottomrightCoord");
 
             float spriteWidth = sprite.getTexture().getWidth();
             float spriteHeight = sprite.getTexture().getHeight();
@@ -92,7 +89,7 @@ public class AddingNewPrefabWindow {
             this.bottomRightCoord.x = clamp(topLeftCoord.x, spriteWidth, this.bottomRightCoord.x);
             this.bottomRightCoord.y = clamp(topLeftCoord.y, spriteHeight, this.bottomRightCoord.y);
 
-            Vector2f[] texCoords =new Vector2f[] {
+            Vector2f[] texCoords = new Vector2f[]{
                     new Vector2f(bottomRightCoord.x / spriteWidth, topLeftCoord.y / spriteHeight),
                     new Vector2f(bottomRightCoord.x / spriteWidth, bottomRightCoord.y / spriteHeight),
                     new Vector2f(topLeftCoord.x / spriteWidth, bottomRightCoord.y / spriteHeight),
@@ -107,6 +104,7 @@ public class AddingNewPrefabWindow {
                 Sprite newSpr = new Sprite(sprite.getTexture());
                 newSpr.setTexCoords(texCoords);
                 GameObject newGo = new GameObject(goName, newSpr);
+                newGo.getComponent(SpriteRenderer.class).convertToScale();
                 newGo.setAsPrefab();
                 close();
             }
@@ -169,7 +167,7 @@ public class AddingNewPrefabWindow {
         }
     }
 
-    private void drawToEasyPreview(Vector2f TLCursorPos, Vector2f sizeToShowImage){
+    private void drawToEasyPreview(Vector2f TLCursorPos, Vector2f sizeToShowImage) {
         float cursorPosX = ImGui.getCursorScreenPosX();
         float cursorPosY = ImGui.getCursorScreenPosY();
 
@@ -212,7 +210,7 @@ public class AddingNewPrefabWindow {
         this.isOpen = false;
     }
 
-    public boolean isOpen(){
+    public boolean isOpen() {
         return this.isOpen;
     }
 }

@@ -43,7 +43,7 @@ public class KeyControls {
         GameObject activeGameObject = inspectorWindow.getActiveGameObject();
         List<GameObject> activeGameObjects = inspectorWindow.getActiveGameObjects();
 
-        float multiplier = KeyListener.isKeyPressed(GLFW_KEY_LEFT_SHIFT) ? 0.1f : 1.0f;
+        float multiplier = KeyListener.isKeyPressed(GLFW_KEY_LEFT_SHIFT) ? 0.1f : 0.5f;
 
         if (KeyListener.isKeyPressed(GLFW_KEY_LEFT_CONTROL) &&
                 KeyListener.keyBeginPress(GLFW_KEY_D) &&
@@ -93,22 +93,22 @@ public class KeyControls {
         } else if (KeyListener.isKeyPressed(GLFW_KEY_UP) && debounce < 0) {
             debounce = debounceTime;
             for (GameObject go : activeGameObjects) {
-                go.transform.position.y += Settings.GRID_HEIGHT * multiplier;
+                go.transform.position.y += go.transform.scale.y * multiplier;
             }
         } else if (KeyListener.isKeyPressed(GLFW_KEY_LEFT) && debounce < 0) {
             debounce = debounceTime;
             for (GameObject go : activeGameObjects) {
-                go.transform.position.x -= Settings.GRID_WIDTH * multiplier;
+                go.transform.position.x -= go.transform.scale.x * multiplier;
             }
         } else if (KeyListener.isKeyPressed(GLFW_KEY_RIGHT) && debounce < 0) {
             debounce = debounceTime;
             for (GameObject go : activeGameObjects) {
-                go.transform.position.x += Settings.GRID_WIDTH * multiplier;
+                go.transform.position.x += go.transform.scale.x * multiplier;
             }
         } else if (KeyListener.isKeyPressed(GLFW_KEY_DOWN) && debounce < 0) {
             debounce = debounceTime;
             for (GameObject go : activeGameObjects) {
-                go.transform.position.y -= Settings.GRID_HEIGHT * multiplier;
+                go.transform.position.y -= go.transform.scale.y * multiplier;
             }
         }
     }
