@@ -32,7 +32,7 @@ public class AnimationState implements INonAddableComponent {
 
     //region Constructors
     public AnimationState() {
-        gifPreview = new Gif(new ArrayList<>(), doesLoop, new Vector2f(200, 200));
+        gifPreview = new Gif(this.animationFrames, doesLoop, new Vector2f(200, 200));
     }
     //endregion
 
@@ -96,9 +96,15 @@ public class AnimationState implements INonAddableComponent {
         this.doesLoop = NiceImGui.checkbox("Loop?", this.doesLoop, columnWidth);
         this.setLoop(doesLoop);
 
+        if (gifPreview.frames.size() != animationFrames.size()){
+            gifPreview = new Gif(this.animationFrames, doesLoop, new Vector2f(200, 200));
+        }
+
         gifPreview.show();
 
         int index = 0;
+
+        boolean isChangeSomething = false;
 
         for (int i = 0; i < animationFrames.size(); i++) {
             Frame frame = animationFrames.get(i);
@@ -106,8 +112,15 @@ public class AnimationState implements INonAddableComponent {
 
             Vector2f oldCursorPos = new Vector2f(ImGui.getCursorScreenPosX(), ImGui.getCursorScreenPosY());
 
+            Sprite oldSprite = frame.sprite.copy();
+            float oldFrameTime = frame.frameTime;
+
             frame.sprite = (Sprite) NiceImGui.ReferenceButton("    Sprite: ", ReferenceType.SPRITE, frame.sprite, columnWidth, "AnimationState" + this.title + "Frame" + index);
             frame.frameTime = NiceImGui.dragFloat("    Time(s): ", frame.frameTime, 0f, Float.MAX_VALUE, 0.001f, columnWidth, "Frame time of" + this.title + index);
+
+            if (oldFrameTime != frame.frameTime || !oldSprite.equal(frame.sprite)){
+                isChangeSomething = true;
+            }
 
             ImGui.text("                       ");
             ImGui.sameLine();
@@ -149,6 +162,10 @@ public class AnimationState implements INonAddableComponent {
             if (response == JOptionPane.YES_OPTION) {
                 needToRemove = true;
             }
+        }
+
+        if (isChangeSomething){
+            gifPreview = new Gif(this.animationFrames, doesLoop, new Vector2f(200, 200));
         }
 
         ImGui.sameLine();

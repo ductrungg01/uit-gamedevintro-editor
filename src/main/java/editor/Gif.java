@@ -1,5 +1,6 @@
 package editor;
 
+import components.AnimationState;
 import components.Frame;
 import imgui.ImGui;
 import org.joml.Vector2f;
@@ -21,6 +22,7 @@ public class Gif {
         this.frames.addAll(frames);
         this.isLoop = isLoop;
         this.gifSize = gifSize;
+        this.currentFrameIndex = 0;
 
         if (frames.size() > 0) timeTracker = frames.get(0).frameTime;
     }
