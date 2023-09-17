@@ -18,13 +18,11 @@ import static org.lwjgl.opengl.GL30.GL_FRAMEBUFFER;
 import static org.lwjgl.opengl.GL30.glBindFramebuffer;
 
 public class ImGuiLayer {
-    //region Fields
-    private long glfwWindow;
-
     // LWJGL3 renderer (SHOULD be initialized)
     private final ImGuiImplGl3 imGuiGl3 = new ImGuiImplGl3();
     private final ImGuiImplGlfw imGuiGlfw = new ImGuiImplGlfw();
-
+    //region Fields
+    private long glfwWindow;
     private InspectorWindow inspectorWindow;
     private MenuBar menuBar;
     private AssetsWindow assetsWindow;
@@ -178,8 +176,8 @@ public class ImGuiLayer {
             AddingNewPrefabWindow.getInstance().imgui();
             SelectSpriteWindow.getInstance().imgui();
             PrefabsWindow.getInstance().imgui();
-            OpenProjectWindow.imgui();
-            CreateNewProjectWindow.imgui();
+            OpenSceneWindow.imgui();
+            CreateNewSceneWindow.imgui();
 
             assetsWindow.imgui();
             messageBox.imgui();

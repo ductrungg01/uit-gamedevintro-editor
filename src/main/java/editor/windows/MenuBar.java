@@ -1,13 +1,10 @@
 package editor.windows;
 
-import editor.windows.OpenProjectWindow;
 import imgui.ImGui;
 import observers.EventSystem;
 import observers.events.Event;
 import observers.events.EventType;
 import system.Window;
-
-import javax.swing.*;
 
 public class MenuBar {
     //region Methods
@@ -21,11 +18,11 @@ public class MenuBar {
             if (ImGui.beginMenu("File")) {
 
                 if (ImGui.menuItem("New", "Ctrl+N")) {
-                    CreateNewProjectWindow.open(false);
+                    CreateNewSceneWindow.open(false);
                 }
 
                 if (ImGui.menuItem("Open", "Ctrl+O")) {
-                    OpenProjectWindow.open(true);
+                    OpenSceneWindow.open(true);
                 }
 
                 if (ImGui.menuItem("Save", "Ctrl+S")) {

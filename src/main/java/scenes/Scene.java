@@ -9,15 +9,13 @@ import deserializers.PrefabDeserializer;
 import editor.KeyControls;
 import editor.MessageBox;
 import editor.MouseControls;
-import editor.windows.OpenProjectWindow;
+import editor.windows.OpenSceneWindow;
 import editor.windows.SceneHierarchyWindow;
 import org.joml.Vector2f;
 import physics2d.Physics2D;
 import renderer.Renderer;
-import renderer.Texture;
 import system.*;
-import util.AssetPool;
-import util.ProjectUtils;
+import util.SceneUtils;
 
 import javax.swing.*;
 import java.io.*;
@@ -31,7 +29,6 @@ public class Scene {
     //region Fields
     final String LEVEL_PATH = "level.txt";
     final String PREFAB_PATH = "prefabs.txt";
-    final String SPRITESHEET_PATH = "spritesheet.txt";
     //region Fields
     private Renderer renderer;
     private Camera camera;
@@ -238,10 +235,9 @@ public class Scene {
     public void save(boolean isShowMessage) {
         Window.getImguiLayer().getInspectorWindow().clearSelected();
         SceneHierarchyWindow.clearSelectedGameObject();
-        if (ProjectUtils.CURRENT_PROJECT.isEmpty()) return;
-        String level_path = "data\\" + ProjectUtils.CURRENT_PROJECT + "\\" + LEVEL_PATH;
-        String prefab_path = "data\\" + ProjectUtils.CURRENT_PROJECT + "\\" + PREFAB_PATH;
-        String spritesheet_path = "data\\" + ProjectUtils.CURRENT_PROJECT + "\\" + SPRITESHEET_PATH;
+        if (SceneUtils.CURRENT_SCENE.isEmpty()) return;
+        String level_path = "data\\" + SceneUtils.CURRENT_SCENE + "\\" + LEVEL_PATH;
+        String prefab_path = "data\\" + PREFAB_PATH;
 
         //region Save Game Object
         Gson gson = new GsonBuilder()
@@ -264,7 +260,7 @@ public class Scene {
             writer.write(gson.toJson(objsToSerialize));
             writer.close();
             if (isShowMessage)
-                MessageBox.setContext(true, MessageBox.TypeOfMsb.NORMAL_MESSAGE, "Save project '" + ProjectUtils.CURRENT_PROJECT + "' successfully");
+                MessageBox.setContext(true, MessageBox.TypeOfMsb.NORMAL_MESSAGE, "Save scene '" + SceneUtils.CURRENT_SCENE + "' successfully");
         } catch (IOException e) {
             e.printStackTrace();
             if (isShowMessage)
@@ -288,7 +284,7 @@ public class Scene {
             writer.write(gson.toJson(objsToSerialize));
             writer.close();
             if (isShowMessage)
-                MessageBox.setContext(true, MessageBox.TypeOfMsb.NORMAL_MESSAGE, "Save project '" + ProjectUtils.CURRENT_PROJECT + "' successfully");
+                MessageBox.setContext(true, MessageBox.TypeOfMsb.NORMAL_MESSAGE, "Save scene '" + SceneUtils.CURRENT_SCENE + "' successfully");
         } catch (IOException e) {
             e.printStackTrace();
             if (isShowMessage)
@@ -296,69 +292,21 @@ public class Scene {
         }
         //endregion
 
-        //region Save Spritesheet
-        List<Spritesheet> spritesheets = AssetPool.getAllSpritesheets();
-        try {
-            FileWriter writer = new FileWriter(spritesheet_path);
-
-            for (Spritesheet s : spritesheets) {
-                String path = s.getTexture().getFilePath().replace("\\", "/");
-                writer.write(path + "|" + s.spriteWidth + "|" + s.spriteHeight + "|" +
-                        s.size() + "|" + s.spacingX + "|" + s.spacingY + "\n");
-            }
-
-            writer.close();
-            if (isShowMessage)
-                MessageBox.setContext(true, MessageBox.TypeOfMsb.NORMAL_MESSAGE, "Save project '" + ProjectUtils.CURRENT_PROJECT + "' successfully");
-        } catch (IOException e) {
-            e.printStackTrace();
-            if (isShowMessage)
-                MessageBox.setContext(true, MessageBox.TypeOfMsb.NORMAL_MESSAGE, "Save failed");
-        }
-        //endregion
     }
 
     public void load() {
-        if (ProjectUtils.CURRENT_PROJECT.isEmpty()) return;
-        File folder = new File("data\\" + ProjectUtils.CURRENT_PROJECT);
+        if (SceneUtils.CURRENT_SCENE.isEmpty()) return;
+        File folder = new File("data\\" + SceneUtils.CURRENT_SCENE);
         if (!folder.exists()) {
-            JOptionPane.showMessageDialog(null, "Cannot find the previous project (" + ProjectUtils.CURRENT_PROJECT + ")",
+            JOptionPane.showMessageDialog(null, "Cannot find the previous scene (" + SceneUtils.CURRENT_SCENE + ")",
                     "ERROR", JOptionPane.ERROR_MESSAGE);
-            Window.get().changeCurrentProject("", false, false);
-            OpenProjectWindow.open(false);
+            Window.get().changeCurrentScene("", false, false);
+            OpenSceneWindow.open(false);
             return;
         }
 
-        String level_path = "data\\" + ProjectUtils.CURRENT_PROJECT + "\\" + LEVEL_PATH;
-        String prefab_path = "data\\" + ProjectUtils.CURRENT_PROJECT + "\\" + PREFAB_PATH;
-        String spritesheet_path = "data\\" + ProjectUtils.CURRENT_PROJECT + "\\" + SPRITESHEET_PATH;
-
-        //region Load spritesheet
-        AssetPool.removeAllSpritesheet();
-        try {
-            BufferedReader reader = new BufferedReader(new FileReader(spritesheet_path));
-            String line;
-
-            while ((line = reader.readLine()) != null) {
-                String[] values = line.split("\\|");
-
-                String textureSrc = values[0].replace("\\", "/");
-                Texture texture = AssetPool.getTexture(textureSrc);
-                int sprWidth = Integer.parseInt(values[1]);
-                int sprHeight = Integer.parseInt(values[2]);
-                int numsSprite = Integer.parseInt(values[3]);
-                int spacingX = Integer.parseInt(values[4]);
-                int spacingY = Integer.parseInt(values[4]);
-
-                Spritesheet spritesheet = new Spritesheet(texture, sprWidth, sprHeight, numsSprite, spacingX, spacingY);
-                AssetPool.addSpritesheet(textureSrc, spritesheet);
-            }
-
-            reader.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        //endregion
+        String level_path = "data\\" + SceneUtils.CURRENT_SCENE + "\\" + LEVEL_PATH;
+        String prefab_path = "data\\" + PREFAB_PATH;
 
         //region Load Game object
         int maxGoId = -1;

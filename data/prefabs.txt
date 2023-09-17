@@ -1,0 +1,84 @@
+[
+  {
+    "name": "animation-block.png",
+    "tag": "",
+    "isPrefab": true,
+    "prefabId": "aYlZBguRob",
+    "parentId": "",
+    "uid": 0,
+    "components": [
+      {
+        "type": "system.Transform",
+        "properties": {
+          "position": {
+            "x": 0.0,
+            "y": 0.0
+          },
+          "scale": {
+            "x": 152.0,
+            "y": 16.0
+          },
+          "rotation": 0.0,
+          "zIndex": 0,
+          "uid": 18
+        }
+      },
+      {
+        "type": "components.SpriteRenderer",
+        "properties": {
+          "color": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0,
+            "w": 1.0
+          },
+          "sprite": {
+            "width": 152.0,
+            "height": 16.0,
+            "texture": {
+              "filePath": "textures/animation-block.png",
+              "width": 152,
+              "height": 16
+            },
+            "texCoords": [
+              {
+                "x": 1.0,
+                "y": 0.0
+              },
+              {
+                "x": 1.0,
+                "y": 1.0
+              },
+              {
+                "x": 0.0,
+                "y": 1.0
+              },
+              {
+                "x": 0.0,
+                "y": 0.0
+              }
+            ]
+          },
+          "uid": 19
+        }
+      },
+      {
+        "type": "components.StateMachine",
+        "properties": {
+          "stateTransfers": {},
+          "states": [
+            {
+              "title": "New state (0)",
+              "animationFrames": [],
+              "doesLoop": false
+            }
+          ],
+          "defaultStateTitle": "New state (0)",
+          "uid": 20
+        }
+      }
+    ],
+    "doSerialization": true,
+    "isDead": false
+  }
+]

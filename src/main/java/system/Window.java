@@ -7,7 +7,7 @@ import deserializers.ComponentDeserializer;
 import deserializers.GameObjectDeserializer;
 import deserializers.PrefabDeserializer;
 import editor.windows.GameViewWindow;
-import editor.windows.OpenProjectWindow;
+import editor.windows.OpenSceneWindow;
 import editor.windows.SceneHierarchyWindow;
 import observers.EventSystem;
 import observers.Observer;
@@ -16,7 +16,6 @@ import observers.events.EventType;
 import org.joml.Vector2f;
 import org.joml.Vector4f;
 import org.lwjgl.BufferUtils;
-import org.lwjgl.Version;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWImage;
@@ -33,7 +32,7 @@ import scenes.GamePlayingSceneInitializer;
 import scenes.Scene;
 import scenes.SceneInitializer;
 import util.AssetPool;
-import util.ProjectUtils;
+import util.SceneUtils;
 import util.Time;
 
 import javax.imageio.ImageIO;
@@ -322,42 +321,42 @@ public class Window implements Observer {
         this.imGuiLayer = new ImGuiLayer(glfwWindow, pickingTexture);
         this.imGuiLayer.initImGui();
 
-        String previousProject = getPreviousProject();
+        String previousScene = getPreviousScene();
 
-        if (previousProject.isEmpty()) {
-            OpenProjectWindow.open(false);
+        if (previousScene.isEmpty()) {
+            OpenSceneWindow.open(false);
         } else {
-            changeCurrentProject(previousProject, false, false);
+            changeCurrentScene(previousScene, false, false);
         }
         Window.changeScene(new EditorSceneInitializer());
     }
 
-    public void changeCurrentProject(String projectName, boolean askToSaveCurrentProject, boolean needToReload) {
-        if (projectName.equals(ProjectUtils.CURRENT_PROJECT)) {
+    public void changeCurrentScene(String sceneName, boolean askToSaveCurrentScene, boolean needToReload) {
+        if (sceneName.equals(SceneUtils.CURRENT_SCENE)) {
             return;
         }
 
-        if (askToSaveCurrentProject) {
+        if (askToSaveCurrentScene) {
             askToSave(false);
         }
 
-        ProjectUtils.CURRENT_PROJECT = projectName;
-        glfwSetWindowTitle(glfwWindow, this.title + " - " + projectName);
+        SceneUtils.CURRENT_SCENE = sceneName;
+        glfwSetWindowTitle(glfwWindow, this.title + " - " + sceneName);
         SceneHierarchyWindow.clearSelectedGameObject();
         Window.getImguiLayer().getInspectorWindow().clearSelected();
         if (needToReload) {
             EventSystem.notify(null, new Event(EventType.LoadLevel));
         }
 
-        saveCurrentProjectName();
+        saveCurrentSceneName();
     }
 
     public void askToSave(boolean askFromCloseWindow) {
-        String message = (askFromCloseWindow ? "Save the project data before close?"
-                : "Save the data of current project (" + ProjectUtils.CURRENT_PROJECT + ") before open/create other project?");
+        String message = (askFromCloseWindow ? "Save the scene data before close?"
+                : "Save the data of current scene (" + SceneUtils.CURRENT_SCENE + ") before open/create other scene?");
         int jOptionPane = (askFromCloseWindow ? JOptionPane.YES_NO_CANCEL_OPTION : JOptionPane.YES_OPTION);
 
-        if (!ProjectUtils.CURRENT_PROJECT.isEmpty() && checkHaveAnyChance()) {
+        if (!SceneUtils.CURRENT_SCENE.isEmpty() && checkHaveAnyChance()) {
             int response = JOptionPane.showConfirmDialog(null, message, "SAVE", jOptionPane);
             if (response == JOptionPane.YES_OPTION) {
                 EventSystem.notify(null, new Event(EventType.SaveLevel));
@@ -368,11 +367,11 @@ public class Window implements Observer {
         }
     }
 
-    private void saveCurrentProjectName() {
+    private void saveCurrentSceneName() {
         try {
             FileWriter writer = new FileWriter("EngineConfig.ini");
 
-            writer.write("PREVIOUS PROJECT:" + ProjectUtils.CURRENT_PROJECT);
+            writer.write("PREVIOUS SCENE:" + SceneUtils.CURRENT_SCENE);
 
             writer.close();
         } catch (IOException e) {
@@ -381,9 +380,9 @@ public class Window implements Observer {
     }
 
     public boolean checkHaveAnyChance() {
-        String level_path = "data\\" + ProjectUtils.CURRENT_PROJECT + "\\" + "level.txt";
-        String prefab_path = "data\\" + ProjectUtils.CURRENT_PROJECT + "\\" + "prefabs.txt";
-        String spritesheet_path = "data\\" + ProjectUtils.CURRENT_PROJECT + "\\" + "spritesheet.txt";
+        String level_path = "data\\" + SceneUtils.CURRENT_SCENE + "\\" + "level.txt";
+        String prefab_path = "data\\" + SceneUtils.CURRENT_SCENE + "\\" + "prefabs.txt";
+        String spritesheet_path = "data\\" + SceneUtils.CURRENT_SCENE + "\\" + "spritesheet.txt";
 
         String previewLevelTxtToSave = "";
         String previewPrefabsTxtToSave = "";
@@ -505,7 +504,7 @@ public class Window implements Observer {
         return levelTxtChange || prefabsTxtChange || spritesheetTxtChange;
     }
 
-    private String getPreviousProject() {
+    private String getPreviousScene() {
         try {
             BufferedReader reader = new BufferedReader(new FileReader("EngineConfig.ini"));
             String line;
@@ -518,7 +517,7 @@ public class Window implements Observer {
                 String title = values[0];
                 String value = values[1].trim();
 
-                if (title.equals("PREVIOUS PROJECT")) {
+                if (title.equals("PREVIOUS SCENE")) {
                     return value;
                 }
             }

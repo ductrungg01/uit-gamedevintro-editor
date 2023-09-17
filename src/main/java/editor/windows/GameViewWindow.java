@@ -80,10 +80,10 @@ public class GameViewWindow {
 
     public boolean getWantCaptureMouse() {
         if (FileDialog.getInstance().isOpen()
-            || CreateNewProjectWindow.isOpen()
-            || OpenProjectWindow.isOpen()
-            || AddingSpritesheetWindow.getInstance().isOpened()
-            || MessageBox.showMsb) {
+                || CreateNewSceneWindow.isOpen()
+                || OpenSceneWindow.isOpen()
+                || AddingSpritesheetWindow.getInstance().isOpened()
+                || MessageBox.showMsb) {
             return false;
         }
 

@@ -7,7 +7,7 @@ import imgui.flag.ImGuiCond;
 import imgui.flag.ImGuiWindowFlags;
 import org.joml.Vector2f;
 import system.Window;
-import util.ProjectUtils;
+import util.SceneUtils;
 
 import javax.swing.*;
 import java.io.File;
@@ -18,21 +18,21 @@ import java.util.List;
 
 import static editor.uihelper.NiceShortCall.*;
 
-public class CreateNewProjectWindow {
+public class CreateNewSceneWindow {
     private static boolean isOpen = false;
-    private static boolean showOpenProjectWindow = false;
-    private static String projectName = "";
+    private static boolean showOpenSceneWindow = false;
+    private static String sceneName = "";
 
-    public static void open(boolean showOpenProjectWindowAfterCancel) {
+    public static void open(boolean showOpenSceneWindowAfterCancel) {
         isOpen = true;
-        projectName = "";
-        showOpenProjectWindow = showOpenProjectWindowAfterCancel;
+        sceneName = "";
+        showOpenSceneWindow = showOpenSceneWindowAfterCancel;
     }
 
     public static void imgui() {
         if (!isOpen) return;
 
-        ImGui.openPopup("Create new project");
+        ImGui.openPopup("Create new scene");
 
         float popupWidth = Window.getWidth() * 0.3f;
         float popupHeight = Window.getHeight() * 0.15f;
@@ -42,14 +42,14 @@ public class CreateNewProjectWindow {
         float popupPosY = (float) Window.getHeight() / 2 - popupHeight / 2;
         ImGui.setNextWindowPos(popupPosX, popupPosY, ImGuiCond.Always);
 
-        if (ImGui.beginPopupModal("Create new project", ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize)) {
-            projectName = NiceImGui.inputText("", projectName, "Enter project name", 0, "NewProjectName");
+        if (ImGui.beginPopupModal("Create new scene", ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize)) {
+            sceneName = NiceImGui.inputText("", sceneName, "Enter scene name", 0, "NewsceneName");
 
             if (NiceImGui.drawButton("Create", new ButtonColor(COLOR_DarkBlue, COLOR_Blue, COLOR_DarkBlue), new Vector2f(100, 30))) {
-                if (!projectName.isEmpty()) {
-                    if (createNewProject(projectName)) {
+                if (!sceneName.isEmpty()) {
+                    if (createNewScene(sceneName)) {
                         isOpen = false;
-                        Window.get().changeCurrentProject(projectName, true, true);
+                        Window.get().changeCurrentScene(sceneName, true, true);
                     }
                 }
             }
@@ -58,8 +58,8 @@ public class CreateNewProjectWindow {
 
             if (NiceImGui.drawButton("Cancel", new ButtonColor(COLOR_DarkRed, COLOR_Red, COLOR_DarkRed), new Vector2f(100, 30))) {
                 isOpen = false;
-                if (showOpenProjectWindow) {
-                    OpenProjectWindow.open(true);
+                if (showOpenSceneWindow) {
+                    OpenSceneWindow.open(true);
                 }
             }
 
@@ -67,35 +67,35 @@ public class CreateNewProjectWindow {
         }
     }
 
-    private static boolean createNewProject(String projectName) {
-        if (!isValidName(projectName)) {
+    private static boolean createNewScene(String sceneName) {
+        if (!isValidName(sceneName)) {
             return false;
         }
 
-        File folder = new File("data\\" + projectName);
+        File folder = new File("data\\" + sceneName);
 
         if (!folder.exists()) {
             boolean success = folder.mkdir();
             if (success) {
-                JOptionPane.showMessageDialog(null, "Create project '" + projectName + "' successful",
+                JOptionPane.showMessageDialog(null, "Create scene '" + sceneName + "' successful",
                         "SUCCESS", JOptionPane.INFORMATION_MESSAGE);
-                createFile(projectName);
+                createFile(sceneName);
                 return true;
             } else {
-                JOptionPane.showMessageDialog(null, "Error when create project!\nCheck if the project name has any special characters? ",
-                        "CREATE PROJECT FAIL", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(null, "Error when create scene!\nCheck if the scene name has any special characters? ",
+                        "CREATE scene FAIL", JOptionPane.ERROR_MESSAGE);
                 return false;
             }
         } else {
-            JOptionPane.showMessageDialog(null, "'" + projectName + "' is existed!",
+            JOptionPane.showMessageDialog(null, "'" + sceneName + "' is existed!",
                     "INVALID NAME", JOptionPane.ERROR_MESSAGE);
             return false;
         }
     }
 
-    private static void createFile(String projectName) {
+    private static void createFile(String sceneName) {
         try {
-            FileWriter writer = new FileWriter("data\\" + projectName + "\\" + "level.txt");
+            FileWriter writer = new FileWriter("data\\" + sceneName + "\\" + "level.txt");
             writer.write("[]");
             writer.close();
         } catch (IOException e) {
@@ -103,7 +103,7 @@ public class CreateNewProjectWindow {
         }
 
         try {
-            FileWriter writer = new FileWriter("data\\" + projectName + "\\" + "prefabs.txt");
+            FileWriter writer = new FileWriter("data\\" + sceneName + "\\" + "prefabs.txt");
             writer.write("[]");
             writer.close();
         } catch (IOException e) {
@@ -111,7 +111,7 @@ public class CreateNewProjectWindow {
         }
 
         try {
-            FileWriter writer = new FileWriter("data\\" + projectName + "\\" + "spritesheet.txt");
+            FileWriter writer = new FileWriter("data\\" + sceneName + "\\" + "spritesheet.txt");
             writer.write("");
             writer.close();
         } catch (IOException e) {
@@ -121,29 +121,29 @@ public class CreateNewProjectWindow {
 
     private static boolean isValidName(String name) {
         if (name.startsWith(" ") || name.endsWith(" ")) {
-            JOptionPane.showMessageDialog(null, "Project name cannot contain leading and trailing spaces",
+            JOptionPane.showMessageDialog(null, "scene name cannot contain leading and trailing spaces",
                     "INVALID NAME", JOptionPane.ERROR_MESSAGE);
             return false;
         }
 
-        List<String> projects = new ArrayList<>();
+        List<String> scenes = new ArrayList<>();
         File directory = new File("data");
         File[] filesList = directory.listFiles();
         if (filesList != null) {
             for (File file : filesList) {
                 if (file.isDirectory()) {
-                    projects.add(file.getName());
+                    scenes.add(file.getName());
                 }
             }
         }
-        if (projects.contains(ProjectUtils.CURRENT_PROJECT)) {
-            int currProjectIndex = projects.indexOf(ProjectUtils.CURRENT_PROJECT);
-            projects.set(currProjectIndex, projects.get(0));
-            projects.set(0, ProjectUtils.CURRENT_PROJECT);
+        if (scenes.contains(SceneUtils.CURRENT_SCENE)) {
+            int currsceneIndex = scenes.indexOf(SceneUtils.CURRENT_SCENE);
+            scenes.set(currsceneIndex, scenes.get(0));
+            scenes.set(0, SceneUtils.CURRENT_SCENE);
         }
 
-        if (projects.contains(name)) {
-            JOptionPane.showMessageDialog(null, "'" + projectName + "' is existed!",
+        if (scenes.contains(name)) {
+            JOptionPane.showMessageDialog(null, "'" + sceneName + "' is existed!",
                     "INVALID NAME", JOptionPane.ERROR_MESSAGE);
             return false;
         }
