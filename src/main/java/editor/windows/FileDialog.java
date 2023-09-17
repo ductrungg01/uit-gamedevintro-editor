@@ -6,6 +6,7 @@ import editor.NiceImGui;
 import editor.ReferenceType;
 import imgui.flag.ImGuiCond;
 import imgui.flag.ImGuiWindowFlags;
+import javassist.compiler.ast.Pair;
 import system.Spritesheet;
 import editor.uihelper.ButtonColor;
 import editor.uihelper.ColorHelp;
@@ -158,93 +159,93 @@ public class FileDialog {
     }
 
     private void showSpriteSheet() {
-        if (this.spritesheetList.isEmpty()) {
-            this.spritesheetList = AssetPool.getAllSpritesheets();
-        }
-
-        Sprite spriteChosen = null;
-
-        final float DEFAULT_SPRITE_BUTTON_SIZE = 32;
-
-        if (ImGui.beginTabItem("SPRITESHEET")) {
-            settings();
-
-            ImGui.text("Select an spritesheet tab and choose an sprite below!");
-            if (ImGui.beginTabBar("FileDialogSpritesheetTabBar")) {
-                for (Spritesheet spritesheet : spritesheetList) {
-                    String spritesheetName = FileUtils.getFileName(spritesheet.getTexture().getFilePath());
-
-                    ImBoolean pOpen = new ImBoolean(true);
-                    if (!spritesheet_has_just_used.equals("")) {
-                        if (!spritesheetName.equals(spritesheet_has_just_used)) {
-                            pOpen = new ImBoolean(false);
-                        }
-                    }
-
-                    if (ImGui.beginTabItem(spritesheetName, pOpen)) {
-                        if (!spritesheetName.equals(spritesheet_has_just_used)) {
-                            spritesheet_has_just_used = "";
-                        }
-
-                        ImGui.beginChild("##Select sprite from spritesheet on FileDialog with spritesheet " + spritesheetName, ImGui.getContentRegionMaxX(), ImGui.getContentRegionMaxY() * 0.7f, true);
-
-                        ImVec2 windowPos = new ImVec2();
-                        ImGui.getWindowPos(windowPos);
-                        ImVec2 windowSize = new ImVec2();
-                        ImGui.getWindowSize(windowSize);
-                        ImVec2 itemSpacing = new ImVec2();
-                        ImGui.getStyle().getItemSpacing(itemSpacing);
-                        float windowX2 = windowPos.x + windowSize.x;
-
-                        for (int i = 0; i < spritesheet.size(); i++) {
-                            Sprite spr = spritesheet.getSprite(i);
-                            Vector2f[] texCoords = spr.getTexCoords();
-                            float offset = Math.min(DEFAULT_SPRITE_BUTTON_SIZE / spr.getWidth(), DEFAULT_SPRITE_BUTTON_SIZE / spr.getHeight());
-                            float spriteWidth = spr.getWidth() * offset * BUTTON_SIZE_BOOST;
-                            float spriteHeight = spr.getHeight() * offset * BUTTON_SIZE_BOOST;
-                            ImGui.pushID(spr.getTexId());
-                            // If select this sprite
-                            if (ImGui.imageButton(spr.getTexId(), spriteWidth, spriteHeight, texCoords[3].x, texCoords[3].y, texCoords[1].x, texCoords[1].y)) {
-                            }
-
-                            if (ImGui.isItemHovered()) {
-                                ImGui.beginTooltip();
-                                Vector4f textColor = Settings.NAME_COLOR;
-                                ImGui.textColored(textColor.x, textColor.y, textColor.z, textColor.w, "spritesheetName \nIndex: " + i);
-                                ImGui.text("Double-click to select this sprite!");
-                                ImGui.endTooltip();
-                                if (ImGui.isMouseDoubleClicked(GLFW_MOUSE_BUTTON_LEFT)) {
-                                    spriteChosen = spr;
-                                }
-                            }
-                            ImGui.popID();
-
-                            ImVec2 lastButtonPos = new ImVec2();
-                            ImGui.getItemRectMax(lastButtonPos);
-                            float lastButtonX2 = lastButtonPos.x;
-                            float nextButtonX2 = lastButtonX2 + itemSpacing.x + spriteWidth;
-                            if (i + 1 < spritesheet.size() && nextButtonX2 <= windowX2) {
-                                ImGui.sameLine();
-                            }
-
-                            if (spriteChosen != null) break;
-
-                        }
-                        ImGui.endChild();
-                        ImGui.endTabItem();
-                    }
-                }
-
-                ImGui.endTabBar();
-            }
-            ImGui.endTabItem();
-        }
-
-        if (spriteChosen != null) {
-            setSelectedObject(spriteChosen);
-            close();
-            ImGui.closeCurrentPopup();
-        }
+//        if (this.spritesheetList.isEmpty()) {
+//            this.spritesheetList = AssetPool.getAllSpritesheets();
+//        }
+//
+//        Sprite spriteChosen = null;
+//
+//        final float DEFAULT_SPRITE_BUTTON_SIZE = 32;
+//
+//        if (ImGui.beginTabItem("SPRITESHEET")) {
+//            settings();
+//
+//            ImGui.text("Select an spritesheet tab and choose an sprite below!");
+//            if (ImGui.beginTabBar("FileDialogSpritesheetTabBar")) {
+//                for (Spritesheet spritesheet : spritesheetList) {
+//                    String spritesheetName = FileUtils.getFileName(spritesheet.getTexture().getFilePath());
+//
+//                    ImBoolean pOpen = new ImBoolean(true);
+//                    if (!spritesheet_has_just_used.equals("")) {
+//                        if (!spritesheetName.equals(spritesheet_has_just_used)) {
+//                            pOpen = new ImBoolean(false);
+//                        }
+//                    }
+//
+//                    if (ImGui.beginTabItem(spritesheetName, pOpen)) {
+//                        if (!spritesheetName.equals(spritesheet_has_just_used)) {
+//                            spritesheet_has_just_used = "";
+//                        }
+//
+//                        ImGui.beginChild("##Select sprite from spritesheet on FileDialog with spritesheet " + spritesheetName, ImGui.getContentRegionMaxX(), ImGui.getContentRegionMaxY() * 0.7f, true);
+//
+//                        ImVec2 windowPos = new ImVec2();
+//                        ImGui.getWindowPos(windowPos);
+//                        ImVec2 windowSize = new ImVec2();
+//                        ImGui.getWindowSize(windowSize);
+//                        ImVec2 itemSpacing = new ImVec2();
+//                        ImGui.getStyle().getItemSpacing(itemSpacing);
+//                        float windowX2 = windowPos.x + windowSize.x;
+//
+//                        for (int i = 0; i < spritesheet.size(); i++) {
+//                            Sprite spr = spritesheet.getSprite(i);
+//                            Vector2f[] texCoords = spr.getTexCoords();
+//                            float offset = Math.min(DEFAULT_SPRITE_BUTTON_SIZE / spr.getWidth(), DEFAULT_SPRITE_BUTTON_SIZE / spr.getHeight());
+//                            float spriteWidth = spr.getWidth() * offset * BUTTON_SIZE_BOOST;
+//                            float spriteHeight = spr.getHeight() * offset * BUTTON_SIZE_BOOST;
+//                            ImGui.pushID(spr.getTexId());
+//                            // If select this sprite
+//                            if (ImGui.imageButton(spr.getTexId(), spriteWidth, spriteHeight, texCoords[3].x, texCoords[3].y, texCoords[1].x, texCoords[1].y)) {
+//                            }
+//
+//                            if (ImGui.isItemHovered()) {
+//                                ImGui.beginTooltip();
+//                                Vector4f textColor = Settings.NAME_COLOR;
+//                                ImGui.textColored(textColor.x, textColor.y, textColor.z, textColor.w, "spritesheetName \nIndex: " + i);
+//                                ImGui.text("Double-click to select this sprite!");
+//                                ImGui.endTooltip();
+//                                if (ImGui.isMouseDoubleClicked(GLFW_MOUSE_BUTTON_LEFT)) {
+//                                    spriteChosen = spr;
+//                                }
+//                            }
+//                            ImGui.popID();
+//
+//                            ImVec2 lastButtonPos = new ImVec2();
+//                            ImGui.getItemRectMax(lastButtonPos);
+//                            float lastButtonX2 = lastButtonPos.x;
+//                            float nextButtonX2 = lastButtonX2 + itemSpacing.x + spriteWidth;
+//                            if (i + 1 < spritesheet.size() && nextButtonX2 <= windowX2) {
+//                                ImGui.sameLine();
+//                            }
+//
+//                            if (spriteChosen != null) break;
+//
+//                        }
+//                        ImGui.endChild();
+//                        ImGui.endTabItem();
+//                    }
+//                }
+//
+//                ImGui.endTabBar();
+//            }
+//            ImGui.endTabItem();
+//        }
+//
+//        if (spriteChosen != null) {
+//            setSelectedObject(spriteChosen);
+//            close();
+//            ImGui.closeCurrentPopup();
+//        }
     }
 
     private static Sprite SPRITE_WAITING = null;
@@ -409,6 +410,17 @@ public class FileDialog {
         }
 
         Object o = this.selectedObject;
+        this.idWaiting = "";
+        selectedObject = null;
+
+        return o;
+    }
+    public Sprite getSelectedSprite(String idWaiting, Sprite oldValue) {
+        if (!this.idWaiting.equals(idWaiting) || isOpen || this.selectedObject == null) {
+            return oldValue;
+        }
+
+        Sprite o = (Sprite) this.selectedObject;
         this.idWaiting = "";
         selectedObject = null;
 

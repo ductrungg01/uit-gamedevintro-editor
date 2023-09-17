@@ -1,6 +1,7 @@
 package editor.windows;
 
 import components.Sprite;
+import components.SpriteRenderer;
 import editor.NiceImGui;
 import editor.uihelper.ButtonColor;
 import imgui.ImColor;
@@ -13,26 +14,23 @@ import org.joml.Vector2f;
 import system.GameObject;
 import system.Window;
 import util.FileUtils;
-import util.JMath;
 
-import javax.swing.plaf.SplitPaneUI;
 import java.text.DecimalFormat;
-import java.util.Vector;
 
 import static editor.uihelper.NiceShortCall.*;
-import static editor.uihelper.NiceShortCall.COLOR_Red;
+import static editor.uihelper.NiceShortCall.COLOR_Green;
 import static org.joml.Math.clamp;
 
-public class AddingNewPrefabWindow {
+public class SelectSpriteWindow {
     //region Singleton
-    private AddingNewPrefabWindow() {
+    private SelectSpriteWindow() {
     }
 
-    private static AddingNewPrefabWindow instance = null;
+    private static SelectSpriteWindow instance = null;
 
-    public static AddingNewPrefabWindow getInstance() {
+    public static SelectSpriteWindow getInstance() {
         if (instance == null) {
-            instance = new AddingNewPrefabWindow();
+            instance = new SelectSpriteWindow();
         }
 
         return instance;
@@ -45,12 +43,25 @@ public class AddingNewPrefabWindow {
     private Vector2f bottomRightCoord = new Vector2f();
     private Sprite sprite;
 
+    private Sprite result;
+    GameObject go_request = null;
 
     public void open(Sprite sprite){
         this.isOpen = true;
         this.sprite = sprite;
         this.topLeftCoord = new Vector2f(0, 0);
         this.bottomRightCoord = new Vector2f(sprite.getWidth(), sprite.getHeight());
+        this.result = null;
+        this.go_request = null;
+    }
+
+    public void open(Sprite sprite, GameObject go_request){
+        this.isOpen = true;
+        this.sprite = sprite;
+        this.topLeftCoord = new Vector2f(0, 0);
+        this.bottomRightCoord = new Vector2f(sprite.getWidth(), sprite.getHeight());
+        this.result = null;
+        this.go_request = go_request;
     }
 
     public void imgui(){
@@ -101,21 +112,23 @@ public class AddingNewPrefabWindow {
 
             ImGui.newLine();
 
-            if (NiceImGui.drawButton("NEW PREFAB",
+            if (NiceImGui.drawButton("SELECT THIS SPRITE",
                     new ButtonColor(COLOR_DarkBlue, COLOR_Blue, COLOR_Blue),
                     new Vector2f(SETTING_COLUMN_WIDTH, 50f))) {
                 Sprite newSpr = new Sprite(sprite.getTexture());
                 newSpr.setTexCoords(texCoords);
-                GameObject newGo = new GameObject(goName, newSpr);
-                newGo.setAsPrefab();
+                this.result = newSpr;
+                if (this.go_request != null){
+                    this.go_request.getComponent(SpriteRenderer.class).setSprite(newSpr);
+                }
                 close();
             }
 
-            if (NiceImGui.drawButton("CANCEL",
-                    new ButtonColor(COLOR_DarkRed, COLOR_Red, COLOR_Red),
-                    new Vector2f(SETTING_COLUMN_WIDTH, 30f))) {
-                close();
-            }
+//            if (NiceImGui.drawButton("CANCEL",
+//                    new ButtonColor(COLOR_DarkRed, COLOR_Red, COLOR_Red),
+//                    new Vector2f(SETTING_COLUMN_WIDTH, 30f))) {
+//                close();
+//            }
 
             ImGui.endChild();
             //endregion
@@ -214,5 +227,13 @@ public class AddingNewPrefabWindow {
 
     public boolean isOpen(){
         return this.isOpen;
+    }
+
+    public Sprite getResult(){
+        if (this.result == null) return null;
+
+        Sprite spr = this.result.copy();
+        this.result = null;
+        return spr;
     }
 }

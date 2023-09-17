@@ -3,7 +3,10 @@ package system;
 import components.Component;
 import components.INonAddableComponent;
 import editor.NiceImGui;
+import imgui.ImGui;
 import org.joml.Vector2f;
+
+import java.text.DecimalFormat;
 
 public class Transform extends Component implements INonAddableComponent {
     //region Fields
@@ -50,6 +53,9 @@ public class Transform extends Component implements INonAddableComponent {
     public void imgui() {
         NiceImGui.drawVec2Control("Position", this.position, "Position of transform " + this.gameObject.hashCode());
         //constrainedProportions = NiceImGui.drawVec2ControlWithConstrainedProportions("Scale", this.scale, "Scale of transform " + this.gameObject.hashCode(), constrainedProportions);
+
+        DecimalFormat df = new DecimalFormat("#.##");
+        ImGui.text("Scale: (" + df.format(this.scale.x) + " : " + df.format(this.scale.y) + ")");
         //this.rotation = NiceImGui.dragFloat("Rotation", this.rotation);
         //this.zIndex = NiceImGui.dragInt("Z-Index", this.zIndex);
     }

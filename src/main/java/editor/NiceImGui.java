@@ -4,6 +4,7 @@ import components.Sprite;
 import editor.uihelper.ButtonColor;
 import editor.windows.FileDialog;
 import editor.windows.PrefabsWindow;
+import editor.windows.SelectSpriteWindow;
 import imgui.*;
 import imgui.flag.ImGuiCol;
 import imgui.flag.ImGuiMouseCursor;
@@ -18,6 +19,7 @@ import system.GameObject;
 import util.FileUtils;
 
 import java.io.File;
+import java.text.DecimalFormat;
 import java.util.List;
 
 import static editor.uihelper.NiceShortCall.*;
@@ -408,6 +410,9 @@ public class NiceImGui {
         return ReferenceButton(label, referenceType, oldValue, new float[2], idPush);
     }
 
+    public static Sprite SPRITE_WAITING = null;
+    public static boolean SELECT_SPR_WINDOW_ISOPEN = false;
+
     public static Object ReferenceButton(String label, ReferenceType referenceType, Object oldValue, float[] columnWidths, String idPush) {
         ImGui.pushID(idPush);
 
@@ -493,7 +498,30 @@ public class NiceImGui {
             ImGui.endTooltip();
         }
 
-        oldValue = FileDialog.getInstance().getSelectedObject(idPush, oldValue);
+        if (SPRITE_WAITING == null) {
+            Sprite spr = (Sprite)oldValue;
+            Sprite newSpr = spr.copy();
+            newSpr = FileDialog.getInstance().getSelectedSprite(idPush, newSpr);
+            if (!spr.equal(newSpr)) {
+                SPRITE_WAITING = newSpr;
+            }
+        }
+
+        if (SPRITE_WAITING != null){
+            if (!SELECT_SPR_WINDOW_ISOPEN) {
+                SelectSpriteWindow.getInstance().open(SPRITE_WAITING);
+                SELECT_SPR_WINDOW_ISOPEN = true;
+            }
+
+            Sprite result = SelectSpriteWindow.getInstance().getResult();
+
+            if (result != null){
+                oldValue = result;
+                SPRITE_WAITING = null;
+                SELECT_SPR_WINDOW_ISOPEN = false;
+            }
+        }
+
         ImGui.popID();
         //endregion
 
@@ -529,16 +557,179 @@ public class NiceImGui {
             float img_size_width = sprite.getTexture().getWidth();
             float img_size_height = sprite.getTexture().getHeight();
 
+            DecimalFormat df = new DecimalFormat("#.##");
+
             Vector2f topLeftCoord = new Vector2f(
-                    (float) Math.floor(texCoords[3].x * img_size_width),
-                    (float) Math.floor( texCoords[3].y * img_size_height)
+                    texCoords[3].x * img_size_width,
+                    texCoords[3].y * img_size_height
             );
             Vector2f bottomRightCoord = new Vector2f(
-                    (float) Math.floor(texCoords[1].x * img_size_width),
-                    (float) Math.floor(texCoords[1].y * img_size_height)
+                    texCoords[1].x * img_size_width,
+                    texCoords[1].y * img_size_height
             );
-            ImGui.text("Top-Left coord: (" + topLeftCoord.x + " : " + topLeftCoord.y + ")");
-            ImGui.text("Bottom-Right coord: (" + bottomRightCoord.x + " : " + bottomRightCoord.y + ")");
+            ImGui.text("Top-Left coord: (" + df.format(topLeftCoord.x) + " : " +  df.format(topLeftCoord.y) + ")");
+            ImGui.text("Bottom-Right coord: (" +  df.format(bottomRightCoord.x) + " : " +  df.format(bottomRightCoord.y) + ")");
+        }
+        //endregion
+
+        return oldValue;
+    }
+    public static Object ReferenceButtonGO(GameObject go_request, String label, ReferenceType referenceType, Object oldValue, float[] columnWidths, String idPush) {
+        ImGui.pushID(idPush);
+
+        columnConfiguration(2, columnWidths, label);
+        ImGui.text(label);
+
+        ImGui.nextColumn();
+
+        float offset = ImGui.getStyle().getFramePaddingX() * 2;
+        float referenceButtonHeight = 30.0f;
+        float referenceButtonWidth = (columnWidths[1] != 0 ? columnWidths[1] - (referenceButtonHeight + offset) * 2 - offset : DEFAULT_REFERENCE_BUTTON_WIDTH);
+
+        //region Reference Button
+        String refState = (oldValue == null ? "(Missing) " : "");
+        String refName = "";
+        String toolTipRef = "";
+        switch (referenceType) {
+            case GAMEOBJECT -> {
+                GameObject go = (GameObject) oldValue;
+                if (go != null)
+                    refName = go.name;
+                else
+                    refName = "Game object";
+                toolTipRef = refName;
+            }
+            case SPRITE -> {
+                Sprite spr = (Sprite) oldValue;
+                if (spr != null && oldValue != null && spr.getTexture() != null) {
+                    String texturePath = spr.getTexture().getFilePath();
+                    File imageFile = new File(texturePath);
+
+                    refName = FileUtils.getShorterName(imageFile.getName());
+                    toolTipRef = spr.getTexture().getFilePath();
+                } else
+                    refName = "Sprite";
+            }
+            case SOUND -> {
+                File soundFile = (File) oldValue;
+                if (soundFile != null) {
+                    refName = FileUtils.getShorterName(soundFile.getName());
+                    toolTipRef = soundFile.getName();
+                } else
+                    refName = "Sound";
+                break;
+            }
+            case JAVA -> {
+                File javaFile = (File) oldValue;
+                if (javaFile != null)
+                    refName = javaFile.getName();
+                else
+                    refName = "Java Script";
+                toolTipRef = refName;
+            }
+        }
+
+        ImGui.pushID("ReferenceButton " + idPush);
+
+        if (ImGui.button(refState + "<" + refName + ">", referenceButtonWidth, referenceButtonHeight)) {
+
+        }
+
+        if (ImGui.isItemHovered()) {
+            ImGui.beginTooltip();
+            ImGui.text(toolTipRef);
+            ImGui.endTooltip();
+        }
+
+        ImGui.popID();
+
+        //endregion
+
+        ImGui.sameLine();
+
+        //region Open FileDialog Button
+        ImGui.pushID("OpenFileDialogButton" + idPush);
+        if (drawOpenFileDialogButton(referenceButtonHeight)) {
+            FileDialog.getInstance().open(idPush, referenceType);
+        }
+
+        if (ImGui.isItemHovered()) {
+            ImGui.beginTooltip();
+            ImGui.text("Open file dialog");
+            ImGui.endTooltip();
+        }
+
+        if (SPRITE_WAITING == null) {
+            Sprite spr = (Sprite)oldValue;
+            Sprite newSpr = spr.copy();
+            newSpr = FileDialog.getInstance().getSelectedSprite(idPush, newSpr);
+            if (!spr.equal(newSpr)) {
+                SPRITE_WAITING = newSpr;
+            }
+        }
+
+        if (SPRITE_WAITING != null){
+            if (!SELECT_SPR_WINDOW_ISOPEN) {
+                SelectSpriteWindow.getInstance().open(SPRITE_WAITING, go_request);
+                SELECT_SPR_WINDOW_ISOPEN = true;
+            }
+
+            Sprite result = SelectSpriteWindow.getInstance().getResult();
+
+            if (result != null){
+                oldValue = result;
+                SPRITE_WAITING = null;
+                SELECT_SPR_WINDOW_ISOPEN = false;
+            }
+        }
+
+        ImGui.popID();
+        //endregion
+
+
+
+        ImGui.sameLine();
+
+        //region Remove Button
+        ImGui.pushID("Remove reference of " + idPush);
+        if (drawDeleteReferenceButton(referenceButtonHeight)) {
+            oldValue = null;
+
+            if (referenceType == ReferenceType.SPRITE) {
+                oldValue = FileUtils.getDefaultSprite();
+            }
+        }
+        if (ImGui.isItemHovered()) {
+            ImGui.beginTooltip();
+            ImGui.text("Remove reference value?");
+            ImGui.endTooltip();
+        }
+        ImGui.popID();
+        //endregion
+
+        ImGui.columns(1);
+
+        ImGui.popID();
+
+        //region coord
+        Sprite sprite = (Sprite) oldValue;
+        if (sprite != null){
+            Vector2f[] texCoords = sprite.getTexCoords();
+            float img_size_width = sprite.getTexture().getWidth();
+            float img_size_height = sprite.getTexture().getHeight();
+
+            DecimalFormat df = new DecimalFormat("#.##");
+
+            Vector2f topLeftCoord = new Vector2f(
+                    texCoords[3].x * img_size_width,
+                    texCoords[3].y * img_size_height
+            );
+            Vector2f bottomRightCoord = new Vector2f(
+                    texCoords[1].x * img_size_width,
+                    texCoords[1].y * img_size_height
+            );
+            ImGui.text("Top-Left coord: (" + df.format(topLeftCoord.x) + " : " +  df.format(topLeftCoord.y) + ")");
+            ImGui.text("Bottom-Right coord: (" +  df.format(bottomRightCoord.x) + " : " +  df.format(bottomRightCoord.y) + ")");
         }
         //endregion
 
@@ -971,7 +1162,7 @@ public class NiceImGui {
             ImGui.button("Error: Cannot find the prefab!");
         } else {
             Vector4f buttonColor = new Vector4f(14 / 255f, 14 / 255f, 28 / 255f, 1);
-            if (drawButton("Go to: '" + prefab.name + "'",
+            if (drawButton("Go to prefab: '" + prefab.name + "'",
                     new ButtonColor(buttonColor, COLOR_Blue, COLOR_DarkBlue),
                     new Vector2f(ImGui.getContentRegionAvailX(), 30f))) {
                 PrefabsWindow.getInstance().prefabNeedToHighlight = prefab.prefabId;

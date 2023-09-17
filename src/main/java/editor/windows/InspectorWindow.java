@@ -71,7 +71,7 @@ public class InspectorWindow {
 
         ImGui.separator();
 
-        if (this.activeGameObject.getComponent(StateMachine.class) == null) {
+        if (this.activeGameObject.getComponent(StateMachine.class) == null && this.activeGameObject.isPrefab()) {
             if (NiceImGui.drawButton("Add StateMachine",
                     new ButtonColor(COLOR_DarkBlue, COLOR_Blue, COLOR_Blue),
                     new Vector2f(ImGui.getContentRegionAvailX(), 50f))) {

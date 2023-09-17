@@ -31,6 +31,23 @@ public class Sprite implements INonAddableComponent {
         setTexture(AssetPool.getTexture(TexturePath));
         calcWidthAndHeight();
     }
+
+    public Sprite copy(){
+        Sprite newSpr = new Sprite();
+        newSpr.texture = this.texture;
+        newSpr.texCoords = this.getTexCoords();
+        newSpr.width = this.width;
+        newSpr.height = this.height;
+
+        return newSpr;
+    }
+
+    public boolean equal(Sprite other){
+        return (this.texture == other.texture)
+                && (this.texCoords == other.texCoords)
+                && (this.width == other.width)
+                && (this.height == other.height);
+    }
     //endregion
 
     //region Properties

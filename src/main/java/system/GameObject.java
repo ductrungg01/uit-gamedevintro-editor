@@ -32,8 +32,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.Vector;
 
-import static editor.uihelper.NiceShortCall.COLOR_Blue;
-import static editor.uihelper.NiceShortCall.COLOR_DarkBlue;
+import static editor.uihelper.NiceShortCall.*;
 
 public class GameObject {
     //region Fields
@@ -238,6 +237,42 @@ public class GameObject {
     }
 
     public void imgui() {
+//        //region Prefab settings
+//        ImGui.beginChild("Show prefab and button override of " + this.hashCode(), ImGui.getContentRegionMaxX(), (!this.isPrefab ? 80 : 50), true);
+//
+//        ButtonColor btnCol = new ButtonColor(new Vector4f(14 / 255f, 14 / 255f, 28 / 255f, 1), COLOR_Blue, COLOR_DarkBlue);
+//        Vector2f btnSize = new Vector2f(ImGui.getContentRegionAvailX(), 30f);
+//        if (this.isPrefab) {
+//            if (NiceImGui.drawButton("Override all children", btnCol, btnSize)) {
+//                this.overrideAllChildGameObject();
+//            }
+//        } else {
+//            if (!this.parentId.isEmpty())
+//                NiceImGui.prefabShowingInInspectorsButton(this);
+//            if (NiceImGui.drawButton("Save as a new prefab", btnCol, btnSize)) {
+//                this.setAsPrefab();
+//            }
+//        }
+//        ImGui.endChild();
+//
+//        ImGui.separator();
+//        //endregion
+
+        if (!this.isPrefab) {
+            Vector4f warning_col = COLOR_Yellow;
+            String warning_text = "This is the CHILD game object\nYou CANNOT change anything (except position)!\nIf you want to change something, click prefab";
+            ImGui.textColored(warning_col.x, warning_col.y, warning_col.z, warning_col.w,
+                    warning_text);
+        } else {
+            Vector4f warning_col = COLOR_Yellow;
+            String warning_text = "This is the PREFAB, your change in this prefab will override all child game object!";
+            ImGui.textColored(warning_col.x, warning_col.y, warning_col.z, warning_col.w,
+                    warning_text);
+        }
+
+        ImGui.separator();
+
+
         ImGui.text("Object's name: ");
         ImGui.sameLine();
 
@@ -274,6 +309,10 @@ public class GameObject {
                     }
                 }
             }
+        }
+
+        if (this.isPrefab()){
+            this.overrideAllChildGameObject();
         }
     }
 
@@ -410,8 +449,8 @@ public class GameObject {
             }
         }
 
-        JOptionPane.showMessageDialog(null, "Override all children successful!",
-                "SUCCESS", JOptionPane.INFORMATION_MESSAGE);
+//        JOptionPane.showMessageDialog(null, "Override all children successful!",
+//                "SUCCESS", JOptionPane.INFORMATION_MESSAGE);
     }
 
     public void generatePrefabId() {

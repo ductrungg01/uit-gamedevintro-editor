@@ -2,11 +2,17 @@ package components;
 
 import editor.ReferenceType;
 import editor.NiceImGui;
+import imgui.ImGui;
 import system.Transform;
 import org.joml.Vector2f;
 import org.joml.Vector4f;
 import renderer.Texture;
 import util.AssetPool;
+import util.FileUtils;
+
+import java.text.DecimalFormat;
+
+import static editor.uihelper.NiceShortCall.COLOR_Green;
 
 public class SpriteRenderer extends Component implements INonAddableComponent {
     //region Fields
@@ -50,13 +56,39 @@ public class SpriteRenderer extends Component implements INonAddableComponent {
 
     @Override
     public void imgui() {
-        Sprite tmp = (Sprite) NiceImGui.ReferenceButton("Sprite",
-                ReferenceType.SPRITE,
-                sprite,
-                "Sprite of SpriteRenderer " + this.gameObject.hashCode());
+        if (this.gameObject.isPrefab()) {
+            Sprite tmp = (Sprite) NiceImGui.ReferenceButtonGO(this.gameObject,
+                    "Sprite",
+                    ReferenceType.SPRITE,
+                    sprite,
+                    new float[2],
+                    "Sprite of SpriteRenderer " + this.gameObject.hashCode());
 
-        if (tmp != sprite) {
-            setSprite(tmp);
+            if (!tmp.equal(sprite)) {
+                setSprite(tmp);
+            }
+        } else {
+            ImGui.textColored(COLOR_Green.x, COLOR_Green.y, COLOR_Green.z, COLOR_Green.w,
+                    FileUtils.getShorterName(sprite.getTexture().getFilePath()));
+            //region coord
+            if (sprite != null){
+                Vector2f[] texCoords = sprite.getTexCoords();
+                float img_size_width = sprite.getTexture().getWidth();
+                float img_size_height = sprite.getTexture().getHeight();
+
+                DecimalFormat df = new DecimalFormat("#.##");
+
+                Vector2f topLeftCoord = new Vector2f(
+                        texCoords[3].x * img_size_width,
+                        texCoords[3].y * img_size_height
+                );
+                Vector2f bottomRightCoord = new Vector2f(
+                        texCoords[1].x * img_size_width,
+                        texCoords[1].y * img_size_height
+                );
+                ImGui.text("Top-Left coord: (" + df.format(topLeftCoord.x) + " : " +  df.format(topLeftCoord.y) + ")");
+                ImGui.text("Bottom-Right coord: (" +  df.format(bottomRightCoord.x) + " : " +  df.format(bottomRightCoord.y) + ")");
+            }
         }
 
         NiceImGui.showImage(this.sprite, new Vector2f(100, 100));

@@ -65,5 +65,81 @@
     ],
     "doSerialization": true,
     "isDead": false
+  },
+  {
+    "uid": 3,
+    "name": "misc.png",
+    "tag": "",
+    "isPrefab": true,
+    "prefabId": "fiveIPrwJT",
+    "parentId": "",
+    "components": [
+      {
+        "type": "system.Transform",
+        "properties": {
+          "position": {
+            "x": 0.0,
+            "y": 0.0
+          },
+          "scale": {
+            "x": 17.00003,
+            "y": 17.000002
+          },
+          "rotation": 0.0,
+          "zIndex": 0,
+          "uid": 82
+        }
+      },
+      {
+        "type": "components.SpriteRenderer",
+        "properties": {
+          "color": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0,
+            "w": 1.0
+          },
+          "sprite": {
+            "width": 17.00003,
+            "height": 17.000002,
+            "texture": {
+              "filePath": "data/textures/misc.png",
+              "width": 639,
+              "height": 360
+            },
+            "texCoords": [
+              {
+                "x": 0.6071988,
+                "y": 0.42222223
+              },
+              {
+                "x": 0.6071988,
+                "y": 0.46944445
+              },
+              {
+                "x": 0.58059466,
+                "y": 0.46944445
+              },
+              {
+                "x": 0.58059466,
+                "y": 0.42222223
+              }
+            ]
+          },
+          "uid": 83
+        }
+      },
+      {
+        "type": "components.StateMachine",
+        "properties": {
+          "stateTransfers": {},
+          "states": [],
+          "defaultStateTitle": "",
+          "uid": 124
+        }
+      }
+    ],
+    "doSerialization": true,
+    "isDead": false
   }
 ]

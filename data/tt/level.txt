@@ -1,26 +1,26 @@
 [
   {
     "uid": 0,
-    "name": "animation-block",
+    "name": "misc.png",
     "tag": "",
     "isPrefab": false,
     "prefabId": "",
-    "parentId": "",
+    "parentId": "fiveIPrwJT",
     "components": [
       {
         "type": "system.Transform",
         "properties": {
           "position": {
-            "x": 76.830086,
-            "y": -231.45348
+            "x": 187.29306,
+            "y": -146.59204
           },
           "scale": {
-            "x": 152.0,
-            "y": 16.0
+            "x": 17.00003,
+            "y": 17.000002
           },
           "rotation": 0.0,
           "zIndex": 0,
-          "uid": 19
+          "uid": 82
         }
       },
       {
@@ -33,33 +33,42 @@
             "w": 1.0
           },
           "sprite": {
-            "width": 152.0,
-            "height": 16.0,
+            "width": 17.00003,
+            "height": 17.000002,
             "texture": {
-              "filePath": "data/textures/images/spritesheets/animation-block.png",
-              "width": 152,
-              "height": 16
+              "filePath": "data/textures/misc.png",
+              "width": 639,
+              "height": 360
             },
             "texCoords": [
               {
-                "x": 1.0,
-                "y": 0.0
+                "x": 0.6071988,
+                "y": 0.42222223
               },
               {
-                "x": 1.0,
-                "y": 1.0
+                "x": 0.6071988,
+                "y": 0.46944445
               },
               {
-                "x": 0.0,
-                "y": 1.0
+                "x": 0.58059466,
+                "y": 0.46944445
               },
               {
-                "x": 0.0,
-                "y": 0.0
+                "x": 0.58059466,
+                "y": 0.42222223
               }
             ]
           },
-          "uid": 20
+          "uid": 83
+        }
+      },
+      {
+        "type": "components.StateMachine",
+        "properties": {
+          "stateTransfers": {},
+          "states": [],
+          "defaultStateTitle": "",
+          "uid": 124
         }
       }
     ],
@@ -68,26 +77,26 @@
   },
   {
     "uid": 1,
-    "name": "animation-block",
+    "name": "misc.png",
     "tag": "",
     "isPrefab": false,
     "prefabId": "",
-    "parentId": "",
+    "parentId": "fiveIPrwJT",
     "components": [
       {
         "type": "system.Transform",
         "properties": {
           "position": {
-            "x": 227.95804,
-            "y": -231.45348
+            "x": 118.38926,
+            "y": -137.3267
           },
           "scale": {
-            "x": 152.0,
-            "y": 16.0
+            "x": 17.00003,
+            "y": 17.000002
           },
           "rotation": 0.0,
           "zIndex": 0,
-          "uid": 19
+          "uid": 82
         }
       },
       {
@@ -100,33 +109,42 @@
             "w": 1.0
           },
           "sprite": {
-            "width": 152.0,
-            "height": 16.0,
+            "width": 17.00003,
+            "height": 17.000002,
             "texture": {
-              "filePath": "data/textures/images/spritesheets/animation-block.png",
-              "width": 152,
-              "height": 16
+              "filePath": "data/textures/misc.png",
+              "width": 639,
+              "height": 360
             },
             "texCoords": [
               {
-                "x": 1.0,
-                "y": 0.0
+                "x": 0.6071988,
+                "y": 0.42222223
               },
               {
-                "x": 1.0,
-                "y": 1.0
+                "x": 0.6071988,
+                "y": 0.46944445
               },
               {
-                "x": 0.0,
-                "y": 1.0
+                "x": 0.58059466,
+                "y": 0.46944445
               },
               {
-                "x": 0.0,
-                "y": 0.0
+                "x": 0.58059466,
+                "y": 0.42222223
               }
             ]
           },
-          "uid": 20
+          "uid": 83
+        }
+      },
+      {
+        "type": "components.StateMachine",
+        "properties": {
+          "stateTransfers": {},
+          "states": [],
+          "defaultStateTitle": "",
+          "uid": 124
         }
       }
     ],
