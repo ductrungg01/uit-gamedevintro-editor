@@ -20,7 +20,6 @@ import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_RIGHT;
 
 public class SceneList {
     private static List<String> scenes = new ArrayList<>();
-    private static final String ROOT_FOLDER = "data";
 
     public static boolean isAutoSave = true;
 
@@ -63,13 +62,6 @@ public class SceneList {
     static void getAllScene(){
         scenes.clear();
 
-        File folder = new File(ROOT_FOLDER);
-        File[] listOfFiles = folder.listFiles();
-
-        for (int i = 0; i < listOfFiles.length; i++){
-            if (listOfFiles[i].isDirectory()){
-                scenes.add(listOfFiles[i].getName());
-            }
-        }
+        scenes = SceneUtils.getAllScene();
     }
 }

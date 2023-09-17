@@ -3,6 +3,9 @@ package scenes;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import components.Component;
+import components.PortalComponent;
+import components.Sprite;
+import components.SpriteRenderer;
 import deserializers.ComponentDeserializer;
 import deserializers.GameObjectDeserializer;
 import deserializers.PrefabDeserializer;
@@ -230,12 +233,28 @@ public class Scene {
     //endregion
 
     //region Save and Load
+    public GameObject getPortalPrefab(){
+        GameObject go = new GameObject("Portal", new Sprite("system-assets/images/Portal.png"));
+        go.tag = "Portal";
+        go.getComponent(SpriteRenderer.class).convertToScale();
+        go.transform.position = new Vector2f();
+        go.isPrefab = true;
+        go.parentId = "";
+        go.generatePrefabId();
+        go.addComponent(new PortalComponent());
+        go.start();
+        return go;
+    }
+
     public void save(boolean isShowMessage) {
         Window.getImguiLayer().getInspectorWindow().clearSelected();
         SceneHierarchyWindow.clearSelectedGameObject();
         if (SceneUtils.CURRENT_SCENE.isEmpty()) return;
         String level_path = "data\\" + SceneUtils.CURRENT_SCENE + "\\" + LEVEL_PATH;
         String prefab_path = "data\\" + PREFAB_PATH;
+        String portal_path = "data\\portal.txt";
+
+        GameObject portal_prefab = null;
 
         //region Save Game Object
         Gson gson = new GsonBuilder()
@@ -283,6 +302,14 @@ public class Scene {
 
             List<GameObject> objsToSerialize = GameObject.PrefabLists;
 
+            for (int i = 0; i < objsToSerialize.size(); i++){
+                if (objsToSerialize.get(i).tag.equals("Portal")){
+                    portal_prefab = objsToSerialize.get(i);
+                    objsToSerialize.remove(i);
+                    break;
+                }
+            }
+
             writer.write(gson.toJson(objsToSerialize));
             writer.close();
             if (isShowMessage) {
@@ -298,6 +325,29 @@ public class Scene {
         }
         //endregion
 
+        //region Portal
+        if (portal_prefab == null){
+            portal_prefab = getPortalPrefab();
+        }
+
+        gson = new GsonBuilder()
+                .setPrettyPrinting()
+                .registerTypeAdapter(Component.class, new ComponentDeserializer())
+                .registerTypeAdapter(GameObject.class, new PrefabDeserializer())
+                .enableComplexMapKeySerialization()
+                .create();
+
+        try {
+            FileWriter writer = new FileWriter(portal_path);
+            List<GameObject> objsToSerialize = new ArrayList<>();
+            objsToSerialize.add(portal_prefab);
+
+            writer.write(gson.toJson(objsToSerialize));
+            writer.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        //endregion
     }
 
     public void load() {
@@ -313,6 +363,9 @@ public class Scene {
 
         String level_path = "data\\" + SceneUtils.CURRENT_SCENE + "\\" + LEVEL_PATH;
         String prefab_path = "data\\" + PREFAB_PATH;
+        String portal_path = "data\\portal.txt";
+
+        GameObject.PrefabLists.clear();
 
         //region Load Game object
         int maxGoId = -1;
@@ -364,9 +417,51 @@ public class Scene {
         }
         //endregion
 
-        //region Load Prefabs
-        GameObject.PrefabLists.clear();
+        //region Load Portal
+        gson = new GsonBuilder()
+                .setPrettyPrinting()
+                .registerTypeAdapter(Component.class, new ComponentDeserializer())
+                .registerTypeAdapter(GameObject.class, new PrefabDeserializer())
+                .enableComplexMapKeySerialization()
+                .create();
 
+        inFile = "";
+
+        try {
+            inFile = new String(Files.readAllBytes(Paths.get(portal_path)));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        if (!inFile.equals("")) {
+            GameObject[] objs = gson.fromJson(inFile, GameObject[].class);
+            for (int i = 0; i < objs.length; i++) {
+                GameObject prefab = objs[i];
+
+                GameObject.PrefabLists.add(prefab);
+
+                for (Component c : prefab.getAllComponents()) {
+                    if (c.getUid() > maxCompId) {
+                        maxCompId = c.getUid();
+                    }
+                }
+
+                prefab.refreshTexture();
+
+                if (prefab.getUid() > maxGoId) {
+                    maxGoId = prefab.getUid();
+                }
+            }
+
+            maxGoId++;
+            maxCompId++;
+
+            GameObject.init(maxGoId);
+            Component.init(maxCompId);
+        }
+        //endregion
+
+        //region Load Prefabs
         gson = new GsonBuilder()
                 .setPrettyPrinting()
                 .registerTypeAdapter(Component.class, new ComponentDeserializer())

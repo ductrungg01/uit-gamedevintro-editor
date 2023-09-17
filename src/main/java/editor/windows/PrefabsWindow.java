@@ -206,8 +206,10 @@ public class PrefabsWindow {
             if (ImGui.menuItem("Create a child game object")) {
                 isCreateChild = true;
             }
-            if (ImGui.menuItem("Remove this prefab")) {
-                isRemove = true;
+            if (!prefab.tag.equals("Portal")) {
+                if (ImGui.menuItem("Remove this prefab")) {
+                    isRemove = true;
+                }
             }
             ImGui.endPopup();
         }

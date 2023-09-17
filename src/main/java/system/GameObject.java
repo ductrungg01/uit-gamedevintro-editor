@@ -2,11 +2,8 @@ package system;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import components.Component;
-import components.Sprite;
-import components.StateMachine;
+import components.*;
 import deserializers.ComponentDeserializer;
-import components.SpriteRenderer;
 import deserializers.GameObjectDeserializer;
 import deserializers.PrefabDeserializer;
 import editor.Debug;
@@ -298,10 +295,24 @@ public class GameObject {
             ImGui.textColored(Settings.NAME_COLOR.x, Settings.NAME_COLOR.y, Settings.NAME_COLOR.z, Settings.NAME_COLOR.w,
                     this.name);
         }else {
-            this.name = NiceImGui.inputText("Name", this.name, "Name of " + this.hashCode());
+            if (!this.tag.equals("Portal")) {
+                this.name = NiceImGui.inputText("Name", this.name, "Name of " + this.hashCode());
+            }
+            else {
+                ImGui.textColored(Settings.NAME_COLOR.x, Settings.NAME_COLOR.y, Settings.NAME_COLOR.z, Settings.NAME_COLOR.w,
+                        "Name: " + this.name);
+            }
         }
 
-        this.tag = NiceImGui.inputText("Tag: ", this.tag, this.getUid() + "tag");
+        if (!this.tag.equals("Portal")) {
+            this.tag = NiceImGui.inputText("Tag: ", this.tag, this.getUid() + "tag");
+        }
+        else {
+            ImGui.textColored(Settings.NAME_COLOR.x, Settings.NAME_COLOR.y, Settings.NAME_COLOR.z, Settings.NAME_COLOR.w,
+                   "Tag: " + this.tag);
+        }
+
+
 
         ImGui.separator();
 
@@ -333,8 +344,21 @@ public class GameObject {
             }
         }
 
+        if (this.tag.equals("Portal")){
+            this.getComponent(PortalComponent.class).imgui();
+        }
+
         if (this.isPrefab()) {
-            this.overrideAllChildGameObject();
+            if (!this.tag.equals("Portal")) {
+                this.overrideAllChildGameObject();
+            } else {
+                ImGui.separator();
+                ImGui.text("This is Portal prefab, you need to click button to override all child object");
+                if (ImGui.button("Override all Portal")){
+                    this.overrideAllChildGameObject();
+                }
+                ImGui.separator();
+            }
         }
     }
 

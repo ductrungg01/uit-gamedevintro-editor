@@ -1,11 +1,11 @@
 [
   {
-    "name": "animation-block.png",
-    "tag": "",
+    "name": "Portal",
+    "tag": "Portal",
     "isPrefab": true,
-    "prefabId": "aYlZBguRob",
+    "prefabId": "wOOM4g6Ort",
     "parentId": "",
-    "uid": 4,
+    "uid": 3,
     "components": [
       {
         "type": "system.Transform",
@@ -20,7 +20,7 @@
           },
           "rotation": 0.0,
           "zIndex": 0,
-          "uid": 18
+          "uid": 60
         }
       },
       {
@@ -36,17 +36,17 @@
             "width": 16.0,
             "height": 16.0,
             "texture": {
-              "filePath": "textures/animation-block.png",
-              "width": 152,
+              "filePath": "system-assets/images/Portal.png",
+              "width": 16,
               "height": 16
             },
             "texCoords": [
               {
-                "x": 0.10526316,
+                "x": 1.0,
                 "y": 0.0
               },
               {
-                "x": 0.10526316,
+                "x": 1.0,
                 "y": 1.0
               },
               {
@@ -59,22 +59,14 @@
               }
             ]
           },
-          "uid": 19
+          "uid": 61
         }
       },
       {
-        "type": "components.StateMachine",
+        "type": "components.PortalComponent",
         "properties": {
-          "stateTransfers": {},
-          "states": [
-            {
-              "title": "New state (0)",
-              "animationFrames": [],
-              "doesLoop": false
-            }
-          ],
-          "defaultStateTitle": "New state (0)",
-          "uid": 20
+          "nextScene": "Scene001",
+          "uid": 62
         }
       }
     ],

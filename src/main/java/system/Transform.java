@@ -54,8 +54,10 @@ public class Transform extends Component implements INonAddableComponent {
         if (!this.gameObject.isPrefab) {
             NiceImGui.drawVec2Control("Position", this.position, "Position of transform " + this.gameObject.hashCode());
         }
-        //constrainedProportions = NiceImGui.drawVec2ControlWithConstrainedProportions("Scale", this.scale, "Scale of transform " + this.gameObject.hashCode(), constrainedProportions);
 
+        if (this.gameObject.tag.equals("Portal")) {
+            constrainedProportions = NiceImGui.drawVec2ControlWithConstrainedProportions("Scale", this.scale, "Scale of transform " + this.gameObject.hashCode(), constrainedProportions);
+        }
         DecimalFormat df = new DecimalFormat("#.##");
         ImGui.text("Sprite Size: (" + df.format(this.scale.x) + " : " + df.format(this.scale.y) + ")");
         //this.rotation = NiceImGui.dragFloat("Rotation", this.rotation);
