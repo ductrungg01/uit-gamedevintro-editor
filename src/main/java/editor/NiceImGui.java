@@ -35,6 +35,7 @@ public class NiceImGui {
     private static final float defaultLabelColumnWidth = 150.0f;
     public static Sprite SPRITE_WAITING = null;
     public static boolean SELECT_SPR_WINDOW_ISOPEN = false;
+    public static String idPush_IsWaiting = "";
 
     //region Calc / Settings / Configurations
     private static float calcMinLabelColWith(String label) {
@@ -502,10 +503,11 @@ public class NiceImGui {
             newSpr = FileDialog.getInstance().getSelectedSprite(idPush, newSpr);
             if (!spr.equal(newSpr)) {
                 SPRITE_WAITING = newSpr;
+                idPush_IsWaiting = idPush;
             }
         }
 
-        if (SPRITE_WAITING != null) {
+        if (SPRITE_WAITING != null && idPush_IsWaiting.equals(idPush)) {
             if (!SELECT_SPR_WINDOW_ISOPEN) {
                 SelectSpriteWindow.getInstance().open(SPRITE_WAITING);
                 SELECT_SPR_WINDOW_ISOPEN = true;
@@ -517,6 +519,7 @@ public class NiceImGui {
                 oldValue = result;
                 SPRITE_WAITING = null;
                 SELECT_SPR_WINDOW_ISOPEN = false;
+                idPush_IsWaiting = "";
             }
         }
 
