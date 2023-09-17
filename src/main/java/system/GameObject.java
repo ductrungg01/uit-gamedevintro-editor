@@ -345,7 +345,10 @@ public class GameObject {
         }
 
         if (this.tag.equals("Portal")){
-            this.getComponent(PortalComponent.class).imgui();
+            if (ImGui.collapsingHeader("Portal Component")) {
+                this.getComponent(PortalComponent.class).imgui();
+            }
+
         }
 
         if (this.isPrefab()) {

@@ -90,7 +90,7 @@
           },
           "scale": {
             "x": 16.0,
-            "y": 16.0
+            "y": 50.0
           },
           "rotation": 0.0,
           "zIndex": 0,
@@ -139,7 +139,7 @@
       {
         "type": "components.PortalComponent",
         "properties": {
-          "nextScene": "Scene001",
+          "nextScene": "prefabtest",
           "uid": 62
         }
       }
