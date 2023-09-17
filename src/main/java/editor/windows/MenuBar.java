@@ -17,15 +17,15 @@ public class MenuBar {
 
             if (ImGui.beginMenu("File")) {
 
-                if (ImGui.menuItem("New", "Ctrl+N")) {
+                if (ImGui.menuItem("New Scene", "Ctrl+N")) {
                     CreateNewSceneWindow.open(false);
                 }
 
-                if (ImGui.menuItem("Open", "Ctrl+O")) {
+                if (ImGui.menuItem("Open Scene", "Ctrl+O")) {
                     OpenSceneWindow.open(true);
                 }
 
-                if (ImGui.menuItem("Save", "Ctrl+S")) {
+                if (ImGui.menuItem("Save Current Scene", "Ctrl+S")) {
                     EventSystem.notify(null, new Event(EventType.SaveLevel));
                 }
                 ImGui.endMenu();

@@ -170,7 +170,8 @@ public class ImGuiLayer {
         inspectorWindow.imgui();
 
         if (!Window.get().runtimePlaying) {
-            SpritesheetWindow.getInstance().imgui();
+            //SpritesheetWindow.getInstance().imgui();
+            SceneList.update();
             FileDialog.getInstance().render();
             AddingSpritesheetWindow.getInstance().spritesheetPreview();
             AddingNewPrefabWindow.getInstance().imgui();

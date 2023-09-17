@@ -5,7 +5,7 @@
     "isPrefab": false,
     "prefabId": "",
     "parentId": "aYlZBguRob",
-    "uid": 8,
+    "uid": 0,
     "components": [
       {
         "type": "system.Transform",
@@ -87,7 +87,7 @@
     "isPrefab": false,
     "prefabId": "",
     "parentId": "aYlZBguRob",
-    "uid": 10,
+    "uid": 1,
     "components": [
       {
         "type": "system.Transform",
