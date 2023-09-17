@@ -291,11 +291,15 @@ public class GameObject {
         ImGui.separator();
 
 
-        ImGui.text("Object's name: ");
-        ImGui.sameLine();
+        if (!this.isPrefab) {
+            ImGui.text("Object's name: ");
+            ImGui.sameLine();
 
-        ImGui.textColored(Settings.NAME_COLOR.x, Settings.NAME_COLOR.y, Settings.NAME_COLOR.z, Settings.NAME_COLOR.w,
-                this.name);
+            ImGui.textColored(Settings.NAME_COLOR.x, Settings.NAME_COLOR.y, Settings.NAME_COLOR.z, Settings.NAME_COLOR.w,
+                    this.name);
+        }else {
+            this.name = NiceImGui.inputText("Name", this.name, "Name of " + this.hashCode());
+        }
 
         this.tag = NiceImGui.inputText("Tag: ", this.tag, this.getUid() + "tag");
 
@@ -316,7 +320,7 @@ public class GameObject {
                     c.imgui();
                 }
 
-                if (!removeComponentButton.get()) {
+                if (!removeComponentButton.get() && this.isPrefab) {
                     int response = JOptionPane.showConfirmDialog(null,
                             "Remove component '" + c.getClass().getSimpleName() + "' from game object '" + this.name + "'?",
                             "REMOVE COMPONENT",
