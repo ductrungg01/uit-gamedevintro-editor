@@ -2,29 +2,29 @@ package scenes;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import components.Component;
-import components.PortalComponent;
-import components.Sprite;
-import components.SpriteRenderer;
+import components.*;
 import deserializers.ComponentDeserializer;
 import deserializers.GameObjectDeserializer;
 import deserializers.PrefabDeserializer;
 import editor.*;
+import editor.windows.AssetsWindow;
 import editor.windows.OpenSceneWindow;
 import editor.windows.SceneHierarchyWindow;
+import editor.windows.SceneList;
+import imgui.ImGui;
 import org.joml.Vector2f;
 import physics2d.Physics2D;
 import renderer.Renderer;
 import system.*;
+import util.FileUtils;
 import util.SceneUtils;
 
 import javax.swing.*;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.text.DecimalFormat;
+import java.util.*;
 
 public class Scene {
     //region Fields
@@ -233,7 +233,7 @@ public class Scene {
     //endregion
 
     //region Save and Load
-    public GameObject getPortalPrefab(){
+    public GameObject getPortalPrefab() {
         GameObject go = new GameObject("Portal", new Sprite("system-assets/images/Portal.png"));
         go.tag = "Portal";
         go.getComponent(SpriteRenderer.class).convertToScale();
@@ -302,8 +302,8 @@ public class Scene {
 
             List<GameObject> objsToSerialize = GameObject.PrefabLists;
 
-            for (int i = 0; i < objsToSerialize.size(); i++){
-                if (objsToSerialize.get(i).tag.equals("Portal")){
+            for (int i = 0; i < objsToSerialize.size(); i++) {
+                if (objsToSerialize.get(i).tag.equals("Portal")) {
                     portal_prefab = objsToSerialize.get(i);
                     objsToSerialize.remove(i);
                     break;
@@ -326,7 +326,7 @@ public class Scene {
         //endregion
 
         //region Portal
-        if (portal_prefab == null){
+        if (portal_prefab == null) {
             portal_prefab = getPortalPrefab();
         }
 
@@ -348,6 +348,153 @@ public class Scene {
             e.printStackTrace();
         }
         //endregion
+
+        try {
+            String prefab_list_path = "Scene Manager\\prefab_list.txt";
+            String scene_path = "Scene Manager\\scene_" + SceneUtils.CURRENT_SCENE + ".txt";
+            String project_define_path = "Scene Manager\\project_define.txt";
+            FileWriter writerScene = new FileWriter(scene_path);
+            FileWriter writerPrefabList = new FileWriter(prefab_list_path);
+            FileWriter writerProject = new FileWriter(project_define_path);
+
+            //region Project Info
+            int startSceneId = 2; //get
+            int portalObjectId = 50;
+            writerProject.write("[SETTINGS]\n");
+            writerProject.write("start\t" + startSceneId + "\n");
+            writerProject.write("width\t" + (int) Math.ceil(Camera.screenSize.x) + "\n");
+            writerProject.write("height\t" + (int) Math.ceil(Camera.screenSize.y) + "\n");
+
+            writerProject.write("\n#id\tfile\n");
+            writerProject.write("[SCENES]\n");
+            for (int i = 0; i < SceneList.scenes.size(); i++) {
+                writerProject.write(i + "\t" + SceneList.scenes.get(i) + "\n");
+            }
+
+            writerProject.write("\n#id\tfile\n");
+            writerProject.write("[TEXTURES]\n");
+            File[] listOfFiles = new File(AssetsWindow.ROOT_FOLDER).listFiles();
+            List<String> listTexturesFile = new ArrayList<>();
+            int textureIndex = 0;
+            for (int i = 0; i < listOfFiles.length; i++) {
+                if (listOfFiles[i].isFile() && FileUtils.isImageFile(listOfFiles[i])) {
+                    listTexturesFile.add(FileUtils.getFileName(listOfFiles[i].getPath()));
+                    writerProject.write(textureIndex * 10 + "\ttextures\\" + listTexturesFile.get(listTexturesFile.size() - 1) + "\n");
+                    textureIndex++;
+                }
+            }
+
+            //endregion
+
+            //region Game Info
+            String sceneAssets = "# list of object assets to load in this scene\n[ASSETS]\n";
+            List<String> prefabNameList = new ArrayList<>();
+            List<String> listFileUse = new ArrayList<>();
+
+            //save prefab
+            for (int i = 0; i < GameObject.PrefabLists.size(); i++) {
+                GameObject prefab = GameObject.PrefabLists.get(i);
+                prefabNameList.add(prefab.name);
+                writerPrefabList.write(i + "\t" + prefabNameList.get(i) + "\n");
+                FileWriter writerPrefabInfo = new FileWriter("Scene Manager\\go_" + prefabNameList.get(i) + ".txt");
+                String spiteList = "# id\tleft\ttop\tright\tbottom\ttexture_id\n[SPRITES]";
+                String animationList = "# ani_id\tsprite1_id\ttime1\tsprite2_id\ttime2\t...\n[ANIMATIONS]";
+
+                StateMachine stateMachine = prefab.getComponent(StateMachine.class);
+                if (stateMachine == null) continue;
+                for (int stateIndex = 0; stateIndex < stateMachine.getStates().size(); stateIndex++) {
+                    AnimationState state = stateMachine.getStates().get(stateIndex);
+                    spiteList += "\n#" + state.title.toUpperCase() + "\n";
+                    int animationId = (i + 1) * 10000 + stateIndex * 1000 + 100;
+                    animationList += "\n#" + state.title.toUpperCase() + "\n" + animationId;
+                    for (int frameIndex = 0; frameIndex < state.animationFrames.size(); frameIndex++) {
+                        Sprite sprite = state.animationFrames.get(frameIndex).sprite;
+                        String textureFile = FileUtils.getFileName(sprite.getTexture().getFilePath());
+                        if (textureFile.equals("Default Sprite.png")) continue;
+                        if (listFileUse.indexOf(textureFile) == -1) listFileUse.add(textureFile);
+                        int spriteId = (i + 1) * 10000 + stateIndex * 1000 + frameIndex;
+
+                        animationList += "\t" + spriteId + "\t" + (int) state.animationFrames.get(frameIndex).frameTime;
+
+                        //region get position sprite
+                        Vector2f[] texCoords = sprite.getTexCoords();
+                        float img_size_width = sprite.getTexture().getWidth();
+                        float img_size_height = sprite.getTexture().getHeight();
+                        DecimalFormat df = new DecimalFormat("#.##");
+                        Vector2f topLeftCoord = new Vector2f(
+                                texCoords[3].x * img_size_width,
+                                texCoords[3].y * img_size_height
+                        );
+                        Vector2f bottomRightCoord = new Vector2f(
+                                texCoords[1].x * img_size_width,
+                                texCoords[1].y * img_size_height
+                        );
+                        //endregion
+
+                        spiteList += spriteId + "\t"
+                                + df.format(topLeftCoord.x) + " " + df.format(topLeftCoord.y)
+                                + " " + df.format(bottomRightCoord.x) + " " + df.format(bottomRightCoord.y) + " " + listTexturesFile.indexOf(textureFile) + "\n";
+                    }
+                    animationList += "\n";
+                }
+                writerPrefabInfo.write(spiteList + "\n");
+                writerPrefabInfo.write(animationList + "\n");
+                writerPrefabInfo.close();
+            }
+
+            // sort game object
+            for (int i = 1; i < this.gameObjects.size() - 1; i++) {
+                for (int j = i + 1; j < this.gameObjects.size(); j++) {
+                    if (this.gameObjects.get(i).name.compareTo(this.gameObjects.get(j).name) > 0) {
+                        Collections.swap(this.gameObjects, i, j);
+                    }
+                }
+            }
+
+            for (int i = 0; i < listFileUse.size(); i++) {
+                sceneAssets += listFileUse.get(i) + "\n";
+            }
+            writerScene.write(sceneAssets);
+
+            //game object
+            writerScene.write("\n[OBJECTS]\n");
+            writerScene.write("# type\tx\ty\textra_settings per object type\n");
+            String lastObjectName = "";
+            for (GameObject obj : this.gameObjects) {
+                if (obj.doSerialization() && !obj.name.equals("Portal")) {
+                    if (!lastObjectName.equals(obj.name)) {
+                        writerScene.write("\n#" + (!obj.tag.equals("") ? obj.tag.toUpperCase() : obj.name.toUpperCase()) + "\n");
+                    }
+                    lastObjectName = obj.name;
+                    Vector2f position = obj.getComponent(Transform.class).position;
+                    position.x = (int) position.x;
+                    position.y = (int) (position.y * -1);
+                    writerScene.write(prefabNameList.indexOf(obj.name) + "\t" + (int) Math.ceil(position.x) + " " + (int) Math.ceil(position.y) + "\n");
+                }
+            }
+            //endregion
+
+            writerScene.write("\n#PORTAL\n");
+            for (GameObject obj : this.gameObjects) {
+                if (obj.doSerialization() && obj.name.equals("Portal")) {
+                    Vector2f position = obj.getComponent(Transform.class).position;
+                    position.y = position.y * -1;
+                    writerScene.write(portalObjectId + "\t" + (int) Math.ceil(position.x) + " " + (int) Math.ceil(position.y) + " ");
+                    int nextSceneId = SceneList.scenes.indexOf(obj.getComponent(PortalComponent.class).nextScene);
+                    writerScene.write(nextSceneId + "\n");
+                }
+            }
+
+            writerPrefabList.close();
+            writerScene.close();
+            writerProject.close();
+            Debug.Log("Convert scene '" + SceneUtils.CURRENT_SCENE + "' successfully", LogType.Success);
+        } catch (IOException e) {
+            e.printStackTrace();
+            if (isShowMessage) {
+                Debug.Log("Convert scene '" + SceneUtils.CURRENT_SCENE + "' FAIL", LogType.Error);
+            }
+        }
     }
 
     public void load() {

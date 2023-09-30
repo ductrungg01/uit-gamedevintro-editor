@@ -5,7 +5,7 @@
     "isPrefab": true,
     "prefabId": "wOOM4g6Ort",
     "parentId": "",
-    "uid": 3,
+    "uid": 13,
     "components": [
       {
         "type": "system.Transform",

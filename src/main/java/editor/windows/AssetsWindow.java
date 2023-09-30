@@ -24,7 +24,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 
 public class AssetsWindow {
-    private static final String ROOT_FOLDER = "textures";
+    public static final String ROOT_FOLDER = "textures";
     static String currentOpenFolder = ROOT_FOLDER;
     private static ImVec2 widgetPos = new ImVec2();
     private static ImVec2 widgetSize = new ImVec2();

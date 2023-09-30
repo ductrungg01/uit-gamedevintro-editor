@@ -20,6 +20,10 @@ public class StateMachine extends Component {
     private transient AnimationState currentState = null;
     private String defaultStateTitle = "";
 
+    public List<AnimationState> getStates() {
+        return states;
+    }
+
     //region Methods
     public void refreshTextures() {
         for (AnimationState state : states) {
