@@ -1,6 +1,6 @@
 package editor;
 
-import editor.windows.AssetsWindow;
+import editor.windows.TexturesWindow;
 import imgui.ImGui;
 import imgui.flag.ImGuiCond;
 import imgui.flag.ImGuiWindowFlags;
@@ -66,7 +66,7 @@ public class MessageBox {
                         ImGui.closeCurrentPopup();
                     }
                     if (newFile[0].equals("true")) {
-                        File file = new File(AssetsWindow.getCurrentOpenFolder() + "/" + newFile[1]);
+                        File file = new File(TexturesWindow.getCurrentOpenFolder() + "/" + newFile[1]);
                         try {
                             if (file.createNewFile()) {
                                 showMsb = true;

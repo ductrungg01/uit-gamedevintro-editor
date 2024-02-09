@@ -8,10 +8,8 @@ import imgui.ImVec2;
 import org.joml.Vector2f;
 import org.joml.Vector4f;
 import org.lwjgl.glfw.GLFW;
-import org.lwjgl.system.CallbackI;
 import scenes.Scene;
 import system.GameObject;
-import system.Prefabs;
 import system.Window;
 import util.AssetPool;
 import util.FileUtils;
@@ -23,7 +21,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 
-public class AssetsWindow {
+public class TexturesWindow {
     public static final String ROOT_FOLDER = "textures";
     static String currentOpenFolder = ROOT_FOLDER;
     private static ImVec2 widgetPos = new ImVec2();
@@ -38,7 +36,7 @@ public class AssetsWindow {
     private Scene scene;
 
 
-    public AssetsWindow() {
+    public TexturesWindow() {
     }
 
     public static ImVec2 getWidgetPos() {
@@ -166,51 +164,6 @@ public class AssetsWindow {
         ImGui.getWindowSize(widgetSize);
 
         Sprite spr = new Sprite();
-
-        //region Breadcrum
-        spr.setTexture(AssetPool.getTexture(LEFT_ARROW_ICON));
-        if (ImGui.imageButton(spr.getTexId(), 20, 20) && previousFolder.size() > 0) {
-            nextFolder.add(currentOpenFolder);
-            currentOpenFolder = previousFolder.get(previousFolder.size() - 1);
-            previousFolder.remove(previousFolder.size() - 1);
-
-        }
-        ImGui.sameLine();
-        spr.setTexture(AssetPool.getTexture(RIGHT_ARROW_ICON));
-        if (ImGui.imageButton(spr.getTexId(), 20, 20) && nextFolder.size() > 0) {
-            previousFolder.add(currentOpenFolder);
-            currentOpenFolder = nextFolder.get(nextFolder.size() - 1);
-            nextFolder.remove(nextFolder.size() - 1);
-        }
-        ImGui.sameLine();
-
-        String breadcrum[] = currentOpenFolder.split("/");
-        for (int i = 0; i < breadcrum.length; i++) {
-            ImGui.sameLine();
-            ImGui.pushID(i);
-            if (i == 0) {
-                if (ImGui.button(breadcrum[i])) {
-                    if (!breadcrum[i].equals(currentOpenFolder))
-                        previousFolder.add(currentOpenFolder);
-                    currentOpenFolder = breadcrum[i];
-                    nextFolder.clear();
-                }
-            } else {
-                ImGui.text(">");
-                ImGui.sameLine();
-                breadcrum[i] = breadcrum[i - 1] + "/" + breadcrum[i];
-                if (ImGui.button(breadcrum[i].substring(breadcrum[i].lastIndexOf("/") + 1))) {
-                    if (!breadcrum[i].equals(currentOpenFolder))
-                        previousFolder.add(currentOpenFolder);
-                    currentOpenFolder = breadcrum[i];
-                    nextFolder.clear();
-                }
-            }
-            ImGui.popID();
-        }
-
-        ImGui.dummy(0, 8);
-        //endregion
 
         //region Load file & folder
         File folder = new File(currentOpenFolder);

@@ -1,6 +1,6 @@
 package system;
 
-import editor.windows.AssetsWindow;
+import editor.windows.TexturesWindow;
 import editor.Debug;
 import imgui.ImVec2;
 import org.joml.Matrix4f;
@@ -175,8 +175,8 @@ public class MouseListener {
     public static void mouseDropCallback(long window, int count, long names) {
 
         //get size widget
-        ImVec2 pos = AssetsWindow.getWidgetPos();
-        ImVec2 size = AssetsWindow.getWidgetSize();
+        ImVec2 pos = TexturesWindow.getWidgetPos();
+        ImVec2 size = TexturesWindow.getWidgetSize();
 
         //get mouse pos
         double[] xPos = new double[1];
@@ -191,7 +191,7 @@ public class MouseListener {
                 if (!filePath.endsWith(".png")) continue;
                 //copy file
                 File srcFile = new File(filePath);
-                File desFile = new File(AssetsWindow.getCurrentOpenFolder() + "/" + srcFile.getName());
+                File desFile = new File(TexturesWindow.getCurrentOpenFolder() + "/" + srcFile.getName());
 
                 FileUtils.copyFile(srcFile, desFile);
             }

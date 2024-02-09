@@ -1,20 +1,9 @@
 package system;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import components.Component;
-import deserializers.ComponentDeserializer;
-import deserializers.GameObjectDeserializer;
-import deserializers.PrefabDeserializer;
-import editor.windows.GameViewWindow;
-import editor.windows.OpenSceneWindow;
 import editor.windows.SceneHierarchyWindow;
-import editor.windows.SceneList;
 import observers.EventSystem;
 import observers.Observer;
 import observers.events.Event;
-import observers.events.EventType;
-import org.joml.Vector2f;
 import org.joml.Vector4f;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFW;
@@ -25,11 +14,9 @@ import org.lwjgl.openal.ALC;
 import org.lwjgl.openal.ALCCapabilities;
 import org.lwjgl.openal.ALCapabilities;
 import org.lwjgl.opengl.GL;
-import physics2d.Physics2D;
 import renderer.Renderer;
 import renderer.*;
 import scenes.EditorSceneInitializer;
-import scenes.GamePlayingSceneInitializer;
 import scenes.Scene;
 import scenes.SceneInitializer;
 import util.AssetPool;
@@ -41,10 +28,6 @@ import javax.swing.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.nio.ByteBuffer;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
 
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
@@ -57,8 +40,6 @@ public class Window implements Observer {
     private static Scene currentScene;
     private static boolean isWindowFocused = true;
     public long glfwWindow;
-    public boolean runtimePlaying = false;
-    //region Fields
     private int width, height;
     private String title;
     private ImGuiLayer imGuiLayer;
@@ -67,17 +48,10 @@ public class Window implements Observer {
     private long audioContext;
     private long audioDevice;
 
-    //endregion
-    //region Override methods
-    private Vector2f oldEditorCameraPos = new Vector2f();
-    //endregion
-
     private Window() {
         this.width = 3840;
         this.height = 2160;
-//        this.width = 700;
-//        this.height = 500;
-        this.title = "9 Engine - UIT - GameDevIntroEditorExtension";
+        this.title = "9 Engine - uit-gamedevintro-editor";
         EventSystem.addObserver(this);
     }
 
@@ -89,7 +63,6 @@ public class Window implements Observer {
 
         getImguiLayer().getInspectorWindow().setActiveGameObject(null);
         currentScene = new Scene(sceneInitializer);
-        currentScene.load();
         currentScene.init();
         currentScene.start();
     }
@@ -102,17 +75,11 @@ public class Window implements Observer {
         return Window.window;
     }
 
-    public static Physics2D getPhysics() {
-        return currentScene.getPhysics();
-    }
-
     public static Scene getScene() {
         return currentScene;
     }
 
     public static int getWidth() {
-        // TODO: fix bug about select multiple gameobject
-        // return 3840;
         return get().width;
     }
 
@@ -121,8 +88,6 @@ public class Window implements Observer {
     }
 
     public static int getHeight() {
-        // TODO: fix bug about select multiple gameobject
-        // return 2160;
         return get().height;
     }
 
@@ -161,7 +126,6 @@ public class Window implements Observer {
 
             glViewport(0, 0, 1920, 1080);
 
-
             glClearColor(0, 0, 0, 0);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -181,13 +145,10 @@ public class Window implements Observer {
             glClear(GL_COLOR_BUFFER_BIT);
 
             if (dt >= 0) {
-
                 Renderer.bindShader(defaultShader);
-                if (runtimePlaying) {
-                    currentScene.update(dt);
-                } else {
-                    currentScene.editorUpdate(dt);
-                }
+
+                currentScene.editorUpdate(dt);
+
                 GridLineDraw.draw();
                 DebugDraw.draw();
                 currentScene.render();
@@ -216,19 +177,15 @@ public class Window implements Observer {
             Time.deltaTime = dt;
 
             if (glfwWindowShouldClose(glfwWindow)) {
-                if (this.runtimePlaying) {
-                    int response = JOptionPane.showConfirmDialog(null, "Close the engine?", "CLOSE", JOptionPane.YES_NO_OPTION);
-                    if (response == JOptionPane.NO_OPTION) {
-                        glfwSetWindowShouldClose(glfwWindow, false);
-                    }
-                } else askToSave(true);
+                int response = JOptionPane.showConfirmDialog(null, "Close the editor?", "CLOSE", JOptionPane.YES_NO_OPTION);
+                if (response == JOptionPane.NO_OPTION) {
+                    glfwSetWindowShouldClose(glfwWindow, false);
+                }
             }
         }
     }
 
     public void run() throws IOException {
-        //System.out.println("Hello LWJGL " + Version.getVersion() + "!");
-
         init();
         loop();
 
@@ -243,7 +200,6 @@ public class Window implements Observer {
         // Terminate GLFW and free the error callback
         glfwTerminate();
         glfwSetErrorCallback(null).free();
-
     }
 
     public void init() throws IOException {
@@ -314,7 +270,6 @@ public class Window implements Observer {
         glEnable(GL_BLEND);
         glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 
-        // 3840, 2160
         this.framebuffer = new Framebuffer(1920, 1080);
         this.pickingTexture = new PickingTexture(1920, 1080);
         glViewport(0, 0, 1920, 1080);
@@ -322,54 +277,20 @@ public class Window implements Observer {
         this.imGuiLayer = new ImGuiLayer(glfwWindow, pickingTexture);
         this.imGuiLayer.initImGui();
 
-        String previousScene = getPreviousScene();
-
-        if (previousScene.isEmpty()) {
-            OpenSceneWindow.open(false);
-        } else {
-            changeCurrentScene(previousScene, false, false);
-        }
         Window.changeScene(new EditorSceneInitializer());
     }
 
-    public void changeCurrentScene(String sceneName, boolean askToSaveCurrentScene, boolean needToReload) {
+    public void changeCurrentScene(String sceneName, boolean needToReload) {
         if (sceneName.equals(SceneUtils.CURRENT_SCENE)) {
             return;
-        }
-
-        if (askToSaveCurrentScene) {
-            askToSave(false);
         }
 
         SceneUtils.CURRENT_SCENE = sceneName;
         glfwSetWindowTitle(glfwWindow, this.title + " - " + sceneName);
         SceneHierarchyWindow.clearSelectedGameObject();
         Window.getImguiLayer().getInspectorWindow().clearSelected();
-        if (needToReload) {
-            EventSystem.notify(null, new Event(EventType.LoadLevel));
-        }
 
         saveCurrentSceneName();
-    }
-
-    public void askToSave(boolean askFromCloseWindow) {
-        if (SceneList.isAutoSave) {
-            EventSystem.notify(null, new Event(EventType.SaveLevel));
-        } else {
-            String message = (askFromCloseWindow ? "Save the scene data before close?"
-                    : "Save the data of current scene (" + SceneUtils.CURRENT_SCENE + ") before open/create other scene?");
-            int jOptionPane = (askFromCloseWindow ? JOptionPane.YES_NO_CANCEL_OPTION : JOptionPane.YES_OPTION);
-
-            if (!SceneUtils.CURRENT_SCENE.isEmpty() && checkHaveAnyChance()) {
-                int response = JOptionPane.showConfirmDialog(null, message, "SAVE", jOptionPane);
-                if (response == JOptionPane.YES_OPTION) {
-                    EventSystem.notify(null, new Event(EventType.SaveLevel));
-                }
-                if (response == JOptionPane.CANCEL_OPTION) {
-                    glfwSetWindowShouldClose(glfwWindow, false);
-                }
-            }
-        }
     }
 
     private void saveCurrentSceneName() {
@@ -382,158 +303,6 @@ public class Window implements Observer {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    public boolean checkHaveAnyChance() {
-        String level_path = "data\\" + SceneUtils.CURRENT_SCENE + "\\" + "level.txt";
-        String prefab_path = "data\\" + SceneUtils.CURRENT_SCENE + "\\" + "prefabs.txt";
-        String spritesheet_path = "data\\" + SceneUtils.CURRENT_SCENE + "\\" + "spritesheet.txt";
-
-        String previewLevelTxtToSave = "";
-        String previewPrefabsTxtToSave = "";
-        String previewSpritesheetTxtToSave = "";
-
-        String previousLevelTxt = "";
-        String previousPrefabsTxt = "";
-        String previousSpritesheetTxt = "";
-
-        int currentMaxGoUid = GameObject.getCurrentMaxUid();
-
-        GameObject.setCurrentMaxUid(-1);
-
-        // region Calc preview to save
-
-        //region get preview file of LEVEL.TXT
-        Gson gson = new GsonBuilder()
-                .setPrettyPrinting()
-                .registerTypeAdapter(Component.class, new ComponentDeserializer())
-                .registerTypeAdapter(GameObject.class, new GameObjectDeserializer())
-                .enableComplexMapKeySerialization()
-                .create();
-
-        List<GameObject> objsToSerialize = new ArrayList<>();
-        for (GameObject obj : currentScene.getGameObjects()) {
-            if (obj.doSerialization()) {
-                objsToSerialize.add(obj);
-            }
-        }
-
-        previewLevelTxtToSave += gson.toJson(objsToSerialize) + "\n";
-        //endregion
-
-        //region get preview file of PREFABS.TXT
-        gson = new GsonBuilder()
-                .setPrettyPrinting()
-                .registerTypeAdapter(Component.class, new ComponentDeserializer())
-                .registerTypeAdapter(GameObject.class, new PrefabDeserializer())
-                .enableComplexMapKeySerialization()
-                .create();
-
-        objsToSerialize = GameObject.PrefabLists;
-
-        previewPrefabsTxtToSave += gson.toJson(objsToSerialize) + "\n";
-        //endregion
-
-        //region get preview file of SPRITESHEET.TXT
-        List<Spritesheet> spritesheets = AssetPool.getAllSpritesheets();
-
-        for (Spritesheet s : spritesheets) {
-            String path = s.getTexture().getFilePath().replace("\\", "/");
-            previewSpritesheetTxtToSave += path + "|" + s.spriteWidth + "|" + s.spriteHeight + "|" +
-                    s.size() + "|" + s.spacingX + "|" + s.spacingY + "\n";
-        }
-
-        //endregion
-
-        //endregion
-
-        GameObject.setCurrentMaxUid(-1);
-
-        //region Load previous data
-
-        //region Load previous spritesheet
-        try {
-            BufferedReader reader = new BufferedReader(new FileReader(spritesheet_path));
-            String line;
-
-            while ((line = reader.readLine()) != null) {
-                previousSpritesheetTxt += line + "\n";
-            }
-
-            reader.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        //endregion
-
-        //region Load previous Game object
-        gson = new GsonBuilder()
-                .setPrettyPrinting()
-                .registerTypeAdapter(Component.class, new ComponentDeserializer())
-                .registerTypeAdapter(GameObject.class, new GameObjectDeserializer())
-                .enableComplexMapKeySerialization()
-                .create();
-
-        try {
-            previousLevelTxt = new String(Files.readAllBytes(Paths.get(level_path)));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        previousLevelTxt += "\n";
-        //endregion
-
-        //region Load previous Prefabs
-        gson = new GsonBuilder()
-                .setPrettyPrinting()
-                .registerTypeAdapter(Component.class, new ComponentDeserializer())
-                .registerTypeAdapter(GameObject.class, new PrefabDeserializer())
-                .enableComplexMapKeySerialization()
-                .create();
-
-        try {
-            previousPrefabsTxt = new String(Files.readAllBytes(Paths.get(prefab_path)));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        previousPrefabsTxt += "\n";
-        //endregion
-
-        //endregion
-
-        GameObject.setCurrentMaxUid(currentMaxGoUid);
-
-        boolean levelTxtChange = !(previousLevelTxt.equals(previewLevelTxtToSave));
-        boolean prefabsTxtChange = !(previousPrefabsTxt.equals(previewPrefabsTxtToSave));
-        boolean spritesheetTxtChange = !(previousSpritesheetTxt.equals(previewSpritesheetTxtToSave));
-
-        return levelTxtChange || prefabsTxtChange || spritesheetTxtChange;
-    }
-
-    private String getPreviousScene() {
-        try {
-            BufferedReader reader = new BufferedReader(new FileReader("EngineConfig.ini"));
-            String line;
-
-            while ((line = reader.readLine()) != null) {
-                String[] values = line.split(":");
-
-                if (values.length <= 1) return "";
-
-                String title = values[0];
-                String value = values[1].trim();
-
-                if (title.equals("PREVIOUS SCENE")) {
-                    return value;
-                }
-            }
-
-            reader.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-            return "";
-        }
-
-        return "";
     }
 
     void SetWindowIcon() {
@@ -572,31 +341,15 @@ public class Window implements Observer {
     @Override
     public void onNotify(GameObject object, Event event) {
         switch (event.type) {
-            case GameEngineStartPlay:
-                this.runtimePlaying = true;
-                currentScene.save(false);
-                GameViewWindow.isPlaying = true;
+            case GameEngineStart:
                 Window.getImguiLayer().getInspectorWindow().clearSelected();
                 SceneHierarchyWindow.clearSelectedGameObject();
-                oldEditorCameraPos = Window.getScene().camera().position;
                 currentScene.removeAllGameObjectInScene();
-                Window.changeScene(new GamePlayingSceneInitializer());
-                break;
-            case GameEngineStopPlay:
-                this.runtimePlaying = false;
-                GameViewWindow.isPlaying = false;
-                Window.getImguiLayer().getInspectorWindow().clearSelected();
-                SceneHierarchyWindow.clearSelectedGameObject();
-                Window.changeScene(new EditorSceneInitializer());
-                Window.getScene().camera().position = oldEditorCameraPos;
-                break;
-            case SaveLevel:
-                if (!this.runtimePlaying)
-                    currentScene.save(true);
-            case LoadLevel:
                 Window.changeScene(new EditorSceneInitializer());
                 break;
-            case UserEvent:
+            case Import:
+                break;
+            case Export:
                 break;
         }
     }

@@ -1,3 +1,0 @@
-0	block
-1	question
-2	animation-block.png

@@ -10,31 +10,21 @@ import util.FileUtils;
 import util.SceneUtils;
 import util.Settings;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 import static editor.uihelper.NiceShortCall.COLOR_Blue;
 import static editor.uihelper.NiceShortCall.COLOR_DarkBlue;
-import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_RIGHT;
 
-public class SceneList {
+public class ScenesWindow {
     public static List<String> scenes = new ArrayList<>();
-
-    public static boolean isAutoSave = true;
 
     public static void update() {
         getAllScene();
 
         ImGui.setNextWindowSizeConstraints(Settings.MIN_WIDTH_GROUP_WIDGET, Settings.MIN_HEIGHT_GROUP_WIDGET, Window.getWidth(), Window.getHeight());
 
-        ImGui.begin("Scene list");
-
-        isAutoSave = NiceImGui.checkbox("Auto save when change scene or close?", isAutoSave);
-
-        if (ImGui.button("New Scene")) {
-            CreateNewSceneWindow.open(false);
-        }
+        ImGui.begin("Scenes");
 
         for (int i = 0; i < scenes.size(); i++) {
             String s = scenes.get(i);
@@ -51,7 +41,7 @@ public class SceneList {
                 ImGui.endTooltip();
 
                 if (ImGui.isMouseDoubleClicked(GLFW.GLFW_MOUSE_BUTTON_LEFT)) {
-                    Window.get().changeCurrentScene(s, true, true);
+                    Window.get().changeCurrentScene(s,  true);
                 }
             }
         }

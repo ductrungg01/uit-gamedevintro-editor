@@ -9,25 +9,13 @@ import system.Window;
 import static org.lwjgl.glfw.GLFW.*;
 
 public class GizmoSystem extends Component implements INonAddableComponent {
-    //region Fields
     private Spritesheet gizmos;
     static private int usingGizmo = 0;
-    //endregion
 
-    //region Constructors
     public GizmoSystem(Spritesheet gizmoSprites) {
         this.gizmos = gizmoSprites;
     }
 
-    public GizmoSystem() {
-    }
-    //endregion
-
-    //region Override methods
-
-    /**
-     * Start is called before the first frame update
-     */
     @Override
     public void start() {
         gameObject.addComponent(new TranslateGizmo(gizmos.getSprite(1),
@@ -52,7 +40,6 @@ public class GizmoSystem extends Component implements INonAddableComponent {
             usingGizmo = 1;
         }
     }
-    //endregion
 
     static public void setUsingTranslateGizmo() {
         usingGizmo = 0;

@@ -2,9 +2,6 @@ package editor;
 
 import components.Sprite;
 import editor.uihelper.ButtonColor;
-import editor.windows.FileDialog;
-import editor.windows.PrefabsWindow;
-import editor.windows.SelectSpriteWindow;
 import imgui.*;
 import imgui.flag.ImGuiCol;
 import imgui.flag.ImGuiMouseCursor;
@@ -12,30 +9,17 @@ import imgui.flag.ImGuiStyleVar;
 import imgui.type.ImBoolean;
 import imgui.type.ImString;
 import org.joml.Vector2f;
-import org.joml.Vector3f;
 import org.joml.Vector4f;
 import org.lwjgl.glfw.GLFW;
-import system.GameObject;
-import util.FileUtils;
 
-import java.io.File;
-import java.text.DecimalFormat;
 import java.util.List;
 
-import static editor.uihelper.NiceShortCall.*;
 import static java.lang.Math.min;
 import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_LEFT;
 
 public class NiceImGui {
-
-    static final Vector4f DEFAULT_DOT_COLOR = COLOR_Red;
-    static final float DEFAULT_DOT_SIZE = 3f;
-    final static float DEFAULT_REFERENCE_BUTTON_WIDTH = 250f;
     static final float DEFAULT_FLOAT_DRAG_SPEED = 0.1f;
     private static final float defaultLabelColumnWidth = 150.0f;
-    public static Sprite SPRITE_WAITING = null;
-    public static boolean SELECT_SPR_WINDOW_ISOPEN = false;
-    public static String idPush_IsWaiting = "";
 
     //region Calc / Settings / Configurations
     private static float calcMinLabelColWith(String label) {
@@ -44,18 +28,6 @@ public class NiceImGui {
         return Float.max(minLength, defaultLabelColumnWidth);
     }
     //endregion
-
-    public static Vector4f getPopupBgColor() {
-        ImVec4 vec4 = new ImVec4();
-        ImGui.getStyle().getColor(ImGuiCol.PopupBg, vec4);
-        return new Vector4f(vec4.x, vec4.y, vec4.z, vec4.w);
-    }
-
-    public static Vector4f getWindowBgColor() {
-        ImVec4 vec4 = new ImVec4();
-        ImGui.getStyle().getColor(ImGuiCol.WindowBg, vec4);
-        return new Vector4f(vec4.x, vec4.y, vec4.z, vec4.w);
-    }
 
     //region Draw dot
     public static Vector2f getSizeOfButton(String label) {
@@ -103,140 +75,11 @@ public class NiceImGui {
             ImGui.setColumnWidth(numsOfColumns - 1, widths[numsOfColumns - 1]);
         }
     }
-
-    public static void createDot() {
-        createDot(ImGui.getCursorScreenPosX(), ImGui.getCursorScreenPosY(), DEFAULT_DOT_SIZE, DEFAULT_DOT_COLOR);
-    }
-
-    public static void createDot(float x, float y) {
-        createDot(x, y, DEFAULT_DOT_SIZE, DEFAULT_DOT_COLOR);
-    }
-
-    public static void createDot(float x, float y, float size) {
-        createDot(x, y, size, DEFAULT_DOT_COLOR);
-    }
     //endregion
-
-    public static void createDot(float x, float y, float size, Vector3f color) {
-        createDot(x, y, size, new Vector4f(color, 1f));
-    }
-
-    public static void createDot(float x, float y, float size, Vector4f color) {
-        ImDrawList drawList = ImGui.getWindowDrawList();
-        drawList.addCircleFilled(x, y, size, ImColor.floatToColor(color.x, color.y, color.z, color.w));
-    }
 
     //region Vec2
     public static void drawVec2Control(String label, Vector2f values, String imguiId) {
         drawVec2Control(label, values, 0.0f, calcMinLabelColWith(label), imguiId);
-    }
-
-    public static void drawVec2Control(String label, Vector2f values, float resetValue, String imguiId) {
-        drawVec2Control(label, values, resetValue, calcMinLabelColWith(label), imguiId);
-    }
-
-    public static boolean drawVec2ControlWithConstrainedProportions(String label, Vector2f values, String imguiId, boolean constrainedProportions) {
-        return drawVec2ControlWithConstrainedProportions(label, values, 0.0f, calcMinLabelColWith(label), imguiId, constrainedProportions);
-    }
-
-    public static boolean drawVec2ControlWithConstrainedProportions(String label, Vector2f values, float resetValue, float columnWidth, String imguiId, boolean constrainedProportions) {
-        ImGui.pushID(imguiId);
-
-        ImGui.columns(2);
-        ImGui.setColumnWidth(0, columnWidth);
-        ImGui.text(label);
-        ImGui.sameLine();
-        if (constrainedProportions) {
-            ImGui.text("            ");
-            ImGui.sameLine();
-            ImGui.image(FileUtils.getIcon(FileUtils.ICON_NAME.ENABLE_CONSTRAINED_PROPORTIONS).getTexId(), 25, 25);
-        } else {
-            ImGui.text("            ");
-            ImGui.sameLine();
-            ImGui.image(FileUtils.getIcon(FileUtils.ICON_NAME.DISABLE_CONSTRAINED_PROPORTIONS).getTexId(), 25, 25);
-        }
-        if (ImGui.isItemHovered()) {
-            ImGui.beginTooltip();
-            ImGui.text("Enable constrained proportions");
-            ImGui.endTooltip();
-            if (ImGui.isMouseClicked(GLFW_MOUSE_BUTTON_LEFT)) {
-                constrainedProportions = !constrainedProportions;
-            }
-        }
-        ImGui.nextColumn();
-
-        ImGui.pushStyleVar(ImGuiStyleVar.ItemSpacing, 0, 0);
-
-        float lineHeight = ImGui.getFontSize() + ImGui.getStyle().getFramePaddingY() * 2.0f;
-        Vector2f buttonSize = new Vector2f(lineHeight + 3.0f, lineHeight);
-        float widthEach = (ImGui.calcItemWidth() - buttonSize.x * 2.0f) / 2.0f;
-
-        ImGui.pushItemWidth(widthEach);
-        ImGui.pushStyleColor(ImGuiCol.Button, 0.8f, 0.1f, 0.15f, 1.0f);
-        ImGui.pushStyleColor(ImGuiCol.ButtonHovered, 0.8f, 0.2f, 0.2f, 1.0f);
-        ImGui.pushStyleColor(ImGuiCol.ButtonActive, 0.8f, 0.1f, 0.15f, 1.0f);
-        if (ImGui.button("X", buttonSize.x, buttonSize.y)) {
-            values.x = resetValue;
-        }
-        ImGui.popStyleColor(3);
-
-        ImGui.sameLine();
-        float[] vecValuesX = {values.x};
-        float oldX = values.x;
-        ImGui.dragFloat("##x", vecValuesX, 0.003f);
-        ImGui.popItemWidth();
-        ImGui.sameLine();
-
-        ImGui.pushItemWidth(widthEach);
-        ImGui.pushStyleColor(ImGuiCol.Button, 0.2f, 0.7f, 0.2f, 1.0f);
-        ImGui.pushStyleColor(ImGuiCol.ButtonHovered, 0.3f, 0.8f, 0.3f, 1.0f);
-        ImGui.pushStyleColor(ImGuiCol.ButtonActive, 0.2f, 0.7f, 0.2f, 1.0f);
-        if (ImGui.button("Y", buttonSize.x, buttonSize.y)) {
-            values.y = resetValue;
-        }
-        ImGui.popStyleColor(3);
-
-        ImGui.sameLine();
-        float[] vecValuesY = {values.y};
-        float oldY = values.y;
-        ImGui.dragFloat("##y", vecValuesY, 0.003f);
-        ImGui.popItemWidth();
-        ImGui.sameLine();
-
-        if (constrainedProportions) {
-            if (oldX == 0 && oldY == 0) {
-                if (vecValuesY[0] != 0)
-                    vecValuesX[0] = vecValuesY[0];
-                else if (vecValuesX[0] != 0) {
-                    vecValuesY[0] = vecValuesX[0];
-                }
-            } else {
-                if (oldX != vecValuesX[0] || oldY != vecValuesY[0]) {
-                    float offsetX = vecValuesX[0] / oldX;
-                    float offsetY = vecValuesY[0] / oldY;
-                    if (offsetX != 1) {
-                        vecValuesY[0] *= offsetX;
-                    } else if (offsetY != 1) {
-                        vecValuesX[0] *= offsetY;
-                    }
-                } else {
-                    if (oldX == 0) {
-                        vecValuesY[0] = 0;
-                    } else if (oldY == 0) {
-                        vecValuesX[0] = 0;
-                    }
-                }
-            }
-        }
-
-        values.x = vecValuesX[0];
-        values.y = vecValuesY[0];
-
-        ImGui.popStyleVar();
-        ImGui.columns(1);
-        ImGui.popID();
-
-        return constrainedProportions;
     }
 
     public static void drawVec2Control(String label, Vector2f values, float resetValue, float columnWidth, String imguiId) {
@@ -294,62 +137,6 @@ public class NiceImGui {
     }
     //endregion
 
-    public static void drawVec2ForCollider(String label, Vector2f values, float resetValue, String imguiId) {
-        ImGui.pushID(imguiId);
-
-        final float DEFAULT_SPEED_DRAG = 0.003f;
-
-        ImGui.columns(2);
-        ImGui.setColumnWidth(0, calcMinLabelColWith(label));
-        ImGui.text(label);
-        ImGui.nextColumn();
-
-        ImGui.pushStyleVar(ImGuiStyleVar.ItemSpacing, 0, 0);
-
-        float lineHeight = ImGui.getFontSize() + ImGui.getStyle().getFramePaddingY() * 2.0f;
-        Vector2f buttonSize = new Vector2f(lineHeight + 3.0f, lineHeight);
-        float widthEach = (ImGui.calcItemWidth() - buttonSize.x * 2.0f) / 2.0f;
-
-        ImGui.pushItemWidth(widthEach);
-        ImGui.pushStyleColor(ImGuiCol.Button, 0.8f, 0.1f, 0.15f, 1.0f);
-        ImGui.pushStyleColor(ImGuiCol.ButtonHovered, 0.8f, 0.2f, 0.2f, 1.0f);
-        ImGui.pushStyleColor(ImGuiCol.ButtonActive, 0.8f, 0.1f, 0.15f, 1.0f);
-        if (ImGui.button("X", buttonSize.x, buttonSize.y)) {
-            values.x = resetValue;
-        }
-        ImGui.popStyleColor(3);
-
-        ImGui.sameLine();
-        float[] vecValuesX = {values.x};
-        ImGui.dragFloat("##x", vecValuesX, DEFAULT_SPEED_DRAG);
-        ImGui.popItemWidth();
-        ImGui.sameLine();
-
-        ImGui.pushItemWidth(widthEach);
-        ImGui.pushStyleColor(ImGuiCol.Button, 0.2f, 0.7f, 0.2f, 1.0f);
-        ImGui.pushStyleColor(ImGuiCol.ButtonHovered, 0.3f, 0.8f, 0.3f, 1.0f);
-        ImGui.pushStyleColor(ImGuiCol.ButtonActive, 0.2f, 0.7f, 0.2f, 1.0f);
-        if (ImGui.button("Y", buttonSize.x, buttonSize.y)) {
-            values.y = resetValue;
-        }
-        ImGui.popStyleColor(3);
-
-        ImGui.sameLine();
-        float[] vecValuesY = {values.y};
-        ImGui.dragFloat("##y", vecValuesY, DEFAULT_SPEED_DRAG);
-        ImGui.popItemWidth();
-        ImGui.sameLine();
-
-        ImGui.nextColumn();
-
-        values.x = vecValuesX[0];
-        values.y = vecValuesY[0];
-
-        ImGui.popStyleVar();
-        ImGui.columns(1);
-        ImGui.popID();
-    }
-
     public static void drawVec2Control(String label, Vector2f values, float resetValue,
                                        float columnWidthForLabel, float columnWidthForValues,
                                        float minValue, float maxValue) {
@@ -406,368 +193,6 @@ public class NiceImGui {
         ImGui.columns(1);
         ImGui.popID();
     }
-
-    //region Reference
-    public static Object ReferenceButton(String label, ReferenceType referenceType, Object oldValue, String idPush) {
-        return ReferenceButton(label, referenceType, oldValue, new float[2], idPush);
-    }
-
-    public static Object ReferenceButton(String label, ReferenceType referenceType, Object oldValue, float[] columnWidths, String idPush) {
-        ImGui.pushID(idPush);
-
-        columnConfiguration(2, columnWidths, label);
-        ImGui.text(label);
-
-        ImGui.nextColumn();
-
-        float offset = ImGui.getStyle().getFramePaddingX() * 2;
-        float referenceButtonHeight = 30.0f;
-        float referenceButtonWidth = (columnWidths[1] != 0 ? columnWidths[1] - (referenceButtonHeight + offset) * 2 - offset : DEFAULT_REFERENCE_BUTTON_WIDTH);
-
-        //region Reference Button
-        String refState = (oldValue == null ? "(Missing) " : "");
-        String refName = "";
-        String toolTipRef = "";
-        switch (referenceType) {
-            case GAMEOBJECT -> {
-                GameObject go = (GameObject) oldValue;
-                if (go != null)
-                    refName = go.name;
-                else
-                    refName = "Game object";
-                toolTipRef = refName;
-            }
-            case SPRITE -> {
-                Sprite spr = (Sprite) oldValue;
-                if (spr != null && oldValue != null && spr.getTexture() != null) {
-                    String texturePath = spr.getTexture().getFilePath();
-                    File imageFile = new File(texturePath);
-
-                    refName = FileUtils.getShorterName(imageFile.getName());
-                    toolTipRef = spr.getTexture().getFilePath();
-                } else
-                    refName = "Sprite";
-            }
-            case SOUND -> {
-                File soundFile = (File) oldValue;
-                if (soundFile != null) {
-                    refName = FileUtils.getShorterName(soundFile.getName());
-                    toolTipRef = soundFile.getName();
-                } else
-                    refName = "Sound";
-                break;
-            }
-            case JAVA -> {
-                File javaFile = (File) oldValue;
-                if (javaFile != null)
-                    refName = javaFile.getName();
-                else
-                    refName = "Java Script";
-                toolTipRef = refName;
-            }
-        }
-
-        ImGui.pushID("ReferenceButton " + idPush);
-
-        if (ImGui.button(refState + "<" + refName + ">", referenceButtonWidth, referenceButtonHeight)) {
-
-        }
-
-        if (ImGui.isItemHovered()) {
-            ImGui.beginTooltip();
-            ImGui.text(toolTipRef);
-            ImGui.endTooltip();
-        }
-
-        ImGui.popID();
-
-        //endregion
-
-        ImGui.sameLine();
-
-        //region Open FileDialog Button
-        ImGui.pushID("OpenFileDialogButton" + idPush);
-        if (drawOpenFileDialogButton(referenceButtonHeight)) {
-            FileDialog.getInstance().open(idPush, referenceType);
-        }
-
-        if (ImGui.isItemHovered()) {
-            ImGui.beginTooltip();
-            ImGui.text("Open file dialog");
-            ImGui.endTooltip();
-        }
-
-        if (SPRITE_WAITING == null) {
-            Sprite spr = (Sprite) oldValue;
-            Sprite newSpr = spr.copy();
-            newSpr = FileDialog.getInstance().getSelectedSprite(idPush, newSpr);
-            if (!spr.equal(newSpr)) {
-                SPRITE_WAITING = newSpr;
-                idPush_IsWaiting = idPush;
-            }
-        }
-
-        if (SPRITE_WAITING != null && idPush_IsWaiting.equals(idPush)) {
-            if (!SELECT_SPR_WINDOW_ISOPEN) {
-                SelectSpriteWindow.getInstance().open(SPRITE_WAITING);
-                SELECT_SPR_WINDOW_ISOPEN = true;
-            }
-
-            Sprite result = SelectSpriteWindow.getInstance().getResult();
-
-            if (result != null) {
-                oldValue = result;
-                SPRITE_WAITING = null;
-                SELECT_SPR_WINDOW_ISOPEN = false;
-                idPush_IsWaiting = "";
-            }
-        }
-
-        ImGui.popID();
-        //endregion
-
-
-        ImGui.sameLine();
-
-        //region Remove Button
-        ImGui.pushID("Remove reference of " + idPush);
-        if (drawDeleteReferenceButton(referenceButtonHeight)) {
-            oldValue = null;
-
-            if (referenceType == ReferenceType.SPRITE) {
-                oldValue = FileUtils.getDefaultSprite();
-            }
-        }
-        if (ImGui.isItemHovered()) {
-            ImGui.beginTooltip();
-            ImGui.text("Remove reference value?");
-            ImGui.endTooltip();
-        }
-        ImGui.popID();
-        //endregion
-
-        ImGui.columns(1);
-
-        ImGui.popID();
-
-        //region coord
-        Sprite sprite = (Sprite) oldValue;
-        if (sprite != null) {
-            Vector2f[] texCoords = sprite.getTexCoords();
-            float img_size_width = sprite.getTexture().getWidth();
-            float img_size_height = sprite.getTexture().getHeight();
-
-            DecimalFormat df = new DecimalFormat("#.##");
-
-            Vector2f topLeftCoord = new Vector2f(
-                    texCoords[3].x * img_size_width,
-                    texCoords[3].y * img_size_height
-            );
-            Vector2f bottomRightCoord = new Vector2f(
-                    texCoords[1].x * img_size_width,
-                    texCoords[1].y * img_size_height
-            );
-            ImGui.text("Top-Left coord: (" + df.format(topLeftCoord.x) + " : " + df.format(topLeftCoord.y) + ")");
-            ImGui.text("Bottom-Right coord: (" + df.format(bottomRightCoord.x) + " : " + df.format(bottomRightCoord.y) + ")");
-        }
-        //endregion
-
-        return oldValue;
-    }
-
-    public static Object ReferenceButtonGO(GameObject go_request, String label, ReferenceType referenceType, Object oldValue, float[] columnWidths, String idPush) {
-        ImGui.pushID(idPush);
-
-        columnConfiguration(2, columnWidths, label);
-        ImGui.text(label);
-
-        ImGui.nextColumn();
-
-        float offset = ImGui.getStyle().getFramePaddingX() * 2;
-        float referenceButtonHeight = 30.0f;
-        float referenceButtonWidth = (columnWidths[1] != 0 ? columnWidths[1] - (referenceButtonHeight + offset) * 2 - offset : DEFAULT_REFERENCE_BUTTON_WIDTH);
-
-        //region Reference Button
-        String refState = (oldValue == null ? "(Missing) " : "");
-        String refName = "";
-        String toolTipRef = "";
-        switch (referenceType) {
-            case GAMEOBJECT -> {
-                GameObject go = (GameObject) oldValue;
-                if (go != null)
-                    refName = go.name;
-                else
-                    refName = "Game object";
-                toolTipRef = refName;
-            }
-            case SPRITE -> {
-                Sprite spr = (Sprite) oldValue;
-                if (spr != null && oldValue != null && spr.getTexture() != null) {
-                    String texturePath = spr.getTexture().getFilePath();
-                    File imageFile = new File(texturePath);
-
-                    refName = FileUtils.getShorterName(imageFile.getName());
-                    toolTipRef = spr.getTexture().getFilePath();
-                } else
-                    refName = "Sprite";
-            }
-            case SOUND -> {
-                File soundFile = (File) oldValue;
-                if (soundFile != null) {
-                    refName = FileUtils.getShorterName(soundFile.getName());
-                    toolTipRef = soundFile.getName();
-                } else
-                    refName = "Sound";
-                break;
-            }
-            case JAVA -> {
-                File javaFile = (File) oldValue;
-                if (javaFile != null)
-                    refName = javaFile.getName();
-                else
-                    refName = "Java Script";
-                toolTipRef = refName;
-            }
-        }
-
-        ImGui.pushID("ReferenceButton " + idPush);
-
-        if (ImGui.button(refState + "<" + refName + ">", referenceButtonWidth, referenceButtonHeight)) {
-
-        }
-
-        if (ImGui.isItemHovered()) {
-            ImGui.beginTooltip();
-            ImGui.text(toolTipRef);
-            ImGui.endTooltip();
-        }
-
-        ImGui.popID();
-
-        //endregion
-
-        ImGui.sameLine();
-
-        //region Open FileDialog Button
-        ImGui.pushID("OpenFileDialogButton" + idPush);
-        if (drawOpenFileDialogButton(referenceButtonHeight)) {
-            FileDialog.getInstance().open(idPush, referenceType);
-        }
-
-        if (ImGui.isItemHovered()) {
-            ImGui.beginTooltip();
-            ImGui.text("Open file dialog");
-            ImGui.endTooltip();
-        }
-
-        if (SPRITE_WAITING == null) {
-            Sprite spr = (Sprite) oldValue;
-            Sprite newSpr = spr.copy();
-            newSpr = FileDialog.getInstance().getSelectedSprite(idPush, newSpr);
-            if (!spr.equal(newSpr)) {
-                SPRITE_WAITING = newSpr;
-            }
-        }
-
-        if (SPRITE_WAITING != null) {
-            if (!SELECT_SPR_WINDOW_ISOPEN) {
-                SelectSpriteWindow.getInstance().open(SPRITE_WAITING, go_request);
-                SELECT_SPR_WINDOW_ISOPEN = true;
-            }
-
-            Sprite result = SelectSpriteWindow.getInstance().getResult();
-
-            if (result != null) {
-                oldValue = result;
-                SPRITE_WAITING = null;
-                SELECT_SPR_WINDOW_ISOPEN = false;
-            }
-        }
-
-        ImGui.popID();
-        //endregion
-
-
-        ImGui.sameLine();
-
-        //region Remove Button
-        ImGui.pushID("Remove reference of " + idPush);
-        if (drawDeleteReferenceButton(referenceButtonHeight)) {
-            oldValue = null;
-
-            if (referenceType == ReferenceType.SPRITE) {
-                oldValue = FileUtils.getDefaultSprite();
-            }
-        }
-        if (ImGui.isItemHovered()) {
-            ImGui.beginTooltip();
-            ImGui.text("Remove reference value?");
-            ImGui.endTooltip();
-        }
-        ImGui.popID();
-        //endregion
-
-        ImGui.columns(1);
-
-        ImGui.popID();
-
-        //region coord
-        Sprite sprite = (Sprite) oldValue;
-        if (sprite != null) {
-            Vector2f[] texCoords = sprite.getTexCoords();
-            float img_size_width = sprite.getTexture().getWidth();
-            float img_size_height = sprite.getTexture().getHeight();
-
-            DecimalFormat df = new DecimalFormat("#.##");
-
-            Vector2f topLeftCoord = new Vector2f(
-                    texCoords[3].x * img_size_width,
-                    texCoords[3].y * img_size_height
-            );
-            Vector2f bottomRightCoord = new Vector2f(
-                    texCoords[1].x * img_size_width,
-                    texCoords[1].y * img_size_height
-            );
-            ImGui.text("Top-Left coord: (" + df.format(topLeftCoord.x) + " : " + df.format(topLeftCoord.y) + ")");
-            ImGui.text("Bottom-Right coord: (" + df.format(bottomRightCoord.x) + " : " + df.format(bottomRightCoord.y) + ")");
-        }
-        //endregion
-
-        return oldValue;
-    }
-
-    private static boolean drawOpenFileDialogButton(float openFileDialogButtonSize) {
-        boolean isClick = false;
-
-        ImDrawList drawList = ImGui.getWindowDrawList();
-
-        // Create open file dialog button
-        if (drawButton("",
-                new ButtonColor(COLOR_Blue, COLOR_DarkBlue, COLOR_DarkBlue),
-                new Vector2f(openFileDialogButtonSize, openFileDialogButtonSize))) {
-            isClick = true;
-        }
-
-        ImGui.sameLine();
-
-        float iconButtonSize = 7.0f;
-        float iconButtonPosX = ImGui.getCursorScreenPosX() - openFileDialogButtonSize / 2f - 7f;
-        float iconButtonPosY = ImGui.getCursorScreenPosY() + openFileDialogButtonSize / 2f;
-        drawList.addCircleFilled(iconButtonPosX, iconButtonPosY, iconButtonSize, ImColor.intToColor(255, 255, 255, 255));
-        drawList.addCircle(iconButtonPosX, iconButtonPosY, iconButtonSize * 1.5f, ImColor.intToColor(255, 255, 255, 255));
-
-        return isClick;
-    }
-
-    private static boolean drawDeleteReferenceButton(float btnSize) {
-        if (drawButton("-", new ButtonColor(COLOR_Red, COLOR_DarkRed, COLOR_DarkRed)
-                , new Vector2f(btnSize, btnSize))) {
-            return true;
-        }
-
-        return false;
-    }
-    //endregion
 
     //region Button
     public static void drawFakeButton(Vector4f btnColor, Vector2f btnSize) {
@@ -840,7 +265,6 @@ public class NiceImGui {
         return isClick;
     }
 
-
     public static boolean drawButton(String label, ButtonColor btnColor, Vector2f btnSize) {
         boolean isClick = false;
 
@@ -877,20 +301,6 @@ public class NiceImGui {
     //region Float
     public static float dragFloat(String label, float value) {
         return dragFloat(label, value, (float) -1E5, (float) 1E5, DEFAULT_FLOAT_DRAG_SPEED, new float[2], label);
-    }
-
-    public static float dragFloat(String label, float value, float minValue, float maxValue, String imguiID) {
-        return dragFloat(label, value, minValue, maxValue, DEFAULT_FLOAT_DRAG_SPEED, new float[2], imguiID);
-    }
-
-    public static float dragFloat(String label, float value, float minValue, float maxValue, float speed, String imguiID) {
-        return dragFloat(label, value, minValue, maxValue, speed, new float[2], imguiID);
-    }
-
-    public static float dragFloat(String label, float value, float minValue, float maxValue, float vSpeed, float labelColumnWidth, String imguiId) {
-        float[] columnWidth = new float[2];
-        columnWidth[0] = labelColumnWidth;
-        return dragFloat(label, value, minValue, maxValue, vSpeed, columnWidth, imguiId);
     }
 
     public static float dragFloat(String label, float value, float minValue, float maxValue, float vSpeed, float[] columnWidth, String imguiId) {
@@ -968,12 +378,6 @@ public class NiceImGui {
     //region InputText
     public static String inputText(String label, String text, String imguiId) {
         return inputText(label, text, "", new float[2], imguiId);
-    }
-
-    public static String inputText(String label, String text, String hint, float labelColumnWidth, String imguiId) {
-        float[] colW = new float[2];
-        colW[0] = labelColumnWidth;
-        return inputText(label, text, hint, colW, imguiId);
     }
 
     public static String inputText(String label, String text, String hint, float[] columnWidths, String imguiId) {
@@ -1080,17 +484,6 @@ public class NiceImGui {
     //endregion
 
     //region Checkbox
-
-    public static boolean checkbox(String label, boolean isChecked) {
-        return checkbox(label, isChecked, new float[2]);
-    }
-
-    public static boolean checkbox(String label, boolean isChecked, float labelColumnWidth) {
-        float[] colW = new float[2];
-        colW[0] = labelColumnWidth;
-        return checkbox(label, isChecked, colW);
-    }
-
     public static boolean checkbox(String label, boolean isChecked, float[] columnWidths) {
         ImGui.pushID(label + "Checkbox");
 
@@ -1142,57 +535,6 @@ public class NiceImGui {
         ImGui.popID();
 
         return returnvalue;
-    }
-    //endregion
-
-    //region Others
-    public static void prefabShowingInInspectorsButton(GameObject go) {
-        ImGui.columns(3);
-        ImGui.setColumnWidth(0, 100);
-        ImGui.setColumnWidth(1, 250);
-        ImGui.text("Prefab: ");
-        ImGui.nextColumn();
-
-        String pushId = "GoToPrefabButton" + go.name + go.hashCode();
-        ImGui.pushID(pushId);
-
-        GameObject prefab = GameObject.getPrefabById(go.parentId);
-        if (prefab == null) {
-            ImGui.button("Error: Cannot find the prefab!");
-        } else {
-            Vector4f buttonColor = new Vector4f(14 / 255f, 14 / 255f, 28 / 255f, 1);
-            if (drawButton("Go to prefab: '" + prefab.name + "'",
-                    new ButtonColor(buttonColor, COLOR_Blue, COLOR_DarkBlue),
-                    new Vector2f(ImGui.getContentRegionAvailX(), 30f))) {
-                PrefabsWindow.getInstance().prefabNeedToHighlight = prefab.prefabId;
-            }
-        }
-
-        if (ImGui.isItemHovered()) {
-            ImGui.beginTooltip();
-            ImGui.text("Go to prefab");
-            ImGui.endTooltip();
-        }
-        ImGui.popID();
-
-        ImGui.nextColumn();
-
-        pushId = "Override the prefab" + go.name + go.hashCode();
-        ImGui.pushID(pushId);
-        if (prefab == null) {
-            ImGui.button("Error: Cannot find the prefab!");
-        } else {
-            Vector4f buttonColor = new Vector4f(14 / 255f, 14 / 255f, 28 / 255f, 1);
-            if (drawButton("Override prefab!",
-                    new ButtonColor(buttonColor, COLOR_Blue, COLOR_DarkBlue),
-                    new Vector2f(ImGui.getContentRegionAvailX(), 30f))) {
-                go.overrideThePrefab();
-            }
-        }
-
-        ImGui.popID();
-
-        ImGui.columns(1);
     }
     //endregion
 

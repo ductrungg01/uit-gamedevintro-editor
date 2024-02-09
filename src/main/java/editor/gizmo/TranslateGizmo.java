@@ -6,8 +6,6 @@ import editor.windows.InspectorWindow;
 import system.MouseListener;
 
 public class TranslateGizmo extends Gizmo implements INonAddableComponent {
-    //region Constructors
-
     public TranslateGizmo() {
     }
 
@@ -16,9 +14,7 @@ public class TranslateGizmo extends Gizmo implements INonAddableComponent {
         this.xAxisObject.name = "TranslateGizmo - xAxisObject";
         this.yAxisObject.name = "TranslateGizmo - yAxisObject";
     }
-    //endregion
 
-    //region Override methods
     @Override
     public void editorUpdate(float dt) {
         if (activeGameObject != null) {
@@ -31,5 +27,4 @@ public class TranslateGizmo extends Gizmo implements INonAddableComponent {
 
         super.editorUpdate(dt);
     }
-    //endregion
 }

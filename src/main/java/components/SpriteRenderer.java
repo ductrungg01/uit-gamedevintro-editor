@@ -1,6 +1,5 @@
 package components;
 
-import editor.ReferenceType;
 import editor.NiceImGui;
 import imgui.ImGui;
 import system.Transform;
@@ -57,16 +56,7 @@ public class SpriteRenderer extends Component implements INonAddableComponent {
     @Override
     public void imgui() {
         if (this.gameObject.isPrefab()) {
-            Sprite tmp = (Sprite) NiceImGui.ReferenceButtonGO(this.gameObject,
-                    "Sprite",
-                    ReferenceType.SPRITE,
-                    sprite,
-                    new float[2],
-                    "Sprite of SpriteRenderer " + this.gameObject.hashCode());
 
-            if (!tmp.equal(sprite)) {
-                setSprite(tmp);
-            }
         } else {
             ImGui.textColored(COLOR_Green.x, COLOR_Green.y, COLOR_Green.z, COLOR_Green.w,
                     FileUtils.getShorterName(sprite.getTexture().getFilePath()));

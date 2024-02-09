@@ -1,21 +1,15 @@
 package components;
 
 import editor.Gif;
-import editor.ReferenceType;
-import editor.uihelper.ButtonColor;
 import editor.NiceImGui;
 import imgui.ImGui;
-import imgui.type.ImString;
 import org.joml.Vector2f;
 import util.AssetPool;
 import util.FileUtils;
 
 import javax.swing.*;
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-
-import static editor.uihelper.NiceShortCall.*;
 
 public class AnimationState implements INonAddableComponent {
     //region Fields
@@ -115,7 +109,6 @@ public class AnimationState implements INonAddableComponent {
             Sprite oldSprite = frame.sprite.copy();
             float oldFrameTime = frame.frameTime;
 
-            frame.sprite = (Sprite) NiceImGui.ReferenceButton("    Sprite: ", ReferenceType.SPRITE, frame.sprite, columnWidth, "AnimationState" + this.title + "Frame" + index);
             frame.frameTime = NiceImGui.dragFloat("    Time(s): ", frame.frameTime, 0f, Float.MAX_VALUE, 0.001f, columnWidth, "Frame time of" + this.title + index);
 
             if (oldFrameTime != frame.frameTime || !oldSprite.equal(frame.sprite)){

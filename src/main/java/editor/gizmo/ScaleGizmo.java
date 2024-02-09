@@ -9,7 +9,6 @@ import system.MouseListener;
 public class ScaleGizmo extends Gizmo implements INonAddableComponent {
     private float oldX = Float.NaN;
     private float oldY = Float.NaN;
-    //region Constructors
 
     public ScaleGizmo() {
     }
@@ -19,9 +18,7 @@ public class ScaleGizmo extends Gizmo implements INonAddableComponent {
         this.xAxisObject.name = "ScaleGizmo - xAxisObject";
         this.yAxisObject.name = "ScaleGizmo - yAxisObject";
     }
-    //endregion
 
-    //region Override methods
     @Override
     public void editorUpdate(float dt) {
         if (activeGameObject != null) {
@@ -55,5 +52,4 @@ public class ScaleGizmo extends Gizmo implements INonAddableComponent {
             setNotUsing();
         }
     }
-    //endregion
 }

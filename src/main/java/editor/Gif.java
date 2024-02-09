@@ -12,8 +12,8 @@ import java.util.List;
 
 public class Gif {
     public List<Frame> frames = new ArrayList<>();
-    public boolean isLoop = false;
-    Vector2f gifSize = new Vector2f();
+    public boolean isLoop;
+    Vector2f gifSize;
 
     private int currentFrameIndex = 0;
     private float timeTracker = 0;

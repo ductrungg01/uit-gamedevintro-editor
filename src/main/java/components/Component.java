@@ -1,10 +1,8 @@
 package components;
 
-import editor.ReferenceType;
 import editor.NiceImGui;
 import imgui.ImGui;
 import imgui.flag.ImGuiComboFlags;
-import imgui.type.ImInt;
 import system.GameObject;
 import org.jbox2d.dynamics.contacts.Contact;
 import org.joml.Vector2f;
@@ -162,10 +160,8 @@ public abstract class Component {
                         ((Sprite) value).setTexture(AssetPool.getTexture(texturePath));
                     }
 
-                    field.set(this, NiceImGui.ReferenceButton(name,
-                            ReferenceType.SPRITE,
-                            value,
-                            "Sprite" + name + gameObject.hashCode()));
+                    field.set(this, value);
+
                     if (value != null) {
                         ImGui.sameLine();
                         NiceImGui.showImage((Sprite) value, new Vector2f(30, 30), true, "Value of " + name, true, new Vector2f(300, 300), false);

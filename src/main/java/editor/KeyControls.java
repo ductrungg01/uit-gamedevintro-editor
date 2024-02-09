@@ -1,9 +1,7 @@
 package editor;
 
 import components.StateMachine;
-import editor.windows.CreateNewSceneWindow;
 import editor.windows.InspectorWindow;
-import editor.windows.OpenSceneWindow;
 import observers.EventSystem;
 import observers.events.Event;
 import observers.events.EventType;
@@ -26,18 +24,6 @@ public class KeyControls {
 
     public void editorUpdate(float dt) {
         debounce -= dt;
-
-        if ((KeyListener.isKeyPressed(org.lwjgl.glfw.GLFW.GLFW_KEY_LEFT_CONTROL) || KeyListener.isKeyPressed(GLFW.GLFW_KEY_RIGHT_CONTROL)) && KeyListener.keyBeginPress(GLFW.GLFW_KEY_S)) {
-            EventSystem.notify(null, new Event(EventType.SaveLevel));
-        }
-
-        if (KeyListener.isKeyRelease(GLFW_KEY_O) && (KeyListener.isKeyPressed(GLFW.GLFW_KEY_LEFT_CONTROL) || KeyListener.isKeyPressed(GLFW.GLFW_KEY_RIGHT_CONTROL))) {
-            OpenSceneWindow.open(true);
-        }
-
-        if (KeyListener.isKeyRelease(GLFW_KEY_N) && (KeyListener.isKeyPressed(GLFW.GLFW_KEY_LEFT_CONTROL) || KeyListener.isKeyPressed(GLFW.GLFW_KEY_RIGHT_CONTROL))) {
-            CreateNewSceneWindow.open(false);
-        }
 
         InspectorWindow inspectorWindow = Window.getImguiLayer().getInspectorWindow();
         GameObject activeGameObject = inspectorWindow.getActiveGameObject();

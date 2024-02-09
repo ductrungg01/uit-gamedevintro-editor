@@ -35,12 +35,9 @@ public class SceneHierarchyWindow {
     }
     //endregion
 
-    //region Fields
     private static String payloadDragDropType = "SceneHierarchy";
     private static GameObject selectedGameObject = null;
-    //endregion
 
-    //region Methods
     public void imgui() {
         ImGui.setNextWindowSizeConstraints(Settings.MIN_WIDTH_GROUP_WIDGET, Settings.MIN_HEIGHT_GROUP_WIDGET, Window.getWidth(), Window.getHeight());
 
@@ -48,19 +45,36 @@ public class SceneHierarchyWindow {
 
         List<GameObject> gameObjects = Window.getScene().getGameObjects();
 
-        List<String> tags = new ArrayList<>();
-        for (GameObject go : gameObjects) {
-            String goTag = go.tag;
-            if (goTag.equals("")) goTag = "Non-tag";
-
-            if (!tags.contains(goTag)) {
-                tags.add(goTag);
-            }
-        }
-
         int index = 0;
 
         if (ImGui.beginTabBar("HierarchyTabBar")) {
+            if (ImGui.beginTabItem("GameObjects")){
+                for (GameObject obj : gameObjects) {
+                    if (!obj.doSerialization()) {
+                        continue;
+                    }
+
+                    ImGui.pushID(index);
+                    float w = ImGui.getContentRegionAvailX();
+                    float h = ImGui.getTextLineHeightWithSpacing();
+                    if (obj.equals(selectedGameObject)) {
+                        if (NiceImGui.drawButtonWithLeftText(obj.name, new ButtonColor(COLOR_Blue, COLOR_DarkAqua, COLOR_Blue), new Vector2f(w, h))) {
+                            setCameraCenterGameObject(obj);
+                        }
+                        ;
+                    } else {
+                        if (NiceImGui.drawButtonWithLeftText(obj.name, new ButtonColor(COLOR_DarkBlue, COLOR_DarkAqua, COLOR_Blue), new Vector2f(w, h))) {
+                            Window.getImguiLayer().getInspectorWindow().setActiveGameObject(obj);
+                            selectedGameObject = obj;
+                            setCameraCenterGameObject(obj);
+                        }
+                    }
+                    ImGui.popID();
+                    index++;
+                }
+                ImGui.endTabItem();
+            }
+
             if (ImGui.beginTabItem("System")) {
                 NiceImGui.colorPicker4("Camera's clear color", Window.getScene().camera().clearColor);
                 NiceImGui.drawVec2Control("ScreenSize", Camera.screenSize, "Screensize");
@@ -68,39 +82,6 @@ public class SceneHierarchyWindow {
                 ImGui.endTabItem();
             }
 
-            for (String tag : tags) {
-                if (ImGui.beginTabItem(tag)) {
-                    for (GameObject obj : gameObjects) {
-                        if (!obj.doSerialization()) {
-                            continue;
-                        }
-
-                        if (tag.equals("Non-tag")) tag = "";
-
-                        if (!obj.compareTag(tag)) continue;
-
-                        ImGui.pushID(index);
-                        float w = ImGui.getContentRegionAvailX();
-                        float h = ImGui.getTextLineHeightWithSpacing();
-                        if (obj.equals(selectedGameObject)) {
-                            if (NiceImGui.drawButtonWithLeftText(obj.name, new ButtonColor(COLOR_Blue, COLOR_DarkAqua, COLOR_Blue), new Vector2f(w, h))) {
-                                setCameraCenterGameObject(obj);
-                            }
-                            ;
-                        } else {
-                            if (NiceImGui.drawButtonWithLeftText(obj.name, new ButtonColor(COLOR_DarkBlue, COLOR_DarkAqua, COLOR_Blue), new Vector2f(w, h))) {
-                                Window.getImguiLayer().getInspectorWindow().setActiveGameObject(obj);
-                                selectedGameObject = obj;
-                                setCameraCenterGameObject(obj);
-                            }
-                        }
-                        ImGui.popID();
-                        index++;
-                    }
-
-                    ImGui.endTabItem();
-                }
-            }
             ImGui.endTabBar();
         }
 
@@ -156,5 +137,4 @@ public class SceneHierarchyWindow {
         Vector2f centerObjectPosition = new Vector2f(go.transform.position.x - (editorCameraSize.x / 2), go.transform.position.y - (editorCameraSize.y / 2));
         EditorCamera.setEditorCamera(centerObjectPosition);
     }
-    //endregion
 }

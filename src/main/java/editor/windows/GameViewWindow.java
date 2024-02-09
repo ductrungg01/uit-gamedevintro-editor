@@ -1,12 +1,8 @@
 package editor.windows;
 
-import editor.MessageBox;
 import imgui.ImGui;
 import imgui.ImVec2;
 import imgui.flag.ImGuiWindowFlags;
-import observers.EventSystem;
-import observers.events.Event;
-import observers.events.EventType;
 import org.joml.Vector2f;
 import system.MouseListener;
 import system.Window;
@@ -17,19 +13,11 @@ import util.Time;
 import static editor.uihelper.NiceShortCall.COLOR_Yellow;
 
 public class GameViewWindow {
-    public static boolean isPlaying = false;
-    private static GameViewWindow instance = null;
     //region Singleton
-    private final float diffScreenX = 10.0f;
-    private final float diffScreenY = -20.0f;
-    public float debounceTimeToCapture = 0;
-
-    //endregion
-    //region Fields
-    private float leftX, rightX, topY, bottomY;
-
     private GameViewWindow() {
     }
+
+    private static GameViewWindow instance = null;
 
     public static GameViewWindow getInstance() {
         if (instance == null) {
@@ -40,7 +28,11 @@ public class GameViewWindow {
     }
     //endregion
 
-    //region Methods
+    private final float diffScreenX = 10.0f;
+    private final float diffScreenY = -20.0f;
+    public float debounceTimeToCapture = 0;
+    private float leftX, rightX, topY, bottomY;
+
     public void imgui() {
         if (debounceTimeToCapture > 0)
             debounceTimeToCapture -= Time.deltaTime;
@@ -51,12 +43,6 @@ public class GameViewWindow {
                 ImGuiWindowFlags.MenuBar);
 
         ImGui.beginMenuBar();
-//        if (ImGui.menuItem("Play", "", isPlaying, !isPlaying)) {
-//            EventSystem.notify(null, new Event(EventType.GameEngineStartPlay));
-//        }
-//        if (ImGui.menuItem("Stop", "", !isPlaying, isPlaying)) {
-//            EventSystem.notify(null, new Event(EventType.GameEngineStopPlay));
-//        }
 
         ImGui.textColored(COLOR_Yellow.x, COLOR_Yellow.y, COLOR_Yellow.z, COLOR_Yellow.w,
                 "Current scene: '" + SceneUtils.CURRENT_SCENE + "'");
@@ -85,14 +71,6 @@ public class GameViewWindow {
     }
 
     public boolean getWantCaptureMouse() {
-        if (FileDialog.getInstance().isOpen()
-                || CreateNewSceneWindow.isOpen()
-                || OpenSceneWindow.isOpen()
-                || AddingSpritesheetWindow.getInstance().isOpened()
-                || MessageBox.showMsb) {
-            return false;
-        }
-
         if (debounceTimeToCapture > 0) return false;
 
         return MouseListener.getX() >= leftX && MouseListener.getX() <= rightX &&
@@ -126,5 +104,4 @@ public class GameViewWindow {
         return new ImVec2(viewportX + ImGui.getCursorPosX(),
                 viewportY + ImGui.getCursorPosY());
     }
-    //endregion
 }

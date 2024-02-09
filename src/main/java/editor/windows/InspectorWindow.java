@@ -4,33 +4,19 @@ import components.*;
 import editor.NiceImGui;
 import editor.uihelper.ButtonColor;
 import imgui.ImGui;
-import imgui.ImVec2;
-import imgui.ImVec4;
-import imgui.flag.ImGuiCol;
-import imgui.flag.ImGuiWindowFlags;
 import org.joml.Vector2f;
-import org.lwjgl.system.CallbackI;
-import org.reflections.Reflections;
-import physics2d.components.Box2DCollider;
-import physics2d.components.Capsule2DCollider;
-import physics2d.components.CircleCollider;
-import physics2d.components.RigidBody2D;
 import system.GameObject;
 import org.joml.Vector4f;
 import renderer.PickingTexture;
 import system.Window;
 import util.Settings;
 
-import javax.swing.*;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import static editor.uihelper.NiceShortCall.*;
 
 public class InspectorWindow {
-
     //region Fields
     List<GameObject> activeGameObjects;
     private List<Vector4f> activeGameObjectOriginalColor;
@@ -40,8 +26,6 @@ public class InspectorWindow {
 
     String searchText = "";
     boolean showAddComponentMenu = false;
-
-    //Set<Class<? extends Component>> classes;
     //endregion
 
     //region Constructors

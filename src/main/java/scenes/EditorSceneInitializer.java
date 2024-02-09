@@ -9,18 +9,12 @@ import util.FileUtils;
 
 
 public class EditorSceneInitializer extends SceneInitializer {
-    //region Fields
     private GameObject levelEditorStuff;
 
-    //endregion
-
-    //region Constructors
     public EditorSceneInitializer() {
 
     }
-    //endregion
 
-    //region Override methods
     @Override
     public void init(Scene scene) {
         Spritesheet gizmos = FileUtils.getGizmosSprSheet();
@@ -41,6 +35,4 @@ public class EditorSceneInitializer extends SceneInitializer {
     @Override
     public void imgui() {
     }
-
-    //endregion
 }

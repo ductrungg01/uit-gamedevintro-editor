@@ -3,10 +3,8 @@ package renderer;
 import static org.lwjgl.opengl.GL30.*;
 
 public class Framebuffer {
-    //region Fields
     private int fboID = 0;
     private Texture texture = null;
-    //endregion
 
     //region Constructors
     public Framebuffer(int width, int height) {

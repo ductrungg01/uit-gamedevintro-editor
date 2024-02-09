@@ -1,9 +1,8 @@
 package observers.events;
 
 public enum EventType {
-    GameEngineStartPlay,
-    GameEngineStopPlay,
-    SaveLevel,
-    LoadLevel,
-    UserEvent
+    NONE,
+    GameEngineStart,
+    Import,
+    Export
 }

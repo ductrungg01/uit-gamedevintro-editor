@@ -1,33 +1,18 @@
 package system;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import components.*;
-import deserializers.ComponentDeserializer;
-import deserializers.GameObjectDeserializer;
-import deserializers.PrefabDeserializer;
 import editor.Debug;
-import editor.NiceImGui;
-import editor.uihelper.ButtonColor;
 import imgui.ImGui;
-import imgui.flag.ImGuiWindowFlags;
 import imgui.type.ImBoolean;
 import org.joml.Vector2f;
 import org.joml.Vector4f;
-import physics2d.components.Box2DCollider;
-import physics2d.components.Capsule2DCollider;
-import physics2d.components.CircleCollider;
-import physics2d.components.RigidBody2D;
 import util.AssetPool;
-import util.FileUtils;
 import util.Settings;
 
 import javax.swing.*;
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.Vector;
 
 import static editor.uihelper.NiceShortCall.*;
 
@@ -36,7 +21,6 @@ public class GameObject {
     //region Fields
     private static int ID_COUNTER = 0;
     public String name = "";
-    public String tag = "";
     public boolean isPrefab = false;
     public String prefabId = "";
     public String parentId = "";
@@ -126,14 +110,8 @@ public class GameObject {
 
     //region Methods
     public GameObject copy() {
-        // TODO: come up with cleaner solution
-        Gson gson = new GsonBuilder()
-                .registerTypeAdapter(Component.class, new ComponentDeserializer())
-                .registerTypeAdapter(GameObject.class, new GameObjectDeserializer())
-                .enableComplexMapKeySerialization()
-                .create();
-        String objAsJson = gson.toJson(this);
-        GameObject obj = gson.fromJson(objAsJson, GameObject.class);
+        // TODO: Gameobject.copy()
+        GameObject obj = new GameObject();
 
         obj.generateUid();
 
@@ -148,14 +126,8 @@ public class GameObject {
 
     // Prefab create a child game object
     public GameObject copyFromPrefab() {
-        // TODO: come up with cleaner solution
-        Gson gson = new GsonBuilder()
-                .registerTypeAdapter(Component.class, new ComponentDeserializer())
-                .registerTypeAdapter(GameObject.class, new PrefabDeserializer())
-                .enableComplexMapKeySerialization()
-                .create();
-        String objAsJson = gson.toJson(this);
-        GameObject obj = gson.fromJson(objAsJson, GameObject.class);
+        // TODO: Prefab.copy()
+        GameObject obj = new GameObject();
 
         obj.generateUid();
 
@@ -252,27 +224,6 @@ public class GameObject {
     }
 
     public void imgui() {
-//        //region Prefab settings
-//        ImGui.beginChild("Show prefab and button override of " + this.hashCode(), ImGui.getContentRegionMaxX(), (!this.isPrefab ? 80 : 50), true);
-//
-//        ButtonColor btnCol = new ButtonColor(new Vector4f(14 / 255f, 14 / 255f, 28 / 255f, 1), COLOR_Blue, COLOR_DarkBlue);
-//        Vector2f btnSize = new Vector2f(ImGui.getContentRegionAvailX(), 30f);
-//        if (this.isPrefab) {
-//            if (NiceImGui.drawButton("Override all children", btnCol, btnSize)) {
-//                this.overrideAllChildGameObject();
-//            }
-//        } else {
-//            if (!this.parentId.isEmpty())
-//                NiceImGui.prefabShowingInInspectorsButton(this);
-//            if (NiceImGui.drawButton("Save as a new prefab", btnCol, btnSize)) {
-//                this.setAsPrefab();
-//            }
-//        }
-//        ImGui.endChild();
-//
-//        ImGui.separator();
-//        //endregion
-
         if (!this.isPrefab) {
             Vector4f warning_col = COLOR_Yellow;
             String warning_text = "This is the CHILD game object\nYou CANNOT change anything (except position)!\nIf you want to change something, click prefab";
@@ -295,24 +246,9 @@ public class GameObject {
             ImGui.textColored(Settings.NAME_COLOR.x, Settings.NAME_COLOR.y, Settings.NAME_COLOR.z, Settings.NAME_COLOR.w,
                     this.name);
         }else {
-            if (!this.tag.equals("Portal")) {
-                this.name = NiceImGui.inputText("Name", this.name, "Name of " + this.hashCode());
-            }
-            else {
-                ImGui.textColored(Settings.NAME_COLOR.x, Settings.NAME_COLOR.y, Settings.NAME_COLOR.z, Settings.NAME_COLOR.w,
-                        "Name: " + this.name);
-            }
-        }
-
-        if (!this.tag.equals("Portal")) {
-            this.tag = NiceImGui.inputText("Tag: ", this.tag, this.getUid() + "tag");
-        }
-        else {
             ImGui.textColored(Settings.NAME_COLOR.x, Settings.NAME_COLOR.y, Settings.NAME_COLOR.z, Settings.NAME_COLOR.w,
-                   "Tag: " + this.tag);
+                    "Name: " + this.name);
         }
-
-
 
         ImGui.separator();
 
@@ -344,24 +280,8 @@ public class GameObject {
             }
         }
 
-        if (this.tag.equals("Portal")){
-            if (ImGui.collapsingHeader("Portal Component")) {
-                this.getComponent(PortalComponent.class).imgui();
-            }
-
-        }
-
         if (this.isPrefab()) {
-            if (!this.tag.equals("Portal")) {
-                this.overrideAllChildGameObject();
-            } else {
-                ImGui.separator();
-                ImGui.text("This is Portal prefab, you need to click button to override all child object");
-                if (ImGui.button("Override all Portal")){
-                    this.overrideAllChildGameObject();
-                }
-                ImGui.separator();
-            }
+            this.overrideAllChildGameObject();
         }
     }
 
@@ -429,10 +349,6 @@ public class GameObject {
 
     public boolean doSerialization() {
         return this.doSerialization;
-    }
-
-    public boolean compareTag(String tag) {
-        return this.tag.equals(tag);
     }
 
     public boolean isPrefab() {

@@ -3,7 +3,6 @@ package util;
 import components.Sprite;
 import editor.Debug;
 import editor.MessageBox;
-import editor.ReferenceType;
 import renderer.Texture;
 import system.Spritesheet;
 
@@ -16,7 +15,26 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+
+
 public class FileUtils {
+    public enum ICON_NAME {
+        FOLDER,
+        LEFT_ARROW,
+        RIGHT_ARROW,
+        JAVA,
+        FILE,
+        SOUND,
+        GAME_OBJECT,
+        REMOVE,
+        ADD,
+        DEMO,
+        RESTART,
+        PROJECT,
+        ENABLE_CONSTRAINED_PROPORTIONS,
+        DISABLE_CONSTRAINED_PROPORTIONS,
+    }
+
 
     public final static Map<ICON_NAME, String> icons = new HashMap<>() {
         {
@@ -39,77 +57,6 @@ public class FileUtils {
     final static String defaultAssetFolder = "textures";
     final static String defaultSprite = "system-assets/images/Default Sprite.png";
     private static List<String> imageExtensions = List.of("jpg", "jpeg", "png");
-    private static List<String> soundExtensions = List.of("ogg", "mp3", "wav", "flac", "aiff", "m4a");
-
-    public static List<File> getAllFiles() {
-        return getAllFiles(defaultAssetFolder);
-    }
-
-    public static List<File> getAllFiles(String folder) {
-        List<File> files = new ArrayList<>();
-        File directory = new File(folder);
-        if (directory.isDirectory()) {
-            File[] filesList = directory.listFiles();
-            if (filesList != null) {
-                for (File file : filesList) {
-                    if (file.isFile()) {
-                        files.add(file);
-                    } else if (file.isDirectory()) {
-                        files.addAll(getAllFiles(file.getPath()));
-                    }
-                }
-            }
-        }
-        return files;
-    }
-
-    // Get file only,
-    public static List<File> getFilesWithReferenceType(ReferenceType referenceType) {
-        List<File> files = new ArrayList<>();
-
-        switch (referenceType) {
-            case SPRITE -> {
-                files.addAll(getAllFilesWithExtensions(imageExtensions));
-            }
-            case JAVA -> {
-                List<String> tmp = List.of("java");
-                files.addAll(getAllFilesWithExtensions(tmp));
-            }
-            case SOUND -> {
-                files.addAll(getAllFilesWithExtensions(soundExtensions));
-            }
-        }
-
-        return files;
-    }
-
-    public static List<File> getAllFilesWithExtensions(List<String> extensions) {
-        return getAllFilesWithExtensions(defaultAssetFolder, extensions);
-    }
-
-    public static List<File> getAllFilesWithExtensions(String folder, List<String> extensions) {
-        List<File> files = new ArrayList<>();
-        File directory = new File(folder);
-        if (directory.isDirectory()) {
-            File[] filesList = directory.listFiles();
-            if (filesList != null) {
-                for (File file : filesList) {
-                    if (file.isFile()) {
-                        String fileName = file.getName();
-                        for (String extension : extensions) {
-                            if (fileName.endsWith(extension)) {
-                                files.add(file);
-                                break;
-                            }
-                        }
-                    } else if (file.isDirectory()) {
-                        files.addAll(getAllFilesWithExtensions(file.getPath(), extensions));
-                    }
-                }
-            }
-        }
-        return files;
-    }
 
     public static boolean isImageFile(File file) {
         String fileName = file.getName();
@@ -121,22 +68,6 @@ public class FileUtils {
             }
         }
         return false;
-    }
-
-    public static boolean isSoundFile(File file) {
-        String extension = getFileExtension(file.getName());
-        for (String ext : soundExtensions) {
-            if (ext.equals(extension)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public static boolean checkFileExtension(String ext, File file) {
-        String fileName = file.getName();
-        String extension = fileName.substring(fileName.lastIndexOf(".") + 1).toLowerCase();
-        return ext.equals(extension);
     }
 
     public static void copyFile(File srcFile, File desFile) {
@@ -198,27 +129,6 @@ public class FileUtils {
         }
     }
 
-    public static Sprite getIconByFile(File file) {
-        Sprite spr = new Sprite();
-
-        String extension = getFileExtension(file.getName()).toLowerCase();
-
-        if (isImageFile(file)) {
-            spr.setTexture(AssetPool.getTexture(file.getPath()));
-            spr.calcWidthAndHeight();
-        } else if (extension.equals("java")) {
-            spr.setTexture(AssetPool.getTexture(icons.get(ICON_NAME.JAVA)));
-            spr.calcWidthAndHeight();
-        } else if (isSoundFile(file)) {
-            spr.setTexture(AssetPool.getTexture(icons.get(ICON_NAME.SOUND)));
-            spr.calcWidthAndHeight();
-        } else {
-            spr.setTexture(AssetPool.getTexture(icons.get(ICON_NAME.FILE)));
-            spr.calcWidthAndHeight();
-        }
-        return spr;
-    }
-
     public static Sprite getIcon(ICON_NAME iconName) {
         Sprite spr = new Sprite();
         spr.setTexture(AssetPool.getTexture(icons.get(iconName)));
@@ -233,22 +143,5 @@ public class FileUtils {
 
     public static Sprite getDefaultSprite() {
         return new Sprite(defaultSprite);
-    }
-
-    public enum ICON_NAME {
-        FOLDER,
-        LEFT_ARROW,
-        RIGHT_ARROW,
-        JAVA,
-        FILE,
-        SOUND,
-        GAME_OBJECT,
-        REMOVE,
-        ADD,
-        DEMO,
-        RESTART,
-        PROJECT,
-        ENABLE_CONSTRAINED_PROPORTIONS,
-        DISABLE_CONSTRAINED_PROPORTIONS,
     }
 }

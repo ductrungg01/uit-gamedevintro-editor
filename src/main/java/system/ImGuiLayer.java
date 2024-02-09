@@ -25,7 +25,7 @@ public class ImGuiLayer {
     private long glfwWindow;
     private InspectorWindow inspectorWindow;
     private MenuBar menuBar;
-    private AssetsWindow assetsWindow;
+    private TexturesWindow texturesWindow;
     private MessageBox messageBox;
     //endregion
 
@@ -34,7 +34,7 @@ public class ImGuiLayer {
         this.glfwWindow = glfwWindow;
         this.inspectorWindow = new InspectorWindow(pickingTexture);
         this.menuBar = new MenuBar();
-        this.assetsWindow = new AssetsWindow();
+        this.texturesWindow = new TexturesWindow();
         this.messageBox = new MessageBox();
     }
     //endregion
@@ -166,24 +166,14 @@ public class ImGuiLayer {
 
         GameViewWindow.getInstance().imgui();
         SceneHierarchyWindow.getInstance().imgui();
-        //ConsoleWindow.getInstance().imgui();
         inspectorWindow.imgui();
 
-        if (!Window.get().runtimePlaying) {
-            //SpritesheetWindow.getInstance().imgui();
-            SceneList.update();
-            FileDialog.getInstance().render();
-            AddingSpritesheetWindow.getInstance().spritesheetPreview();
-            AddingNewPrefabWindow.getInstance().imgui();
-            SelectSpriteWindow.getInstance().imgui();
-            PrefabsWindow.getInstance().imgui();
-            OpenSceneWindow.imgui();
-            CreateNewSceneWindow.imgui();
-            ConsoleWindow.getInstance().imgui();
+        ScenesWindow.update();
+        PrefabsWindow.getInstance().imgui();
+        ConsoleWindow.getInstance().imgui();
 
-            assetsWindow.imgui();
-            messageBox.imgui();
-        }
+        texturesWindow.imgui();
+        messageBox.imgui();
         endFrame();
     }
 
