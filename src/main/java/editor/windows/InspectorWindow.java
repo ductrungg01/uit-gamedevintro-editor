@@ -1,6 +1,7 @@
 package editor.windows;
 
 import components.*;
+import editor.Debug;
 import editor.NiceImGui;
 import editor.uihelper.ButtonColor;
 import imgui.ImGui;

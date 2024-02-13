@@ -161,8 +161,6 @@ public class StateMachine extends Component {
 
     @Override
     public void imgui() {
-        if (!this.gameObject.isPrefab()) return;
-
         List<String> stateTitles = new ArrayList<>();
 
         boolean isDefaultStateAvailable = false;

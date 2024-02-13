@@ -3,6 +3,7 @@ package editor;
 import components.*;
 import editor.gizmo.Gizmo;
 import editor.gizmo.GizmoSystem;
+import editor.windows.GameViewWindow;
 import editor.windows.InspectorWindow;
 import editor.windows.HierarchyWindow;
 import system.GameObject;
@@ -34,6 +35,8 @@ public class MouseControls {
     //endregion
 
     public void editorUpdate(float dt) {
+        if (!GameViewWindow.getInstance().getWantCaptureMouse()) return;
+
         debounce -= dt;
         PickingTexture pickingTexture = Window.getImguiLayer().getInspectorWindow().getPickingTexture();
         Scene currentScene = Window.getScene();

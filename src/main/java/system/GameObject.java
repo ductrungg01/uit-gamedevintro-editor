@@ -1,6 +1,11 @@
 package system;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import components.*;
+import deserializers.ComponentDeserializer;
+import deserializers.GameObjectDeserializer;
+import deserializers.PrefabDeserializer;
 import imgui.ImGui;
 import imgui.type.ImBoolean;
 import org.joml.Vector2f;
@@ -91,8 +96,14 @@ public class GameObject {
     }
 
     public GameObject copy() {
-        // TODO: Gameobject.copy()
-        GameObject obj = new GameObject();
+        // TODO: come up with cleaner solution
+        Gson gson = new GsonBuilder()
+                .registerTypeAdapter(Component.class, new ComponentDeserializer())
+                .registerTypeAdapter(GameObject.class, new GameObjectDeserializer())
+                .enableComplexMapKeySerialization()
+                .create();
+        String objAsJson = gson.toJson(this);
+        GameObject obj = gson.fromJson(objAsJson, GameObject.class);
 
         obj.generateUid();
 
@@ -107,8 +118,14 @@ public class GameObject {
 
     // Prefab create a child game object
     public GameObject copyFromPrefab() {
-        // TODO: Prefab.copy()
-        GameObject obj = new GameObject();
+        // TODO: come up with cleaner solution
+        Gson gson = new GsonBuilder()
+                .registerTypeAdapter(Component.class, new ComponentDeserializer())
+                .registerTypeAdapter(GameObject.class, new PrefabDeserializer())
+                .enableComplexMapKeySerialization()
+                .create();
+        String objAsJson = gson.toJson(this);
+        GameObject obj = gson.fromJson(objAsJson, GameObject.class);
 
         obj.generateUid();
 

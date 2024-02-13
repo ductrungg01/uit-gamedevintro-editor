@@ -42,10 +42,6 @@ public class ConsoleWindow {
 
         ImGui.begin("Console");
 
-        if (NiceImGui.drawButton("Clear", new ButtonColor())) {
-            debugLogs.clear();
-        }
-
         ImGui.beginTabBar("consoleItems");
 
         if (debugLogs.size() > MAX_DEBUGLOG_SIZE) {

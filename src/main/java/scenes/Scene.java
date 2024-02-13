@@ -326,10 +326,12 @@ public class Scene {
 
         AnimationState animationState = new AnimationState();
         animationState.title = s[0];
+        animationState.setLoop(true);
 
         for (int i = 1; i < s.length; i += 2){
             int spriteId = Integer.parseInt(s[i]);
-            int time = Integer.parseInt(s[i + 1]);
+            float time = Integer.parseInt(s[i + 1]);
+            time /= 1000f;
             Sprite sprite = ProjectUtils.getSprite(spriteId);
             animationState.addFrame(sprite, time);
         }
