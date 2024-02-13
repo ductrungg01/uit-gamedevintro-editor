@@ -45,6 +45,15 @@ public class StateMachine extends Component {
         state.start();
     }
 
+    public boolean isExistedState(String stateName){
+        for (AnimationState state: states) {
+            if (state.title.equals(stateName)){
+                return true;
+            }
+        }
+        return false;
+    }
+
     public void setDefaultState(String animationTitle) {
         for (AnimationState state : states) {
             if (state.title.equals(animationTitle)) {

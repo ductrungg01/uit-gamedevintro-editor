@@ -19,7 +19,7 @@ public class MouseListener {
     //region Fields
     private static MouseListener instance;
     private double scrollX, scrollY;
-    private double xPos, yPos, worldX, worldY, lastX, lastY, lastWorldX, lastWorldY;
+    private double xPos, yPos;
     private boolean mouseButtonPressed[] = new boolean[3];
     private boolean mouseBeginPress[] = new boolean[3];
     private boolean mouseRelease[] = new boolean[3];
@@ -35,8 +35,6 @@ public class MouseListener {
         this.scrollY = 0.0;
         this.xPos = 0.0;
         this.yPos = 0.0;
-        this.lastX = 0.0;
-        this.lastY = 0.0;
 
     }
     //endregion
@@ -109,8 +107,6 @@ public class MouseListener {
         get().scrollY = 0.0;
         get().xPos = 0.0;
         get().yPos = 0.0;
-        get().lastX = 0.0;
-        get().lastY = 0.0;
         get().mouseButtonDown = 0;
         get().isDragging = false;
         Arrays.fill(get().mouseButtonPressed, false);
@@ -133,10 +129,6 @@ public class MouseListener {
             get().isDragging = true;
         }
 
-        get().lastX = get().xPos;
-        get().lastY = get().yPos;
-        get().lastWorldX = get().worldX;
-        get().lastWorldY = get().worldY;
         get().xPos = xPos;
         get().yPos = yPos;
     }
@@ -173,7 +165,6 @@ public class MouseListener {
     }
 
     public static void mouseDropCallback(long window, int count, long names) {
-
         //get size widget
         ImVec2 pos = TexturesWindow.getWidgetPos();
         ImVec2 size = TexturesWindow.getWidgetSize();

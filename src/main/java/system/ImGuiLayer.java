@@ -97,9 +97,7 @@ public class ImGuiLayer {
                 ImGui.setWindowFocus(null);
             }
 
-//            if (!io.getWantCaptureMouse()) { //|| GameViewWindow.getInstance().getWantCaptureMouse()) {
             MouseListener.mouseButtonCallback(w, button, action, mods);
-//            }
         });
 
         glfwSetScrollCallback(glfwWindow, (w, xOffset, yOffset) -> {
@@ -165,14 +163,15 @@ public class ImGuiLayer {
         currentScene.imgui();
 
         GameViewWindow.getInstance().imgui();
-        SceneHierarchyWindow.getInstance().imgui();
+        HierarchyWindow.getInstance().imgui();
         inspectorWindow.imgui();
 
         ScenesWindow.update();
         PrefabsWindow.getInstance().imgui();
         ConsoleWindow.getInstance().imgui();
 
-        texturesWindow.imgui();
+        //texturesWindow.imgui();
+        ImportProjectDataWindow.imgui();
         messageBox.imgui();
         endFrame();
     }

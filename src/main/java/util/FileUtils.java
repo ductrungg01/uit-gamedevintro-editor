@@ -18,6 +18,7 @@ import java.util.Map;
 
 
 public class FileUtils {
+
     public enum ICON_NAME {
         FOLDER,
         LEFT_ARROW,
@@ -54,7 +55,6 @@ public class FileUtils {
             put(ICON_NAME.DISABLE_CONSTRAINED_PROPORTIONS, "system-assets/images/DisableConstrainedProportions-icon.png");
         }
     };
-    final static String defaultAssetFolder = "textures";
     final static String defaultSprite = "system-assets/images/Default Sprite.png";
     private static List<String> imageExtensions = List.of("jpg", "jpeg", "png");
 
@@ -115,17 +115,6 @@ public class FileUtils {
             return filename.substring(0, dotIndex);
         } else {
             return filename;
-        }
-    }
-
-    public static String getFileName(String filePath) {
-        int slashIndex = filePath.lastIndexOf('/');
-        if (slashIndex == -1) slashIndex = filePath.lastIndexOf('\\');
-
-        if (slashIndex == -1) {
-            return filePath;
-        } else {
-            return filePath.substring(slashIndex + 1);
         }
     }
 

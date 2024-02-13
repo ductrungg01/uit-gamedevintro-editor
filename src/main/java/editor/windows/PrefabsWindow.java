@@ -64,7 +64,7 @@ public class PrefabsWindow {
             }
 
             if (isClick) {
-                SceneHierarchyWindow.clearSelectedGameObject();
+                HierarchyWindow.clearSelectedGameObject();
                 Window.getImguiLayer().getInspectorWindow().setActiveGameObject(prefab);
             }
             if (isCreateChild) {

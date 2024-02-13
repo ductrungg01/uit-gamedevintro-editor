@@ -7,6 +7,7 @@ import org.joml.Vector4f;
 import org.lwjgl.glfw.GLFW;
 import system.Window;
 import util.FileUtils;
+import util.ProjectUtils;
 import util.SceneUtils;
 import util.Settings;
 
@@ -41,7 +42,7 @@ public class ScenesWindow {
                 ImGui.endTooltip();
 
                 if (ImGui.isMouseDoubleClicked(GLFW.GLFW_MOUSE_BUTTON_LEFT)) {
-                    Window.get().changeCurrentScene(s,  true);
+                    Window.get().changeCurrentScene(s);
                 }
             }
         }
@@ -52,6 +53,22 @@ public class ScenesWindow {
     static void getAllScene() {
         scenes.clear();
 
-        scenes = SceneUtils.getAllScene();
+        scenes = ProjectUtils.convertToList(ProjectUtils.scenes);
+
+        for (int i = 0; i < scenes.size(); i++){
+            String scene = scenes.get(i);
+            scene = getSceneName(scene);
+            scenes.set(i, scene);
+        }
+    }
+
+    static private String getSceneName(String scenePath){
+        int lastSlashIndex = scenePath.lastIndexOf("\\");
+
+        String newSceneName = scenePath.substring(lastSlashIndex + 1);
+
+        newSceneName = FileUtils.getFileNameWithoutExtension(newSceneName);
+
+        return newSceneName;
     }
 }

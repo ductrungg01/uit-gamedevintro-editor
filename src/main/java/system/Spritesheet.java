@@ -18,7 +18,6 @@ public class Spritesheet {
     public int spacingY;
     //endregion
 
-    //region Constructors
     public Spritesheet(Texture texture, int spriteWidth, int spriteHeight, int numSprites, int spacingX, int spacingY) {
         this.sprites = new ArrayList<>();
 
@@ -57,7 +56,6 @@ public class Spritesheet {
             }
         }
     }
-    //endregion
 
     //region Properties
     public Sprite getSprite(int index) {

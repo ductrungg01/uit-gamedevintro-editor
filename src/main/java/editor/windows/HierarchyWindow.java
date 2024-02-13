@@ -1,7 +1,6 @@
 package editor.windows;
 
 import components.EditorCamera;
-import components.SpriteRenderer;
 import editor.NiceImGui;
 import editor.uihelper.ButtonColor;
 import imgui.ImGui;
@@ -9,33 +8,30 @@ import imgui.flag.ImGuiTreeNodeFlags;
 import org.joml.Vector2f;
 import system.Camera;
 import system.GameObject;
-import system.Transform;
 import system.Window;
-import util.FileUtils;
 import util.Settings;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static editor.uihelper.NiceShortCall.*;
 
-public class SceneHierarchyWindow {
+public class HierarchyWindow {
     //region Singleton
-    private SceneHierarchyWindow() {
+    private HierarchyWindow() {
     }
 
-    private static SceneHierarchyWindow instance = null;
+    private static HierarchyWindow instance = null;
 
-    public static SceneHierarchyWindow getInstance() {
+    public static HierarchyWindow getInstance() {
         if (instance == null) {
-            instance = new SceneHierarchyWindow();
+            instance = new HierarchyWindow();
         }
 
         return instance;
     }
     //endregion
 
-    private static String payloadDragDropType = "SceneHierarchy";
+    private static String payloadDragDropType = "Hierarchy";
     private static GameObject selectedGameObject = null;
 
     public void imgui() {
@@ -77,8 +73,7 @@ public class SceneHierarchyWindow {
 
             if (ImGui.beginTabItem("System")) {
                 NiceImGui.colorPicker4("Camera's clear color", Window.getScene().camera().clearColor);
-                NiceImGui.drawVec2Control("ScreenSize", Camera.screenSize, "Screensize");
-
+                ImGui.text("Screen size: (" + Camera.screenSize.x + ":" + Camera.screenSize.y + ")");
                 ImGui.endTabItem();
             }
 

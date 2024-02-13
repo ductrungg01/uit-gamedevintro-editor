@@ -1,6 +1,6 @@
 package system;
 
-import editor.windows.SceneHierarchyWindow;
+import editor.windows.HierarchyWindow;
 import observers.EventSystem;
 import observers.Observer;
 import observers.events.Event;
@@ -20,6 +20,7 @@ import scenes.EditorSceneInitializer;
 import scenes.Scene;
 import scenes.SceneInitializer;
 import util.AssetPool;
+import util.ProjectUtils;
 import util.SceneUtils;
 import util.Time;
 
@@ -36,6 +37,7 @@ import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
 public class Window implements Observer {
+    // region Fields
     private static Window window = null;
     private static Scene currentScene;
     private static boolean isWindowFocused = true;
@@ -47,6 +49,7 @@ public class Window implements Observer {
     private PickingTexture pickingTexture;
     private long audioContext;
     private long audioDevice;
+    // endregion
 
     private Window() {
         this.width = 3840;
@@ -63,8 +66,12 @@ public class Window implements Observer {
 
         getImguiLayer().getInspectorWindow().setActiveGameObject(null);
         currentScene = new Scene(sceneInitializer);
+
         currentScene.init();
+        currentScene.load();
         currentScene.start();
+
+        Camera.screenSize = ProjectUtils.screenSize;
     }
 
     public static Window get() {
@@ -98,7 +105,6 @@ public class Window implements Observer {
     public static Framebuffer getFramebuffer() {
         return get().framebuffer;
     }
-    //endregion
 
     public static float getTargetAspectRatio() {
         return 16.0f / 9.0f;
@@ -280,33 +286,18 @@ public class Window implements Observer {
         Window.changeScene(new EditorSceneInitializer());
     }
 
-    public void changeCurrentScene(String sceneName, boolean needToReload) {
+    public void changeCurrentScene(String sceneName) {
         if (sceneName.equals(SceneUtils.CURRENT_SCENE)) {
             return;
         }
 
         SceneUtils.CURRENT_SCENE = sceneName;
         glfwSetWindowTitle(glfwWindow, this.title + " - " + sceneName);
-        SceneHierarchyWindow.clearSelectedGameObject();
+        HierarchyWindow.clearSelectedGameObject();
         Window.getImguiLayer().getInspectorWindow().clearSelected();
-
-        saveCurrentSceneName();
-    }
-
-    private void saveCurrentSceneName() {
-        try {
-            FileWriter writer = new FileWriter("EngineConfig.ini");
-
-            writer.write("PREVIOUS SCENE:" + SceneUtils.CURRENT_SCENE);
-
-            writer.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     void SetWindowIcon() {
-        //region Set icon
         // Load the image file
         BufferedImage image = null;
         try {
@@ -335,7 +326,6 @@ public class Window implements Observer {
 
         // Set the window icon
         glfwSetWindowIcon(glfwWindow, icons);
-        //endregion
     }
 
     @Override
@@ -343,7 +333,7 @@ public class Window implements Observer {
         switch (event.type) {
             case GameEngineStart:
                 Window.getImguiLayer().getInspectorWindow().clearSelected();
-                SceneHierarchyWindow.clearSelectedGameObject();
+                HierarchyWindow.clearSelectedGameObject();
                 currentScene.removeAllGameObjectInScene();
                 Window.changeScene(new EditorSceneInitializer());
                 break;
@@ -353,4 +343,5 @@ public class Window implements Observer {
                 break;
         }
     }
+    //endregion
 }

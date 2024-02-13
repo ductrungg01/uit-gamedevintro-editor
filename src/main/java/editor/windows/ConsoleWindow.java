@@ -52,21 +52,18 @@ public class ConsoleWindow {
             debugLogs.remove(0);
         }
 
-        if (ImGui.beginTabItem("Debug")) {
-            for (int i = 0; i < debugLogs.size(); i++) {
-                ImGui.text(debugLogs.get(i));
-            }
+        for (int i = 0; i < debugLogs.size(); i++) {
+            ImGui.text(debugLogs.get(i));
+        }
 
-            if (ImGui.getScrollY() < ImGui.getScrollMaxY()) {
-                scrollToBottom_debug = false;
-            } else {
-                scrollToBottom_debug = true;
-            }
+        if (ImGui.getScrollY() < ImGui.getScrollMaxY()) {
+            scrollToBottom_debug = false;
+        } else {
+            scrollToBottom_debug = true;
+        }
 
-            if (scrollToBottom_debug || firstFrame) {
-                ImGui.setScrollHereY(1.0f);
-            }
-            ImGui.endTabItem();
+        if (scrollToBottom_debug || firstFrame) {
+            ImGui.setScrollHereY(1.0f);
         }
 
         ImGui.endTabBar();

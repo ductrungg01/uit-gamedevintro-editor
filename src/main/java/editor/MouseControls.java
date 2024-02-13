@@ -3,9 +3,8 @@ package editor;
 import components.*;
 import editor.gizmo.Gizmo;
 import editor.gizmo.GizmoSystem;
-import editor.windows.GameViewWindow;
 import editor.windows.InspectorWindow;
-import editor.windows.SceneHierarchyWindow;
+import editor.windows.HierarchyWindow;
 import system.GameObject;
 import system.KeyListener;
 import system.MouseListener;
@@ -71,16 +70,16 @@ public class MouseControls {
             if (pickedObj != null && pickedObj.getComponent(NonPickable.class) == null) {
                 if (pickedObj.name.equals("LevelEditorSceneInitializer")) {
                     Window.getImguiLayer().getInspectorWindow().clearSelected();
-                    SceneHierarchyWindow.clearSelectedGameObject();
+                    HierarchyWindow.clearSelectedGameObject();
                 } else {
                     Window.getImguiLayer().getInspectorWindow().setActiveGameObject(pickedObj);
-                    SceneHierarchyWindow.setSelectedGameObject(pickedObj);
+                    HierarchyWindow.setSelectedGameObject(pickedObj);
                 }
                 GizmoSystem.setUsingTranslateGizmo();
             } else if (pickedObj == null && !MouseListener.isDragging()) {
                 if (Gizmo.getUsingGizmo()) return;
                 Window.getImguiLayer().getInspectorWindow().clearSelected();
-                SceneHierarchyWindow.clearSelectedGameObject();
+                HierarchyWindow.clearSelectedGameObject();
             }
             this.debounce = debounceTime;
         } else if (MouseListener.isDragging() && MouseListener.mouseButtonDown(GLFW_MOUSE_BUTTON_LEFT)) {
