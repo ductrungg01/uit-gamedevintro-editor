@@ -1,1 +1,1 @@
-# UIT-GameDevIntro-EditorExtension
+# uit-gamedevintro-editor
