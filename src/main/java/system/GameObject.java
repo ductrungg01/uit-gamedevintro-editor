@@ -15,24 +15,31 @@ import util.Settings;
 
 import javax.swing.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static editor.uihelper.NiceShortCall.*;
 
 public class GameObject {
     //region Fields
-    public static List<GameObject> PrefabLists = new ArrayList<>();
-    private static int ID_COUNTER = 0;
+    protected static int ID_COUNTER = 0;
     public String name = "";
     public String assetFilePath = "";
+
     public boolean isPrefab = false;
     public String prefabId = "";
     public String parentId = "";
+    public boolean isPlatform = false;
+    public int platformId = -1;
+    public boolean isSpecialObject = false;
+    public static Map<Integer, List<GameObject>> platforms = new HashMap<>();
+
     public transient Transform transform;
-    private int uid = -1;
+    protected int uid = -1;
     private List<Component> components = new ArrayList<>();
     private boolean doSerialization = false;
-    private boolean isDead = false;
+    protected boolean isDead = false;
     //endregion
 
     //region Constructors
@@ -116,32 +123,6 @@ public class GameObject {
         return obj;
     }
 
-    // Prefab create a child game object
-    public GameObject copyFromPrefab() {
-        // TODO: come up with cleaner solution
-        Gson gson = new GsonBuilder()
-                .registerTypeAdapter(Component.class, new ComponentDeserializer())
-                .registerTypeAdapter(GameObject.class, new PrefabDeserializer())
-                .enableComplexMapKeySerialization()
-                .create();
-        String objAsJson = gson.toJson(this);
-        GameObject obj = gson.fromJson(objAsJson, GameObject.class);
-
-        obj.generateUid();
-
-        for (Component c : obj.getAllComponents()) {
-            c.generateId();
-        }
-
-        obj.refreshTexture();
-
-        obj.prefabId = "";
-        obj.parentId = this.prefabId;
-        obj.isPrefab = false;
-
-        return obj;
-    }
-
     // TODO: This is temporary method before we find out the correctly method
     public void refreshTexture() {
         if (this.getComponent(SpriteRenderer.class) != null) {
@@ -178,16 +159,8 @@ public class GameObject {
     }
 
     public void imgui() {
-        if (!this.isPrefab) {
-            ImGui.text("Object's name: ");
-            ImGui.sameLine();
-
-            ImGui.textColored(Settings.NAME_COLOR.x, Settings.NAME_COLOR.y, Settings.NAME_COLOR.z, Settings.NAME_COLOR.w,
-                    this.name);
-        }else {
-            ImGui.textColored(Settings.NAME_COLOR.x, Settings.NAME_COLOR.y, Settings.NAME_COLOR.z, Settings.NAME_COLOR.w,
-                    "Name: " + this.name);
-        }
+        ImGui.textColored(Settings.NAME_COLOR.x, Settings.NAME_COLOR.y, Settings.NAME_COLOR.z, Settings.NAME_COLOR.w,
+                "Name: " + this.name);
 
         ImGui.separator();
 
@@ -268,18 +241,6 @@ public class GameObject {
 
     public boolean isPrefab() {
         return this.isPrefab;
-    }
-
-    public GameObject generateChildGameObject() {
-        if (!this.isPrefab) return null;
-        GameObject newGo = this.copyFromPrefab();
-
-        newGo.isPrefab = false;
-        newGo.prefabId = "";
-        newGo.isDead = false;
-        newGo.parentId = this.prefabId;
-
-        return newGo;
     }
     //endregion
 }

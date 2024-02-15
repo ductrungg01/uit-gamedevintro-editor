@@ -7,8 +7,8 @@ import static editor.uihelper.NiceShortCall.COLOR_Green;
 import static editor.uihelper.NiceShortCall.COLOR_Red;
 
 public class Settings {
-    public static float GRID_WIDTH = 0.25f;
-    public static float GRID_HEIGHT = 0.25f;
+    public static float GRID_WIDTH = 16f;
+    public static float GRID_HEIGHT = 16f;
     public static Vector4f NAME_COLOR = COLOR_Green;
 
     public static float MIN_WIDTH_GROUP_WIDGET = 300f;

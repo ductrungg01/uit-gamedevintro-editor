@@ -8,6 +8,7 @@ import org.joml.Vector2f;
 import org.joml.Vector4f;
 import org.lwjgl.glfw.GLFW;
 import system.GameObject;
+import system.Prefab;
 import system.Window;
 import util.Settings;
 
@@ -47,8 +48,8 @@ public class PrefabsWindow {
         float windowX2 = windowPos.x + windowSize.x;
         ImVec2 itemSpacing = new ImVec2(ITEM_SPACING_DEFAULT.x, ITEM_SPACING_DEFAULT.y);
 
-        for (int i = 0; i < GameObject.PrefabLists.size(); i++) {
-            GameObject prefab = GameObject.PrefabLists.get(i);
+        for (int i = 0; i < Prefab.PrefabLists.size(); i++) {
+            Prefab prefab = Prefab.PrefabLists.get(i);
 
             isClick = false;
             isCreateChild = false;

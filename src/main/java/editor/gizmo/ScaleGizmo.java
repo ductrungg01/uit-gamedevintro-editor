@@ -17,6 +17,9 @@ public class ScaleGizmo extends Gizmo implements INonAddableComponent {
         super(scaleSprite, inspectorWindow);
         this.xAxisObject.name = "ScaleGizmo - xAxisObject";
         this.yAxisObject.name = "ScaleGizmo - yAxisObject";
+
+        this.xAxisObject.isSpecialObject = true;
+        this.yAxisObject.isSpecialObject = true;
     }
 
     @Override

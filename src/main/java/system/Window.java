@@ -4,6 +4,7 @@ import editor.windows.HierarchyWindow;
 import observers.EventSystem;
 import observers.Observer;
 import observers.events.Event;
+import org.joml.Vector2f;
 import org.joml.Vector4f;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFW;
@@ -30,6 +31,7 @@ import java.awt.image.BufferedImage;
 import java.io.*;
 import java.nio.ByteBuffer;
 
+import static observers.events.EventType.Export;
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.openal.ALC10.*;
@@ -72,6 +74,7 @@ public class Window implements Observer {
         currentScene.start();
 
         Camera.screenSize = ProjectUtils.screenSize;
+        Window.getScene().camera().position = new Vector2f(-150, -300);
     }
 
     public static Window get() {
@@ -114,7 +117,7 @@ public class Window implements Observer {
         return get().imGuiLayer;
     }
 
-    public void loop() {
+    public void loop() throws IOException {
         float beginTime = (float) glfwGetTime();
         float endTime;
         float dt = -1.0f;
@@ -186,6 +189,8 @@ public class Window implements Observer {
                 int response = JOptionPane.showConfirmDialog(null, "Close the editor?", "CLOSE", JOptionPane.YES_NO_OPTION);
                 if (response == JOptionPane.NO_OPTION) {
                     glfwSetWindowShouldClose(glfwWindow, false);
+                } else {
+                    EventSystem.notify(null, new Event(Export));
                 }
             }
         }
@@ -340,6 +345,7 @@ public class Window implements Observer {
             case Import:
                 break;
             case Export:
+                currentScene.exportScene();
                 break;
         }
     }

@@ -3,8 +3,12 @@ package editor.windows;
 import editor.NiceImGui;
 import editor.uihelper.ButtonColor;
 import imgui.ImGui;
+import observers.EventSystem;
+import observers.events.Event;
+import observers.events.EventType;
 import org.joml.Vector4f;
 import org.lwjgl.glfw.GLFW;
+import scenes.EditorSceneInitializer;
 import system.Window;
 import util.FileUtils;
 import util.ProjectUtils;
@@ -42,6 +46,9 @@ public class ScenesWindow {
                 ImGui.endTooltip();
 
                 if (ImGui.isMouseDoubleClicked(GLFW.GLFW_MOUSE_BUTTON_LEFT)) {
+                    EventSystem.notify(null, new Event(EventType.Export));
+                    ProjectUtils.changeCurrentSceneId(s);
+                    Window.changeScene(new EditorSceneInitializer());
                     Window.get().changeCurrentScene(s);
                 }
             }

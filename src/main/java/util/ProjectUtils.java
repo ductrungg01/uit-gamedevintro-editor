@@ -7,11 +7,16 @@ import org.joml.Vector2f;
 import renderer.Texture;
 import scenes.EditorSceneInitializer;
 import system.GameObject;
+import system.Prefab;
 import system.Window;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -59,16 +64,17 @@ public class ProjectUtils {
             return null;
         }
     }
-
+    public static String getSceneName(int index){
+        return FileUtils.getFileNameWithoutExtension(getScenePath(index).fileName());
+    }
     public static int getSceneId(String path){
         for (Map.Entry<Integer, String> entry : scenes.entrySet()) {
-            if (path.contains(entry.getValue())) {
+            if (entry.getValue().contains(path)) {
                 return entry.getKey();
             }
         }
         return NULL_SCENE_ID;
     }
-
     public static List<String> convertToList(Map<Integer, String> mp){
         List<String> convertedList = new ArrayList<>();
 
@@ -78,11 +84,13 @@ public class ProjectUtils {
 
         return convertedList;
     }
-
     public static CustomFileUtils getCurrentScenePath(){
         if (currentScene == NULL_SCENE_ID) return null;
 
         return getScenePath(currentScene);
+    }
+    public static void changeCurrentSceneId(String newSceneName){
+        currentScene = getSceneId(newSceneName);
     }
     public static Texture getTexture(int id){
         if (!textures.containsKey(id)) {
@@ -94,7 +102,6 @@ public class ProjectUtils {
         AssetPool.getTexture(texture.getFilePath());
         return texture;
     }
-
     public static Sprite getSprite(int id){
         if (!sprites.containsKey(id)) {
             return null;
@@ -102,7 +109,13 @@ public class ProjectUtils {
 
         return sprites.get(id);
     }
+    public static int getSpriteId(Sprite sprite){
+        for (Map.Entry<Integer, Sprite> entry : sprites.entrySet()) {
+            if (entry.getValue() == sprite) return entry.getKey();
+        }
 
+        return -100000;
+    }
     public static void addSpite(int id, Vector2f left_top_pos, Vector2f right_bottom_pos, int textureId){
         if (sprites.containsKey(id)){
             System.out.println("[ERROR] Sprite has ID = " + id + " is exited already");
@@ -138,7 +151,23 @@ public class ProjectUtils {
         scenes = new HashMap<>();
         textures = new HashMap<>();
         sprites = new HashMap<>();
-        GameObject.PrefabLists.clear();
+        Prefab.PrefabLists.clear();
+    }
+
+    public static void removeFileInExportFolder() throws IOException {
+        String directoryPath = "./export/";
+        Path directory = Paths.get(directoryPath);
+        if (!Files.isDirectory(directory)) {
+            throw new IllegalArgumentException(directoryPath + " | Cannot find this directory");
+        }
+        Files.list(directory)
+                .forEach(file -> {
+                    try {
+                        Files.delete(file);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                });
     }
 
     public static void loadProject() {
@@ -151,6 +180,8 @@ public class ProjectUtils {
         ImportProjectDataWindow.close();
 
         Window.changeScene(new EditorSceneInitializer());
+
+        Window.get().changeCurrentScene(getSceneName(startScene));
     }
 
     //region Parse project file

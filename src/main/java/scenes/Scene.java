@@ -5,14 +5,14 @@ import editor.*;
 import org.joml.Vector2f;
 import org.lwjgl.system.CallbackI;
 import renderer.Renderer;
+import renderer.Texture;
 import system.*;
 import util.CustomFileUtils;
 import util.FileUtils;
 import util.ProjectUtils;
+import util.SceneUtils;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.*;
 
 public class Scene {
@@ -165,23 +165,28 @@ public class Scene {
         public static final int SCENE_FILE_SECTION_OBJECTS = 2;
     }
 
-    private static class OBJECT_ID {
-        public static final  int NONE = -10000;
-        public static final int MARIO = 0;
-        public static final int BRICK = 1;
-        public static final int GOOMBA = 2;
-        public static final int KOOPAS = 3;
-        public static final int COIN = 4;
-        public static final int PLATFORM = 5;
-        public static final int PORTAL = 50;
+    List<String> assets = new ArrayList<>();
 
+    void resetSceneInformation(){
+        assets = new ArrayList<>();
+
+        for (GameObject go: Window.getScene().getGameObjects()) {
+            if (!go.isSpecialObject)
+                go.destroy();
+        }
+
+        GameObject.platforms.clear();
+        Prefab.PrefabLists.clear();
+
+        ProjectUtils.sprites.clear();
     }
 
     void parseSceneFile(){
         if (filePath == null || filePath.fileAbsolutePath().isEmpty()) return;
 
+        resetSceneInformation();
+
         int section = SceneConstants.SCENE_FILE_SECTION_UNKNOWN;
-        int object_section = OBJECT_ID.NONE;
         try {
             BufferedReader reader = new BufferedReader(new FileReader(filePath.fileAbsolutePath()));
 
@@ -190,25 +195,7 @@ public class Scene {
             while ((line = reader.readLine()) != null) {
                 line.trim();
 
-                if (line.startsWith("#")) {
-                    if (section == SceneConstants.SCENE_FILE_SECTION_OBJECTS) {
-                        line.substring(1, line.length());
-                        line.trim();
-                        line = line.toUpperCase();
-
-                        if (line.equals("MARIO")) object_section = OBJECT_ID.MARIO;
-                        else if (line.equals("BRICKS")) object_section = OBJECT_ID.BRICK;
-                        else if (line.equals("GOOMBA")) object_section = OBJECT_ID.GOOMBA;
-                        else if (line.equals("KOOPAS")) object_section = OBJECT_ID.KOOPAS;
-                        else if (line.equals("COIN")) object_section = OBJECT_ID.COIN;
-                        else if (line.equals("PLATFORM")) object_section = OBJECT_ID.PLATFORM;
-                        else if (line.equals("PORTAL")) object_section = OBJECT_ID.PORTAL;
-                        else {
-                            System.out.println("[ERROR] Unknown asset : " + line);
-                        }
-                    }
-                    continue;
-                }
+                if (line.startsWith("#")) continue;
 
                 if (line.equals("[ASSETS]")) { section = SceneConstants.SCENE_FILE_SECTION_ASSETS; continue;}
                 if (line.equals("[OBJECTS]")) { section = SceneConstants.SCENE_FILE_SECTION_OBJECTS; continue;}
@@ -217,9 +204,8 @@ public class Scene {
                 switch (section) {
                     case SceneConstants.SCENE_FILE_SECTION_UNKNOWN -> System.out.println("[ERROR] Scene section : ");
                     case SceneConstants.SCENE_FILE_SECTION_ASSETS -> parseAssetsFile(line);
-                    case SceneConstants.SCENE_FILE_SECTION_OBJECTS -> parseObjectsFile(line, object_section);
+                    case SceneConstants.SCENE_FILE_SECTION_OBJECTS -> parseObjectsFile(line);
                 }
-
             }
 
             reader.close();
@@ -234,6 +220,7 @@ public class Scene {
         public static final int ASSET_FILE_SECTION_ANIMATIONS = 2;
     }
 
+    //region Parse
     Sprite defaultSprite = FileUtils.getDefaultSprite();
 
     void createNewPrefab(String absoluteFilePath) {
@@ -242,17 +229,17 @@ public class Scene {
         newPrefabName = FileUtils.getFileNameWithoutExtension(newPrefabName);
         newPrefabName = newPrefabName.toUpperCase();
 
-        GameObject go = new GameObject(newPrefabName, defaultSprite);
+        Prefab go = new Prefab(newPrefabName, defaultSprite);
         go.isPrefab = true;
         go.addComponent(new StateMachine());
         go.assetFilePath = absoluteFilePath;
 
-        GameObject.PrefabLists.add(go);
+        Prefab.PrefabLists.add(go);
     }
 
     boolean isExistedPrefab(String absoluteFilePath) {
-        for (GameObject go: GameObject.PrefabLists) {
-            if (go.assetFilePath.equals(absoluteFilePath)) {
+        for (Prefab prefab: Prefab.PrefabLists) {
+            if (prefab.assetFilePath.equals(absoluteFilePath)) {
                 return true;
             }
         }
@@ -262,6 +249,7 @@ public class Scene {
     void parseAssetsFile(final String file){
         if (file.isEmpty()) return;
 
+        assets.add(file);
         String absoluteFilePath = filePath.fileParentDirectory() + file;
 
         if (isExistedPrefab(absoluteFilePath)) return;
@@ -295,14 +283,69 @@ public class Scene {
         }
     }
 
-    void parseObjectsFile(String line, int ObjectID){
+    void parseObjectsFile(String line){
+        if (line.isEmpty()) return;
 
+        String[] s = line.split("\\s+");
+        if (s.length < 3) return;
+
+        int objectID = Integer.parseInt(s[0]);
+        float x = Float.parseFloat(s[1]);
+        float y = -Float.parseFloat(s[2]);
+
+        String objectName = "";
+        switch (objectID){
+            case OBJECT_ID.MARIO -> objectName = "MARIO";
+            case OBJECT_ID.BRICK -> objectName = "BRICK";
+            case OBJECT_ID.GOOMBA -> objectName = "GOOMBA";
+            case OBJECT_ID.KOOPAS -> objectName = "KOOPAS";
+            case OBJECT_ID.COIN -> objectName = "COIN";
+            case OBJECT_ID.PLATFORM -> {
+                float cell_w = Float.parseFloat(s[3]);
+                float cell_h = Float.parseFloat(s[4]);
+                int length = Integer.parseInt(s[5]);
+                int spr_begin_id = Integer.parseInt(s[6]);
+                int spr_middle_id = Integer.parseInt(s[7]);
+                int spr_end_id = Integer.parseInt(s[8]);
+
+                new Platform(x, y, cell_w, cell_h, length, spr_begin_id, spr_middle_id, spr_end_id);
+
+                return;
+            }
+            case OBJECT_ID.PORTAL -> {
+                float w = Float.parseFloat(s[3]) - x;
+                float h = Float.parseFloat(s[4]) + y;
+                String nextScene = ProjectUtils.getSceneName(Integer.parseInt(s[5]));
+
+                Texture texture = new Texture();
+                texture.init("./system-assets/images/Portal.png");
+                Sprite spr = new Sprite(texture);
+                GameObject newPortal = new GameObject("PORTAL", spr);
+                PortalComponent portalComponent = new PortalComponent(nextScene, w, h);
+                newPortal.transform.position = new Vector2f(x, y);
+                newPortal.transform.zIndex = 5;
+                newPortal.addComponent(portalComponent);
+
+                Window.getScene().addGameObjectToScene(newPortal);
+                return;
+            }
+        }
+
+        Prefab prefab = Prefab.getPrefabByName(objectName);
+        GameObject newGo = prefab.generateChildGameObject();
+
+        newGo.transform.position = new Vector2f(x, y);
+
+        addGameObjectToScene(newGo);
     }
 
     void parseSpriteFile(String line){
         if (line.isEmpty()) return;
 
         String[] tokens = line.split("\\s+");
+
+        if (tokens.length < 3) return;
+
         int spriteId = Integer.parseInt(tokens[0]);
         Vector2f left_top_pos = new Vector2f(Integer.parseInt(tokens[1]), Integer.parseInt(tokens[2]));
         Vector2f right_bottom_pos = new Vector2f(Integer.parseInt(tokens[3]), Integer.parseInt(tokens[4]));
@@ -310,7 +353,7 @@ public class Scene {
 
         ProjectUtils.addSpite(spriteId, left_top_pos, right_bottom_pos, textureId);
 
-        GameObject prefab = GameObject.PrefabLists.get(GameObject.PrefabLists.size() - 1);
+        GameObject prefab = Prefab.PrefabLists.get(Prefab.PrefabLists.size() - 1);
         if (prefab.getComponent(SpriteRenderer.class).getSprite() == defaultSprite) {
             prefab.getComponent(SpriteRenderer.class).setSprite(ProjectUtils.getSprite(spriteId));
         }
@@ -319,7 +362,7 @@ public class Scene {
     void parseAnimationFile(String line){
         if (line.isEmpty()) return;
 
-        GameObject prefab = GameObject.PrefabLists.get(GameObject.PrefabLists.size() - 1);
+        GameObject prefab = Prefab.PrefabLists.get(Prefab.PrefabLists.size() - 1);
         StateMachine stateMachine = prefab.getComponent(StateMachine.class);
 
         String[] s = line.split("\\s+");
@@ -338,5 +381,90 @@ public class Scene {
 
         stateMachine.addState(animationState);
     }
+    //endregion
+
+    //region export scene
+    public void exportScene(){
+        if (SceneUtils.CURRENT_SCENE.isEmpty()) return;
+
+        String fileName = "./export/" + SceneUtils.CURRENT_SCENE + ".txt";
+        try {
+            File file = new File(fileName);
+            if (!file.exists()) {
+                file.createNewFile();
+            }
+            FileWriter writer = new FileWriter(file);
+
+            String s = "";
+            s += "#\n[ASSETS]\n";
+            for (String asset: assets) {
+                s += asset + "\n";
+            }
+
+            s += "#\n[OBJECTS]\n";
+            for (GameObject go: Window.getScene().getGameObjects()) {
+                if (go.isPlatform) continue;
+
+                int objID = -1;
+
+                if (go.name.equals("MARIO")) objID = 0;
+                if (go.name.equals("BRICK")) objID = 1;
+                if (go.name.equals("GOOMBA")) objID = 2;
+                if (go.name.equals("KOOPAS")) objID = 3;
+                if (go.name.equals("COIN")) objID = 4;
+                if (go.name.equals("PORTAL")) objID = 50;
+
+                if (objID == -1) continue;
+
+                float x = go.transform.position.x;
+                float y = -go.transform.position.y;
+
+                if (objID != 50)
+                    s += objID + "\t" +  x + "\t" + y + "\n";
+                else {
+                    PortalComponent portalComponent = go.getComponent(PortalComponent.class);
+                    float w = x + portalComponent.scale.x;
+                    float h = y + portalComponent.scale.y;
+                    int nextSceneId = ProjectUtils.getSceneId(portalComponent.nextScene );
+                    s += objID + "\t" + x + "\t" + y + "\t" + w + "\t" + h + "\t" + nextSceneId + "\n";
+                }
+            }
+
+            for (Map.Entry<Integer, List<GameObject>> entry : GameObject.platforms.entrySet()) {
+                List<GameObject> platformList = entry.getValue();
+                for (GameObject go: platformList) {
+                    if (go.name.contains("begin")){
+                        PlatformInfor infor = go.getComponent(PlatformInfor.class);
+
+                        float x = go.transform.position.x;
+                        float y = -go.transform.position.y;
+                        float cell_w = infor.cell_width;
+                        float cell_h = infor.cell_height;
+                        int length = platformList.size();
+                        int spr_begin_id = infor.spr_begin_id;
+                        int spr_middle_id = infor.spr_middle_id;
+                        int spr_end_id = infor.spr_end_id;
+
+                        s += String.format("5\t%f\t%f\t%f\t%f\t%d\t%d\t%d\t%d\n",
+                                x, y, cell_w, cell_h, length, spr_begin_id, spr_middle_id, spr_end_id);
+                        break;
+                    }
+                }
+
+            }
+
+            writer.write(s);
+
+            writer.close();
+
+            Debug.Log("Export scene '" + fileName + "' SUCCESSFULLY!" );
+        } catch (IOException e) {
+            e.printStackTrace();
+            Debug.Log("Export scene '" + fileName + "' ERROR: " + e.getMessage() );
+        }
+    }
+
+    //endregion
+
     //endregion
 }

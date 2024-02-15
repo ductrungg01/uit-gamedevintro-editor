@@ -11,6 +11,7 @@ import system.GameObject;
 import system.Window;
 import util.Settings;
 
+import java.util.Collection;
 import java.util.List;
 
 import static editor.uihelper.NiceShortCall.*;
@@ -46,9 +47,7 @@ public class HierarchyWindow {
         if (ImGui.beginTabBar("HierarchyTabBar")) {
             if (ImGui.beginTabItem("GameObjects")){
                 for (GameObject obj : gameObjects) {
-                    if (!obj.doSerialization()) {
-                        continue;
-                    }
+                    if (obj.isSpecialObject) continue;
 
                     ImGui.pushID(index);
                     float w = ImGui.getContentRegionAvailX();

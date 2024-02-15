@@ -14,6 +14,7 @@ import util.Settings;
 import java.util.ArrayList;
 import java.util.List;
 
+import static observers.events.EventType.Export;
 import static org.lwjgl.glfw.GLFW.*;
 
 public class KeyControls {
@@ -30,6 +31,11 @@ public class KeyControls {
         List<GameObject> activeGameObjects = inspectorWindow.getActiveGameObjects();
 
         float multiplier = KeyListener.isKeyPressed(GLFW_KEY_LEFT_SHIFT) ? 0.1f : 0.5f;
+
+        if ((KeyListener.isKeyPressed(GLFW_KEY_LEFT_CONTROL) || KeyListener.isKeyPressed(GLFW_KEY_RIGHT_CONTROL)) &&
+                KeyListener.keyBeginPress(GLFW_KEY_E)) {
+            EventSystem.notify(null, new Event(Export));
+        }
 
         if (KeyListener.isKeyPressed(GLFW_KEY_LEFT_CONTROL) &&
                 KeyListener.keyBeginPress(GLFW_KEY_D) &&

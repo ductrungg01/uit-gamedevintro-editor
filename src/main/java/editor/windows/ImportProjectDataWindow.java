@@ -19,7 +19,7 @@ public class ImportProjectDataWindow {
     private static boolean isOpen = true;
     private static ImString imString = new ImString("");
 
-    public static void imgui(){
+    public static void imgui() throws IOException {
         check();
 
         if (!isOpen) return;
@@ -42,6 +42,7 @@ public class ImportProjectDataWindow {
             }
 
             if (ImGui.button("Import")) {
+                ProjectUtils.removeFileInExportFolder();
                 ProjectUtils.loadProject();
             }
 

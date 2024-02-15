@@ -51,6 +51,9 @@ public class Gizmo extends Component implements INonAddableComponent {
         this.xAxisObject.addComponent(new NonPickable());
         this.yAxisObject.addComponent(new NonPickable());
 
+        this.xAxisObject.isSpecialObject = true;
+        this.yAxisObject.isSpecialObject = true;
+
         Window.getScene().addGameObjectToScene(this.xAxisObject);
         Window.getScene().addGameObjectToScene(this.yAxisObject);
     }

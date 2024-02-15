@@ -82,7 +82,7 @@ public class Camera {
     public void setDefaultZoom() {
         float offsetW = screenSize.x / projectionWidth;
         float offsetH = screenSize.y / projectionHeight;
-        float needToMul = Math.max(offsetH, offsetW) + 20;
+        float needToMul = Math.max(offsetH, offsetW) + 100;
         setZoom(needToMul);
     }
     //endregion

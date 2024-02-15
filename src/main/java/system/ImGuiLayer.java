@@ -12,6 +12,8 @@ import imgui.type.ImBoolean;
 import renderer.PickingTexture;
 import scenes.Scene;
 
+import java.io.IOException;
+
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL30.GL_FRAMEBUFFER;
@@ -154,7 +156,7 @@ public class ImGuiLayer {
         ImGui.newFrame();
     }
 
-    public void update(float dt, Scene currentScene) {
+    public void update(float dt, Scene currentScene) throws IOException {
         startFrame(dt);
 
         // Any Dear ImGui code SHOULD go between ImGui.newFrame()/ImGui.render() methods
